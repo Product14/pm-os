@@ -1,0 +1,7 @@
+{
+  "name": "pm-os",
+  "version": "0.1.0",
+  "description": "Spyne PM OS: shared context, skills and weekly rituals for Spyne product managers. Start with /pm-os:setup.",
+  "author": { "name": "Spyne Product" },
+  "keywords": ["product-management", "spyne", "dealer", "team-os"]
+}

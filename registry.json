@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "notes": "Every team skill. status: local (one PM) > candidate (proposed, needs rubric + tests) > stable (ships in plugin) > deprecated. track = which v1 track it belongs to.",
+  "skills": [
+    { "name": "setup", "status": "stable", "owner": "yash.sharma", "track": "groundwork", "path": "plugin/skills/setup", "does": "Connects and verifies every tool, links goals sheet and repo, writes profile." },
+    { "name": "plan-week", "status": "planned", "owner": "yash.sharma", "track": "1-planning", "does": "Monday plan tied to quarterly goals; flags goals with nothing planned." },
+    { "name": "eow-update", "status": "planned", "owner": "yash.sharma", "track": "1-planning", "does": "Friday update against goals with evidence; writes sheet status; sends to head of product after approval." },
+    { "name": "metric", "status": "planned", "owner": "yash.sharma", "track": "2-metrics", "does": "Answers metric questions through verified definitions with data traps applied." },
+    { "name": "agent-review", "status": "planned", "owner": "yash.sharma", "track": "2-metrics", "does": "Weekly metrics + prompts + transcripts review per agent; generalizes sales-inbound-weekly." },
+    { "name": "triage", "status": "planned", "owner": "yash.sharma", "track": "3-tickets", "does": "Classifies tickets, links PRDs and decisions, posts internal Freshdesk note; drafts public replies." },
+    { "name": "rooftop-brief", "status": "planned", "owner": "yash.sharma", "track": "3-tickets", "does": "One-page rooftop brief: account, tickets, calls, agent metrics, decisions." },
+    { "name": "prd", "status": "planned", "owner": "yash.sharma", "track": "4-prd", "does": "Idea to one-pager to PRD with goal link, prediction, and rubric-based critics." },
+    { "name": "prd-to-jira", "status": "planned", "owner": "yash.sharma", "track": "4-prd", "does": "Approved PRD into Jira epics and stories with acceptance criteria." }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "spyne-pm-os",
+  "description": "Spyne product team's shared Claude Code operating system.",
+  "owner": { "name": "Spyne Product" },
+  "plugins": [
+    {
+      "name": "pm-os",
+      "description": "Shared context, skills and weekly rituals for Spyne PMs. Start with /pm-os:setup.",
+      "source": "./plugin",
+      "category": "product-management"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Installed by /pm-os:setup via: git config core.hooksPath .githooks
+node "$(git rev-parse --show-toplevel)/scripts/check.mjs" --staged || {
+  echo "pm-os check failed. Fix the errors above; never bypass with --no-verify."
+  exit 1
+}

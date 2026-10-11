@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "notes": "Single source of truth for what a PM must connect. The setup skill reads this file. Probes are read-only and tiny. claude.ai connectors load at session start, so a PM who connects one mid-session must restart Claude Code before the probe can pass.",
+  "connectors": [
+    {
+      "id": "arali",
+      "name": "Arali",
+      "required": true,
+      "kind": "claude.ai connector",
+      "why": "Customer calls, emails, WhatsApp, and Freshdesk ticket reads (Arali ingests Freshdesk).",
+      "connect": "claude.ai > Settings > Connectors > Arali > Connect",
+      "probe": { "find": "mcp__claude_ai_Arali__get-tickets", "call": { "limit": 1 } },
+      "used_by": ["rooftop-brief", "ticket-triage", "voc-themes", "personas", "eow-update"]
+    },
+    {
+      "id": "slack",
+      "name": "Slack",
+      "required": true,
+      "kind": "claude.ai connector",
+      "why": "Read decisions and threads; deliver updates and release notes after approval.",
+      "connect": "claude.ai > Settings > Connectors > Slack > Connect",
+      "probe": { "find": "mcp__claude_ai_Slack__slack_search_channels", "call": { "keywords": ["general"], "natural_language_query": "", "limit": 1, "response_format": "concise" } },
+      "used_by": ["eow-update", "decision-lookup", "release-notes", "stakeholder-update"]
+    },
+    {
+      "id": "gmail",
+      "name": "Gmail",
+      "required": true,
+      "kind": "claude.ai connector",
+      "why": "Read dealer and stakeholder threads; draft release notes and updates.",
+      "connect": "claude.ai > Settings > Connectors > Gmail > Connect",
+      "probe": { "find": "mcp__claude_ai_Gmail__list_labels", "call": {} },
+      "used_by": ["eow-update", "release-notes", "status-reports"]
+    },
+    {
+      "id": "drive",
+      "name": "Google Drive",
+      "required": true,
+      "kind": "claude.ai connector",
+      "why": "Read PRDs, docs and the goals sheet.",
+      "connect": "claude.ai > Settings > Connectors > Google Drive > Connect",
+      "probe": { "find": "mcp__claude_ai_Google_Drive__search_files", "call": { "query": "owner = 'me'", "pageSize": 1, "excludeContentSnippets": true } },
+      "used_by": ["plan-week", "eow-update", "prd", "decision-lookup"]
+    },
+    {
+      "id": "calendar",
+      "name": "Google Calendar",
+      "required": true,
+      "kind": "claude.ai connector",
+      "why": "Plan the week around real meetings; find decision meetings.",
+      "connect": "claude.ai > Settings > Connectors > Google Calendar > Connect",
+      "probe": { "find": "mcp__claude_ai_Google_Calendar__list_calendars", "call": { "pageSize": 1 } },
+      "used_by": ["plan-week", "eow-update"]
+    },
+    {
+      "id": "sheets",
+      "name": "Google Sheets",
+      "required": true,
+      "kind": "claude.ai connector",
+      "why": "Read and write status on each PM's quarterly goals sheet. Drive alone cannot write cells.",
+      "connect": "claude.ai > Settings > Connectors > Google Sheets > Connect",
+      "probe": { "search": "google sheets spreadsheet read range values", "match": "Google_Sheets", "call": "the cheapest read tool found, against the PM's goals sheet" },
+      "used_by": ["plan-week", "eow-update", "on-track-check"]
+    },
+    {
+      "id": "atlassian",
+      "name": "Atlassian (Jira + Confluence)",
+      "required": true,
+      "kind": "claude.ai connector",
+      "why": "Read sprint and ticket movement for plans and updates; file PRD stories; read Confluence docs.",
+      "connect": "claude.ai > Settings > Connectors > Atlassian > Connect",
+      "probe": { "search": "jira confluence atlassian accessible resources user", "match": "Atlassian", "call": "the cheapest read tool found, e.g. current user or accessible resources" },
+      "used_by": ["plan-week", "eow-update", "prd-to-jira", "decision-lookup"]
+    },
+    {
+      "id": "clickhouse",
+      "name": "ClickHouse",
+      "required": true,
+      "kind": "local MCP server",
+      "why": "All metrics. Every PM uses their own ClickHouse Cloud user; the OS never stores credentials.",
+      "connect": "Ask data/eng for a read-only ClickHouse Cloud user, then run in your own terminal (not in chat): claude mcp add clickhouse-local --scope user -e CLICKHOUSE_HOST=<host> -e CLICKHOUSE_PORT=8443 -e CLICKHOUSE_USER=<you> -e CLICKHOUSE_PASSWORD=<password> -e CLICKHOUSE_SECURE=true -e CLICKHOUSE_VERIFY=true -- uvx --python 3.10 mcp-clickhouse",
+      "probe": { "find": "mcp__clickhouse-local__list_databases", "call": {}, "expect_databases": ["vini_reporting", "dealer_leads", "conversation_ai", "eventila"] },
+      "used_by": ["metric-qa", "agent-review", "launch-readout", "on-track-check", "rooftop-brief"]
+    },
+    {
+      "id": "freshdesk",
+      "name": "Freshdesk (write)",
+      "required": true,
+      "kind": "API key",
+      "why": "Post internal notes on tickets. Reads come through Arali. Public replies are drafted, never posted by the OS.",
+      "connect": "Freshdesk > profile picture > Profile settings > copy API key. Then in your own terminal: mkdir -p ~/.pm-os && printf 'FRESHDESK_API_KEY=%s\\nFRESHDESK_DOMAIN=spyne\\n' '<key>' > ~/.pm-os/secrets.env && chmod 600 ~/.pm-os/secrets.env",
+      "probe": { "run": "node ${CLAUDE_PLUGIN_ROOT}/scripts/freshdesk.mjs whoami" },
+      "used_by": ["ticket-triage", "freshdesk-notes"]
+    },
+    {
+      "id": "blue-brain",
+      "name": "Spyne Blue Brain",
+      "required": false,
+      "kind": "claude.ai connector (org)",
+      "why": "Code knowledge graph, so PRDs match how the code works today.",
+      "connect": "Enabled org-wide; if missing, ask the claude.ai org admin.",
+      "probe": { "find": "mcp__claude_ai_Spyne_Blue_Brain__list_repos", "call": {} },
+      "used_by": ["prd", "change-detection"]
+    },
+    {
+      "id": "github",
+      "name": "GitHub CLI",
+      "required": false,
+      "kind": "CLI",
+      "why": "Prompt and code history for change detection; contributing to this repo.",
+      "connect": "brew install gh && gh auth login",
+      "probe": { "run": "gh auth status" },
+      "used_by": ["change-detection", "agent-review", "contributing"]
+    }
+  ]
+}
