@@ -5,17 +5,45 @@
   "clickhouse": {
     "host": "leio048s4j.us-east-1.aws.clickhouse.cloud",
     "port": 8443,
-    "required_databases": ["vini_reporting", "dealer_leads", "conversation_ai", "eventila"]
+    "required_databases": [
+      "vini_reporting",
+      "dealer_leads",
+      "conversation_ai",
+      "eventila"
+    ]
   },
   "eow": {
     "recipient": "head-of-product",
-    "head_of_product": { "name": "TODO", "slack_user_id": "TODO", "email": "TODO" },
-    "channel": "TODO: slack-dm | email | both"
+    "head_of_product": {
+      "name": "Amit Gupta",
+      "slack_user_id": "U0C44A95LKU",
+      "email": "amit.gupta@spyne.ai"
+    },
+    "channel": "slack-dm",
+    "rule": "PM approves the draft; it is sent as a Slack DM from the PM's own account."
   },
   "goals_sheet": {
     "template_url": "TODO",
-    "never_copy_columns_matching": ["ARR", "CARR", "LARR", "MRR", "revenue", "\\$"],
+    "never_copy_columns_matching": [
+      "ARR",
+      "CARR",
+      "LARR",
+      "MRR",
+      "revenue",
+      "\\$"
+    ],
     "rule": "Read live, never cache sheet contents into this repo. Commercial columns are read for on-track math only and never written into context, queue or digests."
   },
-  "areas": ["vini-sales", "vini-service", "vini-platform", "studio", "lot-service", "contact-service", "agent-marketplace", "dealer-os", "data-warehouse", "integrations"]
+  "areas": [
+    "vini-sales",
+    "vini-service",
+    "vini-platform",
+    "studio",
+    "lot-service",
+    "contact-service",
+    "agent-marketplace",
+    "dealer-os",
+    "data-warehouse",
+    "integrations"
+  ]
 }
