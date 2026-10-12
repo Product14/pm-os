@@ -2,11 +2,14 @@
 id: data-trap--data-aggregator-carries-commercial-fields
 kind: data-trap
 area: vini-platform
-status: candidate
+status: stable
 owner: yash.sharma
 source: memory project_demo_analytics_dashboard.md (2026-09-29)
-verified: 2026-09-29
+verified: 2026-10-12
 confidence: high
+reviewed_by: pm-os-reviewer/rubric-v1
+review_date: 2026-10-12
+review_risk: low
 ---
 
 **Rule:** Strip `/data-aggregator/get-enterprise-details-list` to ids and names before any use.

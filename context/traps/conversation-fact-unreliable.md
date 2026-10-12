@@ -2,11 +2,14 @@
 id: data-trap--conversation-fact-unreliable
 kind: data-trap
 area: data-warehouse
-status: candidate
+status: stable
 owner: yash.sharma
 source: appointments-30d-by-rooftop.sql header; memory project_vini_red_history.md (2026-09-11), project_inbound_performance_page.md (2026-08-14), project_sales_inbound_lead_funnel.md (2026-08-26)
-verified: 2026-09-11
+verified: 2026-10-12
 confidence: high
+reviewed_by: pm-os-reviewer/rubric-v1
+review_date: 2026-10-12
+review_risk: low
 ---
 
 **Rule:** Never use `vini_reporting.conversation_fact` for Vini reporting.

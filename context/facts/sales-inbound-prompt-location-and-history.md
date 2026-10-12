@@ -2,11 +2,14 @@
 id: system-fact--sales-inbound-prompt-location-and-history
 kind: system-fact
 area: vini-platform
-status: candidate
+status: stable
 owner: yash.sharma
 source: conversational-ai-backend src/agents/agents-v2.service.ts (resolveSystemPrompt), src/agent-types-crud/schemas/agent-type-logs.schema.ts; memory reference_sales_inbound_prompt.md (2026-10-01), project_context_engineering_review.md (2026-10-11)
-verified: 2026-10-11
+verified: 2026-10-12
 confidence: high
+reviewed_by: pm-os-reviewer/rubric-v1
+review_date: 2026-10-12
+review_risk: low
 ---
 
 **Rule:** Find agent prompts and their history in `conversational-ai-backend` git + Mongo `AgentTypeLog`, never in ClickHouse.

@@ -2,11 +2,14 @@
 id: data-trap--aggregated-product-details-current-state
 kind: data-trap
 area: data-warehouse
-status: candidate
+status: stable
 owner: yash.sharma
 source: Vini-Success-Dashboard sales-outbound-roster.sql, call-hours-7d.sql; memory project_vini_enablement_tab.md (2026-08-27), project_vini_red_history.md (2026-09-11), project_inbound_performance_page.md (2026-08-14)
-verified: 2026-09-11
+verified: 2026-10-12
 confidence: high
+reviewed_by: pm-os-reviewer/rubric-v1
+review_date: 2026-10-12
+review_risk: low
 ---
 
 **Rule:** Never treat `aggregated_product_details` (or `conversationNotifications`) as history; an as_of replay describes old days with today's roster.

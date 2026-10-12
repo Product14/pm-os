@@ -2,11 +2,14 @@
 id: data-trap--transfer-outcome-fields
 kind: data-trap
 area: data-warehouse
-status: candidate
+status: stable
 owner: yash.sharma
 source: memory project_transfer_escalation_research.md (2026-10-06), project_sales_inbound_lead_funnel.md (2026-08-26), project_service_inbound_roadmap.md (2026-10-05)
-verified: 2026-10-06
+verified: 2026-10-12
 confidence: high
+reviewed_by: pm-os-reviewer/rubric-v1
+review_date: 2026-10-12
+review_risk: low
 ---
 
 **Rule:** Do not read transfer success from `callTransferred`, `answered_at`, `callTransferEvents` or a `bridged` status.

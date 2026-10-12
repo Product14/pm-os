@@ -2,11 +2,14 @@
 id: data-trap--finance-inquiry-report-claims
 kind: data-trap
 area: vini-sales
-status: candidate
+status: stable
 owner: yash.sharma
 source: brainstorming-flows/projects/call-analysis/finance-inquiry-report.md; brainstorming-flows/projects/informativ-payments-pitch/hypothesis-findings.md; memory project_informativ_payments_pitch.md (2026-08-18)
-verified: 2026-08-18
+verified: 2026-10-12
 confidence: high
+reviewed_by: pm-os-reviewer/rubric-v1
+review_date: 2026-10-12
+review_risk: low
 ---
 
 **Rule:** Do not reuse the headline claims in `finance-inquiry-report.md`; they fail matched comparison.

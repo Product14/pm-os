@@ -7,6 +7,8 @@ owner: yash.sharma
 source: conversational-ai-backend commit 55411f278; agentBaseFact.sql; memory project_sms_funnel_dashboard.md (2026-08-14), project_abr_sep_refresh.md (2026-10-01)
 verified: 2026-10-01
 confidence: high
+held_since: 2026-10-12
+hold_reason: reviewer held
 ---
 
 **Rule:** Treat every outcome or action-item allowlist as dated; check for relabels before trending.

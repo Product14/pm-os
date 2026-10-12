@@ -6,7 +6,17 @@ Company and dealer-domain context lives in the org `us-dealer-domain` skill, not
 
 ## Data traps (read before any metric query)
 
-_None yet._
+- `context/traps/agent-call-type-not-direction.md` [data-warehouse] Never derive SMS direction or motion from `agentTypes.agentCallType` or `smsFlowJourneySource`.
+- `context/traps/agent-self-report-fields.md` [vini-sales] Do not trust the agent's own qualified / transferred / intent fields; use deterministic tool evidence.
+- `context/traps/aggregated-product-details-current-state.md` [data-warehouse] Never treat `aggregated_product_details` (or `conversationNotifications`) as history; an as_of replay describes old days with today's roster.
+- `context/traps/conversation-fact-unreliable.md` [data-warehouse] Never use `vini_reporting.conversation_fact` for Vini reporting.
+- `context/traps/data-aggregator-carries-commercial-fields.md` [vini-platform] Strip `/data-aggregator/get-enterprise-details-list` to ids and names before any use.
+- `context/traps/dealer-leads-join-traps.md` [data-warehouse] Dedupe every dealer-leads table to one row per key before joining it.
+- `context/traps/duration-seconds-includes-hold-tail.md` [data-warehouse] Do not compare call `duration_seconds` across the ~June 2026 boundary.
+- `context/traps/finance-inquiry-report-claims.md` [vini-sales] Do not reuse the headline claims in `finance-inquiry-report.md`; they fail matched comparison.
+- `context/traps/sms-handoff-from-outcome-is-circular.md` [vini-sales] Never measure SMS handoff from `conversationAnalytics.outcome` or from voice transfer findings; measure it from action-item intents.
+- `context/traps/transfer-from-agent-wording.md` [vini-sales] Never measure transfers (or any agent behaviour) by phrase-matching what the agent says.
+- `context/traps/transfer-outcome-fields.md` [data-warehouse] Do not read transfer success from `callTransferred`, `answered_at`, `callTransferEvents` or a `bridged` status.
 
 ## Metric definitions
 
@@ -14,7 +24,12 @@ _None yet._
 
 ## System facts
 
-_None yet._
+- `context/facts/agent-channel-coverage.md` [vini-platform] Split every Vini metric by agent type and channel before comparing.
+- `context/facts/appointment-transfer-coupled-in-prompt.md` [vini-sales] Expect any new guardrail or fallible pre-ask tool to raise transfers AND cut the appointment ask together.
+- `context/facts/console-local-env-hits-prod.md` [vini-platform] Assume a local spyne-console-microfrontends run reads and writes PROD unless a per-app `.env.local` overrides it.
+- `context/facts/prompt-routing-decides-active-prompt.md` [vini-sales] When dating a prompt change, diff the routing code and grep only files the active root includes.
+- `context/facts/sales-inbound-prompt-location-and-history.md` [vini-platform] Find agent prompts and their history in `conversational-ai-backend` git + Mongo `AgentTypeLog`, never in ClickHouse.
+- `context/facts/service-policies-wire-contract.md` [vini-service] Read-modify-write the whole `entityConfig.service.policies` block; never partial-write it.
 
 ## Decisions
 

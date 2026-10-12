@@ -2,11 +2,14 @@
 id: system-fact--service-policies-wire-contract
 kind: system-fact
 area: vini-service
-status: candidate
+status: stable
 owner: yash.sharma
 source: org-settings (branch aws-uat) lib/adapters/service-policies-adapter.ts; central-config /central-config/v1/vini-config/agent-config; memory project_service_policies_wire.md (2026-09-30)
-verified: 2026-09-30
+verified: 2026-10-12
 confidence: medium
+reviewed_by: pm-os-reviewer/rubric-v1
+review_date: 2026-10-12
+review_risk: low
 ---
 
 **Rule:** Read-modify-write the whole `entityConfig.service.policies` block; never partial-write it.

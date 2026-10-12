@@ -2,11 +2,14 @@
 id: system-fact--agent-channel-coverage
 kind: system-fact
 area: vini-platform
-status: candidate
+status: stable
 owner: yash.sharma
 source: memory project_inbound_performance_page.md (2026-08-14), project_gtm_followup_appt_docs.md (2026-07-27), project_sales_inbound_lead_funnel.md (2026-08-26)
-verified: 2026-08-14
+verified: 2026-10-12
 confidence: medium
+reviewed_by: pm-os-reviewer/rubric-v1
+review_date: 2026-10-12
+review_risk: low
 ---
 
 **Rule:** Split every Vini metric by agent type and channel before comparing.

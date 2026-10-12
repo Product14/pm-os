@@ -2,11 +2,14 @@
 id: system-fact--prompt-routing-decides-active-prompt
 kind: system-fact
 area: vini-sales
-status: candidate
+status: stable
 owner: yash.sharma
 source: conversational-ai-backend commits 94d067d07 (2026-07-07), af1f8413d (2026-07-20); agents-v2.service.ts resolveSystemPrompt; memory project_prompt_metric_mapping.md (2026-10-01), project_prompt_lever_review.md (2026-10-01), reference_sales_inbound_prompt.md (2026-10-01)
-verified: 2026-10-01
+verified: 2026-10-12
 confidence: high
+reviewed_by: pm-os-reviewer/rubric-v1
+review_date: 2026-10-12
+review_risk: low
 ---
 
 **Rule:** When dating a prompt change, diff the routing code and grep only files the active root includes.
