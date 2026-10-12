@@ -1,0 +1,422 @@
+<title>PM OS Test Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one left-aligned column of test cards grouped by area, a sticky progress strip, Spyne Design OS tokens (light only, by design). */
+:root {
+  color-scheme: light;
+  --canvas: #FAFAFF;
+  --panel: #FFFFFF;
+  --sunken: #F1F1F5;
+  --brand: #522EBF;
+  --brand-strong: #371E7E;
+  --brand-subtle: #F1EDFB;
+  --action: #4600F2;
+  --text: #262C42;
+  --text-subtle: #4C495D;
+  --text-muted: #68657A;
+  --border: #E1E3E9;
+  --control: #86839A;
+  --success: #008743;
+  --success-subtle: #EBFAF3;
+  --pending: #C2410C;
+  --pending-subtle: #FFF7ED;
+  --danger: #B42318;
+  --danger-subtle: #FFF5F5;
+  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+body { background: var(--canvas); color: var(--text); font: 400 14px/1.6 var(--font); }
+.page { max-width: 920px; padding-inline: 24px; padding-block: 32px 64px; display: grid; gap: 24px; }
+@media (max-width: 480px) { .page { padding-inline: 16px; } }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h1 { font-size: 20px; font-weight: 600; line-height: 1.3; }
+h2 { font-size: 15px; font-weight: 600; line-height: 1.4; }
+h3 { font-size: 14px; font-weight: 600; line-height: 1.4; }
+p { margin: 0; }
+.overline { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+.small { font-size: 12px; color: var(--text-muted); }
+.subtle { color: var(--text-subtle); }
+code { font-family: var(--mono); font-size: 12px; background: var(--sunken); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+.lede { max-width: 68ch; color: var(--text-subtle); }
+
+.panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: grid; gap: 16px; min-width: 0; }
+.stack { display: grid; gap: 8px; }
+
+.progress { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.progress .count { font-variant-numeric: tabular-nums; font-weight: 600; }
+.bar { flex: 1 1 200px; height: 8px; border-radius: 999px; background: var(--sunken); overflow: hidden; display: flex; min-width: 120px; }
+.bar span { display: block; height: 100%; }
+.bar .w { background: var(--success); } .bar .p { background: var(--pending); } .bar .b { background: var(--danger); }
+.saveinfo { font-size: 12px; color: var(--text-muted); }
+
+.chip { display: inline-flex; align-items: center; font-size: 12px; font-weight: 500; line-height: 1; padding: 4px 8px; border-radius: 999px; white-space: nowrap; }
+.chip.built { background: var(--success-subtle); color: var(--success); }
+.chip.untested { background: var(--pending-subtle); color: var(--pending); }
+.chip.notbuilt { background: var(--sunken); color: var(--text-subtle); }
+
+.cmd { background: var(--sunken); border-radius: 8px; padding: 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; }
+.cmd pre { margin: 0; font-family: var(--mono); font-size: 12px; line-height: 1.7; overflow-x: auto; white-space: pre; }
+button { font: 500 14px/1 var(--font); cursor: pointer; transition: background-color 150ms, border-color 150ms, color 150ms; }
+button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.copy { font-size: 12px; color: var(--brand); background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+.copy:hover { border-color: var(--brand); }
+
+.group { display: grid; gap: 12px; }
+.group-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; justify-content: space-between; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+.card-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.card-head .title { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.card-head .num { font-family: var(--mono); font-size: 12px; color: var(--text-muted); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+@media (max-width: 720px) { .cols { grid-template-columns: 1fr; } }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field ol { margin: 0; padding-left: 18px; color: var(--text-subtle); display: grid; gap: 4px; }
+.field p { color: var(--text-subtle); }
+
+.verdicts { display: inline-flex; background: var(--sunken); border-radius: 8px; padding: 2px; gap: 2px; flex-wrap: wrap; }
+.verdicts button { font-size: 12px; padding: 8px 12px; border: 0; border-radius: 6px; background: transparent; color: var(--text-subtle); }
+.verdicts button:hover { color: var(--text); }
+.verdicts button[aria-pressed="true"][data-v="works"] { background: var(--success-subtle); color: var(--success); }
+.verdicts button[aria-pressed="true"][data-v="partial"] { background: var(--pending-subtle); color: var(--pending); }
+.verdicts button[aria-pressed="true"][data-v="broken"] { background: var(--danger-subtle); color: var(--danger); }
+.verdicts button[aria-pressed="true"][data-v="skip"] { background: var(--panel); color: var(--text); }
+.verdicts button[aria-pressed="true"][data-v="must"] { background: var(--brand-subtle); color: var(--brand-strong); }
+.verdicts button[aria-pressed="true"][data-v="later"] { background: var(--panel); color: var(--text); }
+.verdicts button[aria-pressed="true"][data-v="drop"] { background: var(--danger-subtle); color: var(--danger); }
+.feedback { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+textarea { width: 100%; min-height: 64px; resize: vertical; font: 400 14px/1.5 var(--font); color: var(--text); background: var(--panel); border: 1px solid var(--control); border-radius: 6px; padding: 8px 12px; }
+.limits { margin: 0; padding-left: 18px; color: var(--text-subtle); display: grid; gap: 4px; }
+footer { color: var(--text-muted); font-size: 12px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<main class="page">
+  <header class="stack">
+    <span class="overline">Spyne PM OS · v0.2 · local build</span>
+    <h1>PM OS Test Plan</h1>
+    <p class="lede">Every capability the PM OS has today, how it works, and exactly how to test it. Mark each one works, partial, broken or skip and leave a note. Your verdicts save as you go, and Claude reads them back to fix what you flag. The last group lists what is not built yet, so you can rank it.</p>
+  </header>
+
+  <div class="progress" role="status" aria-live="polite">
+    <span><span class="count" id="p-done">0</span> of <span class="count" id="p-total">0</span> tested</span>
+    <div class="bar" aria-hidden="true"><span class="w" id="bar-w"></span><span class="p" id="bar-p"></span><span class="b" id="bar-b"></span></div>
+    <span class="small"><span class="count" id="p-works">0</span> works · <span class="count" id="p-partial">0</span> partial · <span class="count" id="p-broken">0</span> broken</span>
+    <span class="saveinfo" id="saveinfo">Connecting to saved feedback…</span>
+  </div>
+
+  <section class="panel" aria-labelledby="run">
+    <div class="stack">
+      <h2 id="run">Run it locally</h2>
+      <p class="subtle">The repo lives at <code>~/Documents/claude-code/apps/pm-os</code>. Nothing is published, so everything below runs on your laptop.</p>
+    </div>
+    <div class="stack">
+      <h3>Option A: load the plugin for one session (best while testing)</h3>
+      <p class="small">Picks up edits immediately. Nothing is installed.</p>
+      <div class="cmd"><pre id="cmd-a">cd ~/Documents/claude-code/apps/pm-os
+claude --plugin-dir ./plugin</pre><button class="copy" type="button" data-copy="cmd-a">Copy</button></div>
+    </div>
+    <div class="stack">
+      <h3>Option B: install it like a teammate would</h3>
+      <p class="small">Claude copies the plugin into its cache. After editing the plugin, run the update line, then restart Claude Code.</p>
+      <div class="cmd"><pre id="cmd-b">claude plugin marketplace add ~/Documents/claude-code/apps/pm-os
+claude plugin install pm-os@spyne-pm-os
+# after edits:
+claude plugin marketplace update spyne-pm-os</pre><button class="copy" type="button" data-copy="cmd-b">Copy</button></div>
+    </div>
+    <div class="stack">
+      <h3>Run the reviewer pipeline</h3>
+      <p class="small">Repair, then context review, then skill review. The source roots let the reviewer open your memory files and workspace to verify sources.</p>
+      <div class="cmd"><pre id="cmd-c">cd ~/Documents/claude-code/apps/pm-os
+PM_OS_SOURCE_ROOTS="$HOME/.claude/projects/-Users-yash-Documents-claude-code/memory:$HOME/Documents/claude-code" \
+  bash scripts/pm-os-review.sh</pre><button class="copy" type="button" data-copy="cmd-c">Copy</button></div>
+    </div>
+  </section>
+
+  <div id="groups"></div>
+
+  <section class="panel" aria-labelledby="known">
+    <h2 id="known">Known limits before you start</h2>
+    <ul class="limits">
+      <li>The GitHub Actions cannot run until the repo is published, so capability 20 and 21 are untested.</li>
+      <li>The goals sheet template link is still missing, so setup skips the goals step and records it as pending.</li>
+      <li>Google Sheets and Atlassian did not load in the build session. Setup will tell you if they load for you.</li>
+      <li>Setup looks for the repo at <code>~/pm-os</code> or <code>~/Documents/pm-os</code>. Yours is elsewhere, so it will ask for the path.</li>
+      <li>Reviewer runs cost about $0.11 per entry. The reviewer eval costs about $1.</li>
+    </ul>
+  </section>
+
+  <footer>Feedback saves to this page's database. Ask Claude to "read my PM OS test feedback" to act on it.</footer>
+</main>
+
+<script>
+var CAPS = [
+  { group: "Install and setup", items: [
+    { id: "install", name: "Plugin install", status: "built",
+      what: "Packages the OS as a Claude Code plugin with two skills (setup, capture) and two hooks.",
+      how: "The repo is a plugin marketplace (spyne-pm-os) holding one plugin (pm-os). About 218 tokens load into every session.",
+      test: ["Run option A or B above.", "Type /pm-os and look at the suggestions.", "Optional: run claude plugin details pm-os@spyne-pm-os after option B."],
+      expect: "/pm-os:setup and /pm-os:capture appear. Details show 2 skills and 2 hooks." },
+    { id: "session-hook", name: "Session start nudge and context pointer", status: "built",
+      what: "Every new session either nudges you to run setup or points Claude at the shared context index.",
+      how: "A SessionStart hook checks ~/.pm-os/profile.json. With a profile, it pulls the repo (fast-forward only) and prints the index path and the number of queued candidates.",
+      test: ["Before setup: start a session with the plugin and ask \"what does the PM OS hook say?\"", "After setup: start a new session and ask the same."],
+      expect: "Before: a line saying the OS is not set up. After: the INDEX.md path and a candidate count." },
+    { id: "setup-connectors", name: "Setup: connect and verify tools first", status: "untested",
+      what: "Checks all 10 required tools and 1 optional one with a tiny read each, and blocks the rest of setup until they pass.",
+      how: "/pm-os:setup reads plugin/connectors.json and probes Arali, Slack, Gmail, Drive, Calendar, Sheets, Atlassian, ClickHouse (and its 4 databases), Freshdesk and GitHub. It shows pass, fail or not loaded with the exact fix.",
+      test: ["Run /pm-os:setup.", "Read the table.", "Optional: disconnect one connector at claude.ai, restart, and run it again."],
+      expect: "An accurate table. Missing claude.ai connectors tell you to connect and restart. It never asks you to paste a key into chat." },
+    { id: "setup-freshdesk-owner", name: "Setup: rejects a borrowed Freshdesk key", status: "untested",
+      what: "Stops notes from posting under someone else's name.",
+      how: "The Freshdesk probe runs whoami and compares the key owner's email with yours.",
+      test: ["Put a Freshdesk key in ~/.pm-os/secrets.env (chmod 600) as FRESHDESK_API_KEY.", "Run /pm-os:setup and watch the Freshdesk row."],
+      expect: "Your own key passes. The key from Otto's .env.local fails with \"This key belongs to Dilip Bhagtani\"." },
+    { id: "setup-profile", name: "Setup: repo, profile and goals sheet", status: "untested",
+      what: "Finds your repo clone, installs the commit guard, asks your area and writes your profile.",
+      how: "Writes ~/.pm-os/profile.json (no secrets). Skips the goals sheet while the template link is TODO.",
+      test: ["Finish /pm-os:setup and give it the repo path when asked.", "Open ~/.pm-os/profile.json."],
+      expect: "Profile has your name, email, areas, repo_path and connector statuses. Goals sheet shows pending." },
+    { id: "usage-log", name: "Skill usage log", status: "built",
+      what: "Records which skills you run, for the weekly digest and the audit.",
+      how: "A PreToolUse hook on the Skill tool appends the skill name and time to ~/.pm-os/usage.jsonl. No arguments, no content.",
+      test: ["Run any skill, for example /pm-os:capture.", "Run tail ~/.pm-os/usage.jsonl."],
+      expect: "One line per skill run with a timestamp and the skill name only." }
+  ]},
+  { group: "Shared knowledge", items: [
+    { id: "context-quality", name: "62 live context entries", status: "built",
+      what: "32 data traps, 15 system facts, 14 metric definitions and 1 decision, each one rule with a source.",
+      how: "Seeded from your memories, then reviewed, repaired and merged by the reviewer agent. Listed in context/INDEX.md.",
+      test: ["Open context/INDEX.md.", "Read 10 entries in areas you know best, especially context/metrics/.", "Mark anything wrong."],
+      expect: "Every entry you read is correct, specific and still true. Note any you would veto." },
+    { id: "context-use", name: "Sessions actually use the context", status: "untested",
+      what: "Claude should apply the traps when you ask a data question, without being told.",
+      how: "The session hook points Claude at INDEX.md. Claude loads only the entries that match the question.",
+      test: ["After setup, start a fresh session with the plugin.", "Ask: \"Write a ClickHouse query for Vini appointments booked last week by rooftop.\"", "Ask: \"Where do I find the history of the Sales Inbound prompt?\""],
+      expect: "It uses dealer_leads.meetings, not conversation_fact, and points to git plus Mongo AgentTypeLog, not ClickHouse. If it ignores the index, mark broken." },
+    { id: "capture", name: "/pm-os:capture", status: "built",
+      what: "Turns a lesson from a session into a queue candidate, declines project status, and splits two lessons into two entries.",
+      how: "Writes queue/<id>.md in the right format, runs the commit check, and commits. With a remote it opens a PR. Without one it tells you to run the reviewer.",
+      test: ["In a session, describe a real trap you hit recently and run /pm-os:capture.", "Try one that is pure project status.", "Try one with a rooftop name in it."],
+      expect: "A clean entry with a real source and no customer names. Status-only input is declined with a reason." }
+  ]},
+  { group: "Reviewer agent (no human step)", items: [
+    { id: "reviewer-eval", name: "Reviewer eval", status: "built",
+      what: "Proves the reviewer catches bad entries before it is allowed to merge anything.",
+      how: "13 planted cases: good entries, plus project status, customer names, commercials in words, duplicates, contradictions, unsourced numbers, a fake source file and a prompt injection.",
+      test: ["Run node scripts/eval-reviewer.mjs.", "Open evals/reviewer/last-run.md.", "Optional: add your own case in evals/reviewer/cases/ and run again."],
+      expect: "13/13 passed, 0 false merges, about $1." },
+    { id: "reviewer-merge", name: "Context review and auto-merge", status: "built",
+      what: "Reviews every candidate against the rubric and merges, holds or rejects it with no approval step.",
+      how: "The model returns a structured verdict. Code applies the policy: merge low risk; merge medium risk only with a verified source; hold the rest. Verdicts go to review-log/.",
+      test: ["Write a good candidate into queue/ (or use capture).", "Run the reviewer pipeline command above.", "Check context/INDEX.md and today's review-log file."],
+      expect: "A good entry merges into context/ with reviewed_by set. The log explains each decision." },
+    { id: "repair", name: "Repair loop for fixable rejects", status: "built",
+      what: "A rejected entry that only needs splitting or a corrected source is rewritten and reviewed again, so nothing waits on a person.",
+      how: "Fixable rejects move to queue/repair/. On the next run a separate repair agent rewrites them and a fresh review decides. One repair attempt per entry.",
+      test: ["Queue one candidate that bundles three unrelated rules.", "Run the pipeline twice (first run rejects it to repair, second run repairs and re-reviews).", "Read the Repair section of today's review-log."],
+      expect: "It becomes separate single-rule entries that merge, or a clear reason why parts were dropped." },
+    { id: "hold-expiry", name: "Hold expiry", status: "built",
+      what: "Held entries cannot sit forever.",
+      how: "After 14 days a held entry gets one more review, then is rejected if still unsure.",
+      test: ["Open queue/held/data-trap--outcome-label-taxonomy-drift.md.", "Change held_since to a date more than 14 days ago.", "Run the pipeline."],
+      expect: "It is re-reviewed and either merges or is rejected with a logged reason." },
+    { id: "veto", name: "Veto after the fact", status: "built",
+      what: "Any PM can overturn a wrong merge with one command, and the reviewer learns from it.",
+      how: "Marks the entry deprecated, drops it from the index, and logs it in reviewer/vetoes.md, which the reviewer reads on every run.",
+      test: ["Pick an entry you think is wrong (or any one, then git revert after).", "Run node scripts/veto.mjs <entry-id> \"why it is wrong\".", "Check context/INDEX.md and reviewer/vetoes.md."],
+      expect: "The entry leaves the index and the veto is logged with your reason." },
+    { id: "certification", name: "Fail-safe when the reviewer is not certified", status: "built",
+      what: "The reviewer cannot merge if its latest eval did not fully pass or the rubric changed without a new eval.",
+      how: "review-context.mjs reads evals/reviewer/last-run.md and downgrades merges to holds when it is not clean for the current rubric version.",
+      test: ["Change rubric_version to 2 in reviewer/RUBRIC.md.", "Queue a good candidate and run the pipeline.", "Undo the change afterwards with git checkout reviewer/RUBRIC.md."],
+      expect: "The candidate is held with \"reviewer not certified\" instead of merging." }
+  ]},
+  { group: "Skill improvements (no human step)", items: [
+    { id: "skill-safety", name: "Skill safety gate", status: "built",
+      what: "Holds any skill change that adds a send or write action, an external URL, or removes an approval or guard rule.",
+      how: "A line diff of the proposal against the current skill, checked with fixed patterns. Held proposals expire in 14 days.",
+      test: ["Look at proposals/skills/capture/announce-in-slack/HOLD.md (already held).", "Make your own proposal that removes the \"Never include\" block, run node scripts/review-skills.mjs."],
+      expect: "Both are held with the exact offending line named." },
+    { id: "skill-eval", name: "Skill eval gate", status: "built",
+      what: "A skill change merges only if it beats the current version on that skill's eval cases.",
+      how: "Both versions run on each case in evals/<skill>/cases/. A separate judge scores them blind. Needs a mean gain of 0.25 and no case dropping more than 0.5.",
+      test: ["Copy plugin/skills/capture/SKILL.md to proposals/skills/capture/<slug>/SKILL.md and make a real improvement.", "Add a one-line WHY.md.", "Run node scripts/review-skills.mjs and read the per-case scores."],
+      expect: "A real improvement merges and bumps the plugin version. A regression is rejected with the case that dropped." }
+  ]},
+  { group: "Guardrails", items: [
+    { id: "commit-guard", name: "Commit check", status: "built",
+      what: "Blocks secrets, customer PII, Spyne commercials and badly formed entries on every commit.",
+      how: "scripts/check.mjs runs as a pre-commit hook. It also warns on entries not re-verified in 90 days and fails if the index is out of date.",
+      test: ["Add a scratch file with a made-up US phone number, a non-Spyne email and the word for annual recurring revenue as its acronym.", "Try to git commit it.", "Remove the file."],
+      expect: "The commit is blocked and each line is named with its rule." },
+    { id: "freshdesk-script", name: "Freshdesk notes script", status: "built",
+      what: "Lets the OS post private notes on tickets. Public replies are blocked in code.",
+      how: "plugin/scripts/freshdesk.mjs supports whoami, ticket and note (private only). reply exits with an error by design.",
+      test: ["node plugin/scripts/freshdesk.mjs whoami", "node plugin/scripts/freshdesk.mjs ticket <id> on a test ticket.", "Optional: post a note to a test ticket only.", "node plugin/scripts/freshdesk.mjs reply 1"],
+      expect: "whoami shows your name. The note is private. reply refuses." }
+  ]},
+  { group: "Automation (needs the repo published)", items: [
+    { id: "action-intake", name: "Intake Action", status: "untested",
+      what: "Auto-merges contribution PRs that touch only queue/ or proposals/ and pass the commit check.",
+      how: ".github/workflows/pm-os-intake.yml. Any other PR gets a comment saying a human must review it.",
+      test: ["Publish to Product14/pm-os.", "Open a PR adding one queue file.", "Open a PR that edits a script."],
+      expect: "The first merges by itself. The second gets the human-review comment." },
+    { id: "action-review", name: "Review Action", status: "untested",
+      what: "Runs the reviewer on every push to main that adds candidates, nightly at 03:00 IST, and weekly runs the reviewer eval.",
+      how: ".github/workflows/pm-os-review.yml runs scripts/pm-os-review.sh --push with a Claude token secret.",
+      test: ["Add the CLAUDE_CODE_OAUTH_TOKEN secret.", "Merge a candidate PR.", "Watch the Actions tab."],
+      expect: "A bot commit with the verdict within minutes. No loop of repeated runs." }
+  ]},
+  { group: "Not built yet: rank these", ranking: true, items: [
+    { id: "nb-plan-week", name: "/pm-os:plan-week", status: "notbuilt", what: "Monday plan from your goals sheet, last update, Jira, tickets and calendar. Flags goals with nothing planned." },
+    { id: "nb-eow", name: "/pm-os:eow-update", status: "notbuilt", what: "Friday update against goals with evidence, sent to Amit as a Slack DM after you approve it." },
+    { id: "nb-metric", name: "/pm-os:metric", status: "notbuilt", what: "Answers metric questions through the verified definitions with traps applied." },
+    { id: "nb-agent-review", name: "/pm-os:agent-review", status: "notbuilt", what: "Your sales-inbound-weekly review generalized to every agent." },
+    { id: "nb-triage", name: "/pm-os:triage", status: "notbuilt", what: "Classifies tickets, links PRDs and decisions, posts an internal Freshdesk note, drafts public replies." },
+    { id: "nb-rooftop", name: "/pm-os:rooftop-brief", status: "notbuilt", what: "One page on a rooftop: account, tickets, calls, agent metrics, decisions." },
+    { id: "nb-prd", name: "/pm-os:prd", status: "notbuilt", what: "Idea to one-pager to PRD with a goal link, a prediction, and critics scored against a rubric." },
+    { id: "nb-jira", name: "/pm-os:prd-to-jira", status: "notbuilt", what: "Approved PRD into Jira epics and stories with acceptance criteria." },
+    { id: "nb-digest", name: "Weekly digest", status: "notbuilt", what: "What merged, held and was vetoed this week, plus which skills got used, posted to Slack." },
+    { id: "nb-audit", name: "Quarterly audit", status: "notbuilt", what: "Blunt review of unused skills, stale context and rubric challenges." },
+    { id: "nb-harvest", name: "Automatic harvest at session end", status: "notbuilt", what: "Proposes capture candidates on its own when a session ends, instead of waiting for /pm-os:capture." }
+  ]}
+];
+
+var TEST_VERDICTS = [["works", "Works"], ["partial", "Partial"], ["broken", "Broken"], ["skip", "Skip"]];
+var RANK_VERDICTS = [["must", "Build next"], ["later", "Later"], ["drop", "Drop"]];
+var STATUS_LABEL = { built: "Built", untested: "Built, untested", notbuilt: "Not built" };
+var state = {};
+var db = null, saving = 0;
+
+function el(tag, attrs, kids) {
+  var n = document.createElement(tag);
+  if (attrs) for (var k in attrs) { if (k === "text") n.textContent = attrs[k]; else n.setAttribute(k, attrs[k]); }
+  (kids || []).forEach(function (c) { if (c) n.appendChild(c); });
+  return n;
+}
+
+function render() {
+  var root = document.getElementById("groups");
+  root.textContent = "";
+  var n = 0;
+  CAPS.forEach(function (g) {
+    var sec = el("section", { "class": "group" });
+    sec.appendChild(el("div", { "class": "group-head" }, [el("h2", { text: g.group }), el("span", { "class": "small", text: g.items.length + (g.ranking ? " ideas" : " capabilities") })]));
+    g.items.forEach(function (c) {
+      n++;
+      var card = el("article", { "class": "card", id: "cap-" + c.id });
+      card.appendChild(el("div", { "class": "card-head" }, [
+        el("div", { "class": "title" }, [el("span", { "class": "num", text: String(n).padStart(2, "0") }), el("h3", { text: c.name })]),
+        el("span", { "class": "chip " + c.status, text: STATUS_LABEL[c.status] })
+      ]));
+      if (g.ranking) {
+        card.appendChild(el("p", { "class": "subtle", text: c.what }));
+      } else {
+        var left = el("div", { "class": "stack" }, [
+          el("div", { "class": "field" }, [el("span", { "class": "overline", text: "What it does" }), el("p", { text: c.what })]),
+          el("div", { "class": "field" }, [el("span", { "class": "overline", text: "How it works" }), el("p", { text: c.how })])
+        ]);
+        var ol = el("ol");
+        c.test.forEach(function (t) { ol.appendChild(el("li", { text: t })); });
+        var right = el("div", { "class": "stack" }, [
+          el("div", { "class": "field" }, [el("span", { "class": "overline", text: "How to test" }), ol]),
+          el("div", { "class": "field" }, [el("span", { "class": "overline", text: "Expected" }), el("p", { text: c.expect })])
+        ]);
+        card.appendChild(el("div", { "class": "cols" }, [left, right]));
+      }
+      var fb = el("div", { "class": "feedback" });
+      var seg = el("div", { "class": "verdicts", role: "group", "aria-label": "Verdict for " + c.name });
+      (g.ranking ? RANK_VERDICTS : TEST_VERDICTS).forEach(function (v) {
+        var b = el("button", { type: "button", "data-v": v[0], "aria-pressed": String((state[c.id] || {}).verdict === v[0]), text: v[1] });
+        b.addEventListener("click", function () {
+          var cur = (state[c.id] || {}).verdict;
+          save(c.id, { verdict: cur === v[0] ? "" : v[0] });
+        });
+        seg.appendChild(b);
+      });
+      var ta = el("textarea", { id: "notes-" + c.id, placeholder: g.ranking ? "Why, or what it should do differently" : "What happened, what you expected, what to change", "aria-label": "Notes for " + c.name });
+      ta.value = (state[c.id] || {}).notes || "";
+      var timer;
+      ta.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { save(c.id, { notes: ta.value }); }, 700); });
+      fb.appendChild(seg);
+      fb.appendChild(ta);
+      card.appendChild(fb);
+      sec.appendChild(card);
+    });
+    root.appendChild(sec);
+  });
+  progress();
+}
+
+function progress() {
+  var testable = [], counts = { works: 0, partial: 0, broken: 0, skip: 0 };
+  CAPS.forEach(function (g) { if (!g.ranking) g.items.forEach(function (c) { testable.push(c.id); }); });
+  testable.forEach(function (id) { var v = (state[id] || {}).verdict; if (counts[v] !== undefined) counts[v]++; });
+  var done = counts.works + counts.partial + counts.broken + counts.skip, total = testable.length;
+  document.getElementById("p-done").textContent = done;
+  document.getElementById("p-total").textContent = total;
+  document.getElementById("p-works").textContent = counts.works;
+  document.getElementById("p-partial").textContent = counts.partial;
+  document.getElementById("p-broken").textContent = counts.broken;
+  document.getElementById("bar-w").style.width = (100 * counts.works / total) + "%";
+  document.getElementById("bar-p").style.width = (100 * counts.partial / total) + "%";
+  document.getElementById("bar-b").style.width = (100 * counts.broken / total) + "%";
+}
+
+function info(t) { document.getElementById("saveinfo").textContent = t; }
+
+function save(id, patch) {
+  var next = Object.assign({}, state[id] || {}, patch, { updatedAt: new Date().toISOString() });
+  state[id] = next;
+  if (patch.verdict !== undefined) {
+    var card = document.getElementById("cap-" + id);
+    card.querySelectorAll(".verdicts button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-v") === next.verdict)); });
+    progress();
+  }
+  if (db) {
+    saving++; info("Saving…");
+    db.collection("feedback").doc(id).set({ verdict: next.verdict || "", notes: next.notes || "", updatedAt: next.updatedAt })
+      .then(function () { saving--; if (!saving) info("All feedback saved"); })
+      .catch(function (e) { saving--; info("Could not save: " + ((e && e.message) || "error") + ". Your edits stay in this browser."); local(); });
+  } else {
+    local();
+  }
+}
+
+function local() {
+  try { localStorage.setItem("pmos-test-feedback", JSON.stringify(state)); info("Saved in this browser only. Claude cannot read it from here."); } catch (e) {}
+}
+
+document.querySelectorAll("[data-copy]").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var pre = document.getElementById(b.getAttribute("data-copy"));
+    var done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = "Copy"; }, 1400); };
+    try {
+      navigator.clipboard.writeText(pre.textContent).then(function () { done("Copied"); }, function () { sel(pre); done("Press Cmd+C"); });
+    } catch (e) { sel(pre); done("Press Cmd+C"); }
+  });
+});
+function sel(n) { var r = document.createRange(); r.selectNodeContents(n); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); }
+
+try { state = JSON.parse(localStorage.getItem("pmos-test-feedback") || "{}") || {}; } catch (e) { state = {}; }
+render();
+
+(async function () {
+  var cap = window.claude && window.claude.use ? await window.claude.use("db") : null;
+  if (!cap) { info("Saved feedback is unavailable here; verdicts stay in this browser."); return; }
+  db = cap;
+  info("All feedback saved");
+  db.collection("feedback").onSnapshot(function (snap) {
+    snap.docs.forEach(function (d) {
+      var v = d.data() || {};
+      var mine = state[d.id] || {};
+      if (!mine.updatedAt || (v.updatedAt && v.updatedAt >= mine.updatedAt)) state[d.id] = { verdict: v.verdict || "", notes: v.notes || "", updatedAt: v.updatedAt };
+    });
+    var active = document.activeElement && document.activeElement.tagName === "TEXTAREA" ? document.activeElement.id : null;
+    if (!active) render(); else progress();
+  }, function (e) { info("Could not load saved feedback: " + ((e && e.message) || "error")); });
+})();
+</script>
