@@ -1,0 +1,53 @@
+# The reviewer agent. Runs on every push that adds candidates or skill
+# proposals, nightly for repairs and expiring holds, and on demand.
+# Commits made with GITHUB_TOKEN do not trigger workflows, so its own
+# verdict commits never loop.
+name: pm-os review
+
+on:
+  push:
+    branches: [main]
+    paths: ["queue/**", "proposals/**"]
+  schedule:
+    - cron: "30 21 * * *" # 03:00 IST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pm-os-review
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run reviewer
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          git config user.name "pm-os-reviewer"
+          git config user.email "pm-os-reviewer@spyne.ai"
+          bash scripts/pm-os-review.sh --push
+
+      - name: Weekly reviewer eval (Mondays)
+        if: github.event_name == 'schedule' && github.event.schedule == '30 21 * * *'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ "$(date -u +%u)" = "7" ]; then node scripts/eval-reviewer.mjs; fi

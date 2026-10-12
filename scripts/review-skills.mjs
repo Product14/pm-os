@@ -108,13 +108,13 @@ async function review(propDir) {
   const isNew = !existsSync(basePath);
   const baseText = isNew ? "" : readFileSync(basePath, "utf8");
   const held = existsSync(join(ROOT, propDir, "HOLD.md"));
+  if (held) {
+    const since = parseEntry(readFileSync(join(ROOT, propDir, "HOLD.md"), "utf8"))?.meta.held_since;
+    if (ageDays(since) >= HOLD_DAYS) return { propDir, skill, action: "reject", why: `held for ${HOLD_DAYS} days; split the risky part into its own proposal`, cost: 0 };
+  }
 
   const hits = safetyGate(baseText, candText);
   if (hits.length) {
-    if (held) {
-      const since = parseEntry(readFileSync(join(ROOT, propDir, "HOLD.md"), "utf8"))?.meta.held_since;
-      if (ageDays(since) >= HOLD_DAYS) return { propDir, skill, action: "reject", why: `safety hold expired after ${HOLD_DAYS} days: ${hits[0]}`, cost: 0 };
-    }
     return { propDir, skill, action: "hold", why: `safety gate: ${hits.join("; ")}`, cost: 0 };
   }
   const cs = cases(skill);
@@ -201,7 +201,7 @@ if (process.argv[1] && import.meta.url === `file://${process.argv[1]}`) {
   log(results, cost);
   try { execSync("node scripts/check.mjs", { cwd: ROOT, stdio: "inherit" }); }
   catch { console.error("check failed after applying; nothing committed"); process.exit(1); }
-  if (flag("--commit")) {
+  if (flag("--commit") && execSync("git status --porcelain", { cwd: ROOT, encoding: "utf8" }).trim()) {
     execSync(`git add -A ${["proposals", "plugin", "registry.json", "CHANGELOG.md", "review-log"].filter((p) => existsSync(join(ROOT, p))).join(" ")}`, { cwd: ROOT });
     const t = results.reduce((a, r) => ((a[r.action] = (a[r.action] || 0) + 1), a), {});
     execSync(`git -c user.name="pm-os-reviewer" -c user.email="pm-os-reviewer@spyne.ai" commit -q -m ${JSON.stringify(`pm-os skill reviewer: ${t.merge || 0} merged, ${t.hold || 0} held, ${t.reject || 0} rejected`)}`, { cwd: ROOT, stdio: "inherit" });

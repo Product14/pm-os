@@ -56,6 +56,14 @@ Read `context/INDEX.md` in the PM OS repo (`repo_path` in `~/.pm-os/profile.json
 
 ## Output
 
-When you have file access, write each entry to `<repo_path>/queue/<id>.md` and run `node scripts/check.mjs` in the repo. Fix anything it reports. Then tell the PM in one line per entry what you queued. The reviewer handles the rest, and nobody needs to approve it.
+When you have file and shell access, contribute the entries as a pull request. Nobody needs to approve it: the intake check merges it, and the reviewer agent decides what joins the shared context.
+
+1. In the repo (`repo_path` from `~/.pm-os/profile.json`), run `git switch main && git pull --ff-only`, then `git switch -c capture/<first-id>`.
+2. Write each entry to `queue/<id>.md`. Touch nothing outside `queue/`. A PR that changes any other file needs a human reviewer.
+3. Run `node scripts/check.mjs` and fix anything it reports.
+4. Commit with the message `capture: <id>[, <id>]`, then run `git push -u origin HEAD` and `gh pr create --fill`.
+5. Tell the PM in one line per entry what you contributed, and give them the PR link. The verdict appears in `review-log/` within minutes. Rejections include what would make the entry mergeable, and fixable ones are repaired automatically.
+
+If `gh` is not authenticated, stop after step 3 and tell the PM to run `gh auth login`.
 
 When you have no file access, return the entry markdown only.

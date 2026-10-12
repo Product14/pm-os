@@ -28,6 +28,19 @@ const RUBRIC_VERSION = (RUBRIC.match(/rubric_version:\s*(\d+)/) || [])[1] || "?"
 const SCHEMA = JSON.parse(readFileSync(join(ROOT, "reviewer", "context-verdict.schema.json"), "utf8"));
 const SOURCE_ROOTS = (process.env.PM_OS_SOURCE_ROOTS || "").split(":").filter((d) => d && existsSync(d));
 
+// The reviewer may merge only if the current rubric has a clean eval on record:
+// every case passed and no false merges. Otherwise it runs hold-only.
+export function certified() {
+  const p = join(ROOT, "evals", "reviewer", "last-run.md");
+  if (!existsSync(p)) return { ok: false, why: "no reviewer eval on record" };
+  const t = readFileSync(p, "utf8");
+  const v = (t.match(/rubric v(\d+)/) || [])[1];
+  const m = t.match(/(\d+)\/(\d+) passed\. False merges: (\d+)/);
+  if (v !== RUBRIC_VERSION) return { ok: false, why: `last eval was rubric v${v}, current is v${RUBRIC_VERSION}` };
+  if (!m || m[1] !== m[2] || m[3] !== "0") return { ok: false, why: "last reviewer eval did not fully pass" };
+  return { ok: true };
+}
+
 // ---------- frontmatter helpers ----------
 export function setField(text, key, value) {
   const re = new RegExp(`^${key}:.*$`, "m");
@@ -129,6 +142,8 @@ export async function review(path, override = {}) {
     else verdict.decision = verdict.decision === "merge" ? "hold" : verdict.decision;
   }
   let applied = policy(verdict);
+  const cert = override.text ? { ok: true } : certified();
+  if (applied.action === "merge" && !cert.ok) applied = { action: "hold", why: `reviewer not certified (${cert.why}); would have merged` };
   const wasHeld = path.startsWith("queue/held/");
   if (wasHeld && applied.action === "hold" && !override.text) applied = { action: "reject", why: `still held after ${HOLD_DAYS} days: ${applied.why}` };
   return { path, text: finalText, parsed: parseEntry(finalText), verdict, applied, cost: r.cost };
@@ -219,7 +234,7 @@ if (process.argv[1] && import.meta.url === `file://${process.argv[1]}`) {
   log(results, cost);
   try { execSync("node scripts/check.mjs", { cwd: ROOT, stdio: "inherit" }); }
   catch { console.error("check failed after applying verdicts; nothing committed"); process.exit(1); }
-  if (flag("--commit")) {
+  if (flag("--commit") && execSync("git status --porcelain queue context review-log", { cwd: ROOT, encoding: "utf8" }).trim()) {
     execSync("git add -A queue context review-log", { cwd: ROOT });
     const msg = `pm-os reviewer: ${tally.merge || 0} merged, ${tally.hold || 0} held, ${tally.repair || 0} sent to repair, ${tally.reject || 0} rejected (rubric v${RUBRIC_VERSION})`;
     execSync(`git -c user.name="pm-os-reviewer" -c user.email="pm-os-reviewer@spyne.ai" commit -q -m ${JSON.stringify(msg)}`, { cwd: ROOT, stdio: "inherit" });

@@ -1,0 +1,56 @@
+# Auto-merges contribution PRs so no human has to approve them.
+# A PR merges here only if it touches nothing but queue/ and proposals/ and
+# passes the safety check. Quality review happens after merge, on main, by the
+# reviewer agent (pm-os-review.yml). Anything else needs a human reviewer.
+name: pm-os intake
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Only queue/ and proposals/ may change
+        id: scope
+        run: |
+          changed=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
+          echo "$changed"
+          outside=$(echo "$changed" | grep -vE '^(queue|proposals)/' || true)
+          if [ -n "$outside" ]; then
+            echo "contribution=false" >> "$GITHUB_OUTPUT"
+            printf 'These files are outside queue/ and proposals/, so this PR needs a human reviewer:\n\n%s\n' "$outside" > scope.txt
+          else
+            echo "contribution=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Safety check (secrets, PII, commercials, entry schema)
+        if: steps.scope.outputs.contribution == 'true'
+        run: node scripts/check.mjs
+
+      - name: Merge contribution
+        if: steps.scope.outputs.contribution == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "${{ github.event.pull_request.number }}" --body "Safety check passed. Merging; the reviewer agent reviews it on main within minutes and logs the verdict in review-log/."
+          gh pr merge "${{ github.event.pull_request.number }}" --squash --delete-branch
+
+      - name: Explain why a human is needed
+        if: steps.scope.outputs.contribution == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file scope.txt

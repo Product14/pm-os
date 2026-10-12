@@ -18,6 +18,8 @@ It replaces each PM's private setup. Your personal preferences stay personal. Te
 | Google Sheets | Your quarterly goals sheet |
 | Atlassian | Jira and Confluence |
 
+And the GitHub CLI (`gh auth login`), so you can contribute with `/pm-os:capture`.
+
 You also need:
 - **ClickHouse:** your own read-only ClickHouse Cloud user. Ask data/eng. Setup gives you the exact command.
 - **Freshdesk:** your own API key (Freshdesk > Profile settings). Never use someone else's: notes post under the key owner's name.
@@ -27,14 +29,14 @@ Then **quit and restart Claude Code**. Connectors load at session start.
 **2. Install the plugin.** In Claude Code:
 
 ```
-/plugin marketplace add <repo-url>          # TODO: set once the repo has a remote
+/plugin marketplace add Product14/pm-os
 /plugin install pm-os@spyne-pm-os
 ```
 
 **3. Clone this repo** (you need it to read and contribute shared context):
 
 ```
-git clone <repo-url> ~/pm-os
+gh repo clone Product14/pm-os ~/pm-os
 ```
 
 **4. Run setup:**
