@@ -5,7 +5,7 @@
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 
-export function claudeRun({ prompt, systemPromptFile, schema, model = "opus", cwd, addDirs = [], allowedTools = [], budgetUsd = 1.5, timeoutMs = 300_000 }) {
+export function claudeRun({ prompt, systemPromptFile, schema, model = "opus", cwd, addDirs = [], allowedTools = [], disallowedTools = [], budgetUsd = 1.5, timeoutMs = 300_000 }) {
   const args = [
     "-p", prompt,
     "--output-format", "json",
@@ -17,6 +17,7 @@ export function claudeRun({ prompt, systemPromptFile, schema, model = "opus", cw
   if (schema) args.push("--json-schema", JSON.stringify(schema));
   if (systemPromptFile) args.push("--append-system-prompt", readFileSync(systemPromptFile, "utf8"));
   if (allowedTools.length) args.push("--allowedTools", ...allowedTools);
+  if (disallowedTools.length) args.push("--disallowedTools", ...disallowedTools);
   for (const d of addDirs) args.push("--add-dir", d);
 
   return new Promise((resolve) => {

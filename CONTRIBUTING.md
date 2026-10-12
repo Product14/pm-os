@@ -7,15 +7,31 @@ This repo is expected to grow. What is forbidden is growing it privately: a less
 ## The ladder
 
 ```
-  candidate  ──►  stable  ──►  deprecated
-   queue/        context/       context/ (kept, marked)
+  candidate  ──►  reviewer agent  ──►  stable  ──►  deprecated
+   queue/        (no human step)      context/     (veto or superseded)
 ```
 
-| Status | Where | Who changes it |
-|---|---|---|
-| candidate | `queue/` | Anyone. Harvested from sessions or written by hand |
-| stable | `context/<kind>/` | The area owner promotes it with `scripts/promote.mjs` |
-| deprecated | `context/<kind>/` | The area owner. The body names what replaced it |
+Nobody approves entries by hand. A separate reviewer agent checks every candidate against `reviewer/RUBRIC.md`. A fixed policy in `scripts/review-context.mjs` then decides:
+
+| Reviewer verdict | What happens |
+|---|---|
+| merge, low risk, source not contradicted | Merged into `context/` automatically |
+| merge, medium risk, source verified | Merged automatically |
+| merge, medium risk, unverified source; or high risk | Held in `queue/held/` |
+| hold | Held, re-reviewed once after 14 days, then rejected if still unsure |
+| reject | Removed. The reason and the fix are in `review-log/` |
+
+Nothing waits on a person, and nothing risky merges silently.
+
+**Humans keep a veto, after the fact.** If a merged entry is wrong, any PM runs:
+
+```
+node scripts/veto.mjs <entry-id> "<why it was wrong>"
+```
+
+The entry is deprecated and the veto goes into `reviewer/vetoes.md`. The reviewer reads the vetoes on every run as calibration.
+
+**The reviewer is evaluated before it is trusted.** `node scripts/eval-reviewer.mjs` runs it on planted cases: good entries, plus project status, customer names, commercials written in words, duplicates, contradictions, unsourced numbers, a fake source file and a prompt injection. Every case must pass with zero false merges before a rubric change ships. Results: `evals/reviewer/last-run.md`.
 
 ## Entry kinds
 
@@ -49,13 +65,30 @@ confidence: high | medium | low
 **Instead:** What to use.
 ```
 
-## Flow
-
-1. **Capture.** At the end of a session the harvest step proposes candidates into `queue/`, or you write one by hand.
-2. **PR.** Open a PR with the candidate. `scripts/check.mjs` must pass.
-3. **Review.** The area owner (see `OWNERS.md`) checks the source, then runs `node scripts/promote.mjs queue/<file>.md` or `--reject`.
-4. **Freshness.** Entries not re-verified in 90 days are flagged by the check and listed in the quarterly audit.
+The easiest way to write one is `/pm-os:capture` at the end of a session.
 
 ## Skills
 
-New skills start in your personal `~/.claude/skills/` under a distinct name (`my-prd-style`, never `prd`). When a skill works for you, propose it in `registry.json` as `candidate` with a rubric and at least 3 test cases. It becomes `stable` and ships in the plugin once a second PM has used it and the owner signs off.
+Improve a skill by proposing its full new version:
+
+```
+proposals/skills/<skill>/<short-slug>/SKILL.md   the whole proposed file
+proposals/skills/<skill>/<short-slug>/WHY.md     one line on what it improves
+```
+
+`scripts/review-skills.mjs` decides with no human step:
+
+1. **Safety gate.** It holds any change that:
+   - adds a send, post, reply, create, update or delete tool
+   - adds an external URL or a raw network call
+   - adds wording that skips approval
+   - removes a guard line (approval, never, draft, PII, commercials)
+
+   Held proposals are rejected after 14 days. Split the risky part out and propose it separately.
+2. **Eval gate.** The current and proposed versions both run on every case in `evals/<skill>/cases/`. A separate judge scores them blind against each case's rubric. The proposal merges when:
+   - no case drops by more than 0.5
+   - **and** either the mean improves by at least 0.25, or quality ties while the file gets at least 10% shorter
+   - **and**, if the file grows by more than 25%, the mean improves by at least 0.5
+3. **New skills** must beat plain Claude, with no skill loaded, by at least 0.5 and score 3.5 or higher.
+
+A skill needs at least 3 eval cases before it can change automatically. Each case is `## input` plus `## rubric` (one line per thing a good answer does).

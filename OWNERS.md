@@ -1,6 +1,6 @@
 # Owners
 
-Each area has one owner who reviews and promotes candidates in it. An owner can delegate a review but stays accountable for the area being correct and current.
+Owners do not approve anything: the reviewer agent merges on its own. An owner watches their area in the weekly digest, vetoes wrong merges with `scripts/veto.mjs`, and proposes rubric changes when the reviewer keeps getting their area wrong.
 
 | Area | Owner |
 |---|---|
