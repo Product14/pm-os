@@ -192,13 +192,15 @@ if (process.argv[1] && import.meta.url === `file://${process.argv[1]}`) {
     const r = await review(p);
     console.log(`${r.action.padEnd(6)} ${p}  (${r.why})`);
     for (const x of r.results || []) console.log(`        ${x.case}: current ${x.base?.overall} -> proposed ${x.cand?.overall}`);
+    r.repeat = r.action === "hold" && existsSync(join(ROOT, p, "HOLD.md"));
     if (!flag("--dry-run")) apply(r);
     results.push(r);
   }
   const cost = results.reduce((s, r) => s + (r.cost || 0), 0);
   console.log(`cost $${cost.toFixed(2)}`);
   if (flag("--dry-run")) process.exit(0);
-  log(results, cost);
+  const changed = results.filter((r) => !r.repeat);
+  if (changed.length) log(changed, cost);
   try { execSync("node scripts/check.mjs", { cwd: ROOT, stdio: "inherit" }); }
   catch { console.error("check failed after applying; nothing committed"); process.exit(1); }
   if (flag("--commit") && execSync("git status --porcelain", { cwd: ROOT, encoding: "utf8" }).trim()) {
