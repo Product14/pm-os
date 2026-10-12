@@ -1,0 +1,1 @@
+- 2026-10-12 v0.1.1 `capture`: Simplify: drop the intro section (same quality, shorter: mean delta 0.00, candidate mean 2.17, size -13%)
