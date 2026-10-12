@@ -1,0 +1,287 @@
+<title>Spyne PM OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one left-aligned reading column on the Spyne canvas, white panels by role, Spyne Design OS tokens (light only, by design). */
+:root {
+  color-scheme: light;
+  --canvas: #FAFAFF;
+  --panel: #FFFFFF;
+  --sunken: #F1F1F5;
+  --brand: #522EBF;
+  --brand-strong: #371E7E;
+  --brand-subtle: #F1EDFB;
+  --action: #4600F2;
+  --text: #262C42;
+  --text-subtle: #4C495D;
+  --text-muted: #68657A;
+  --border: #E1E3E9;
+  --success: #008743;
+  --success-subtle: #EBFAF3;
+  --pending: #C2410C;
+  --pending-subtle: #FFF7ED;
+  --info: #0369A1;
+  --info-subtle: #F0F9FF;
+  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+body { background: var(--canvas); color: var(--text); font: 400 14px/1.6 var(--font); }
+.page { max-width: 880px; padding-inline: 24px; padding-block: 32px 64px; display: grid; gap: 24px; }
+@media (max-width: 480px) { .page { padding-inline: 16px; } }
+
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h1 { font-size: 20px; font-weight: 600; line-height: 1.3; }
+h2 { font-size: 15px; font-weight: 600; line-height: 1.4; }
+h3 { font-size: 14px; font-weight: 500; line-height: 1.4; }
+p { margin: 0; }
+.overline { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+.small { font-size: 12px; color: var(--text-muted); }
+.subtle { color: var(--text-subtle); }
+code, .mono { font-family: var(--mono); font-size: 12px; }
+code { background: var(--sunken); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+
+.panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: grid; gap: 16px; min-width: 0; }
+.stack { display: grid; gap: 8px; }
+.lede { max-width: 65ch; color: var(--text-subtle); }
+
+.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; line-height: 1; padding: 4px 8px; border-radius: 999px; white-space: nowrap; }
+.chip.built { background: var(--success-subtle); color: var(--success); }
+.chip.next { background: var(--brand-subtle); color: var(--brand-strong); }
+.chip.planned { background: var(--sunken); color: var(--text-subtle); }
+.chip.review { background: var(--pending-subtle); color: var(--pending); }
+
+.hero { display: grid; gap: 12px; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+.problems { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.problems li { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; }
+.problems .n { width: 24px; height: 24px; border-radius: 999px; background: var(--brand-subtle); color: var(--brand-strong); font-size: 12px; font-weight: 600; display: grid; place-items: center; }
+
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 720px) { .three { grid-template-columns: 1fr; } }
+.card { border: 1px solid var(--border); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.card .icon { width: 32px; height: 32px; border-radius: 6px; background: var(--brand-subtle); color: var(--brand); display: grid; place-items: center; }
+.card ul { margin: 0; padding-left: 16px; color: var(--text-subtle); display: grid; gap: 4px; }
+
+.ladder { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; align-items: stretch; }
+@media (max-width: 720px) { .ladder { grid-template-columns: 1fr; } }
+.step { background: var(--sunken); border-radius: 8px; padding: 12px; display: grid; gap: 4px; align-content: start; position: relative; min-width: 0; }
+.step.stable { background: var(--brand-subtle); }
+.step .where { font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+
+.traps { display: grid; gap: 8px; }
+.trap { border-left: 2px solid var(--brand); padding: 4px 0 4px 12px; display: grid; gap: 4px; }
+.trap .rule { font-weight: 500; }
+
+.week { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 720px) { .week { grid-template-columns: 1fr; } }
+.day { border: 1px solid var(--border); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.day .when { font-size: 12px; font-weight: 600; color: var(--brand); }
+.day ol { margin: 0; padding-left: 18px; color: var(--text-subtle); display: grid; gap: 4px; }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; min-width: 560px; }
+th, td { text-align: left; padding: 12px; vertical-align: top; border-bottom: 1px solid var(--border); }
+tr:last-child td { border-bottom: 0; }
+th { background: var(--sunken); font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+td.status { width: 1%; white-space: nowrap; }
+
+.rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+@media (max-width: 720px) { .rules { grid-template-columns: 1fr; } }
+.rules li { display: grid; grid-template-columns: 20px 1fr; gap: 8px; align-items: start; color: var(--text-subtle); }
+.rules svg { color: var(--success); margin-top: 2px; }
+.rules strong { color: var(--text); font-weight: 500; }
+
+.asks { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.asks li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.asks li:last-child { border-bottom: 0; padding-bottom: 0; }
+@media (max-width: 480px) { .asks li { grid-template-columns: 1fr; } }
+
+.cmd { background: var(--sunken); border-radius: 8px; padding: 12px; overflow-x: auto; }
+.cmd pre { margin: 0; font-family: var(--mono); font-size: 12px; line-height: 1.7; color: var(--text); }
+.cmd-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+button.copy { font: 500 14px/1 var(--font); color: #FFFFFF; background: var(--action); border: 0; border-radius: 8px; padding: 10px 16px; cursor: pointer; transition: background-color 150ms; }
+button.copy:hover { background: var(--brand); }
+button.copy:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+footer { color: var(--text-muted); font-size: 12px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<main class="page">
+
+  <header class="hero">
+    <span class="overline">Spyne product team</span>
+    <h1>Spyne PM OS</h1>
+    <p class="lede">One shared Claude Code setup for every Spyne PM. It holds what we have learned about how Spyne's systems and data actually behave, the skills we run every week, and the rituals that keep both current. It replaces each PM building the same setup alone.</p>
+    <div class="hero-meta">
+      <span class="chip built">v0.1: setup and guardrails built</span>
+      <span class="chip next">Next: weekly planning loop</span>
+      <span class="small">Owner: Yash Sharma</span>
+    </div>
+  </header>
+
+  <section class="panel" aria-labelledby="why">
+    <div class="stack">
+      <h2 id="why">Why we need it</h2>
+      <p class="subtle">The org already gives every Claude account the dealer basics through the <code>us-dealer-domain</code> skill. What it cannot know is Spyne's own systems, data and decisions. Today that knowledge lives with whoever learned it.</p>
+    </div>
+    <ol class="problems">
+      <li><span class="n">1</span><div><h3>Lessons stay with one PM</h3><p class="subtle">A trap like "conversation_fact returns 12 to 17% fewer appointments than dealer_leads.meetings" (Spyne internal analysis, Sep 2026) gets learned once, then relearned by the next person who queries it.</p></div></li>
+      <li><span class="n">2</span><div><h3>Skills travel as tarballs and pasted prompts</h3><p class="subtle">Good prompts and skills reach teammates through Slack attachments. Everyone copies once, edits locally, and the copies drift. Nothing flows back.</p></div></li>
+      <li><span class="n">3</span><div><h3>Every PM sets up tools alone</h3><p class="subtle">ClickHouse users, Freshdesk keys and connectors get configured one person at a time, with the same questions asked in support channels each time.</p></div></li>
+    </ol>
+  </section>
+
+  <section class="panel" aria-labelledby="what">
+    <h2 id="what">What it does</h2>
+    <div class="three">
+      <div class="card">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/><path d="M8 7h6M8 11h6"/></svg></span>
+        <h3>Shared knowledge</h3>
+        <ul>
+          <li>Data traps and metric definitions</li>
+          <li>System facts and decisions</li>
+          <li>One rule per file, with owner, source and verified date</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8 15l2 2 4-4"/></svg></span>
+        <h3>Weekly rituals</h3>
+        <ul>
+          <li>Monday plan tied to your quarterly goals</li>
+          <li>Friday update with evidence, sent to the head of product after you approve it</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg></span>
+        <h3>Skills for PM jobs</h3>
+        <ul>
+          <li>Metric questions and weekly agent review</li>
+          <li>Ticket triage and rooftop briefs</li>
+          <li>PRDs with critics, then Jira</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="ladder">
+    <div class="stack">
+      <h2 id="ladder">How knowledge gets in</h2>
+      <p class="subtle">Sharing out is easy. Getting what each PM learns back in is the whole game, so every lesson follows the same path.</p>
+    </div>
+    <div class="ladder">
+      <div class="step"><span class="overline">1. Capture</span><p>A session ends with a lesson worth keeping, or you write one by hand.</p></div>
+      <div class="step"><span class="overline">2. Candidate</span><p>It lands in the queue as one small file.</p><span class="where">queue/</span></div>
+      <div class="step"><span class="overline">3. Owner review</span><p>The area owner checks the source and promotes or rejects it.</p><span class="where">scripts/promote.mjs</span></div>
+      <div class="step stable"><span class="overline">4. Stable</span><p>Every PM's next session reads it from the index.</p><span class="where">context/</span></div>
+    </div>
+    <p class="small">Entries not re-verified in 90 days get flagged. The index is generated by a script, so it never drifts from the files.</p>
+    <div class="stack">
+      <h3>Three of the 36 entries already waiting for review</h3>
+      <div class="traps">
+        <div class="trap"><span class="rule">Never use <code>vini_reporting.conversation_fact</code> for Vini reporting.</span><span class="small">Data trap · Use <code>dealer_leads.meetings</code> for appointments.</span></div>
+        <div class="trap"><span class="rule">Always split ABR into attempt rate times close-given-attempt.</span><span class="small">Metric definition · In 2026 the drop was in the ask, not the close.</span></div>
+        <div class="trap"><span class="rule">Agent prompts and their history live in git and Mongo <code>AgentTypeLog</code>, never in ClickHouse.</span><span class="small">System fact · Where to look when dating a prompt change.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="week">
+    <div class="stack">
+      <h2 id="week">Your week with it</h2>
+      <p class="subtle">Built around each PM's quarterly goals sheet. Next to ship.</p>
+    </div>
+    <div class="week">
+      <div class="day">
+        <span class="when">Monday · plan-week</span>
+        <ol>
+          <li>Reads your goals, last Friday's update, open Jira work, assigned tickets and calendar</li>
+          <li>Proposes the week, each item tied to a goal</li>
+          <li>Flags any goal with nothing planned against it</li>
+        </ol>
+      </div>
+      <div class="day">
+        <span class="when">Friday · eow-update</span>
+        <ol>
+          <li>Drafts the update from what actually moved: Jira, launches, readouts, tickets</li>
+          <li>Marks each goal on track, at risk or off track, with evidence</li>
+          <li>You approve, then it goes to Amit as a Slack DM from your account</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="status">
+    <h2 id="status">What exists today</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">Piece</th><th scope="col">What it does</th><th scope="col">Status</th></tr></thead>
+        <tbody>
+          <tr><td>Setup</td><td>Connects and verifies all 9 tools first, links your goals sheet, writes your profile</td><td class="status"><span class="chip built">Built</span></td></tr>
+          <tr><td>Commit check</td><td>Blocks secrets, customer PII, Spyne commercials and unsourced entries on every commit</td><td class="status"><span class="chip built">Built</span></td></tr>
+          <tr><td>Contribution path</td><td>Queue, owner promotion, generated index, 90-day staleness flag</td><td class="status"><span class="chip built">Built</span></td></tr>
+          <tr><td>Seed knowledge</td><td>36 entries from Vini Sales work: 19 data traps, 11 system facts, 6 metric definitions</td><td class="status"><span class="chip review">Awaiting review</span></td></tr>
+          <tr><td>Weekly planning loop</td><td>plan-week and eow-update against your goals sheet</td><td class="status"><span class="chip next">Next</span></td></tr>
+          <tr><td>Metrics</td><td>Metric questions through verified definitions, then the weekly agent review</td><td class="status"><span class="chip planned">Planned</span></td></tr>
+          <tr><td>Tickets</td><td>Triage, rooftop briefs, internal Freshdesk notes</td><td class="status"><span class="chip planned">Planned</span></td></tr>
+          <tr><td>PRDs</td><td>Idea to PRD with critics and a written rubric, then Jira stories</td><td class="status"><span class="chip planned">Planned</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">Today's knowledge covers Vini only. Studio, Lot Service, Reseller and Marketplace need owners before their context can grow.</p>
+  </section>
+
+  <section class="panel" aria-labelledby="rules">
+    <h2 id="rules">Rules the OS enforces</h2>
+    <ul class="rules">
+      <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span><strong>Nothing sends without you.</strong> Updates, release notes and dealer-facing ticket replies are drafts until you approve them.</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span><strong>Internal notes only on Freshdesk.</strong> The OS can post private notes. Public replies are blocked in code.</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span><strong>Your own credentials.</strong> Every PM uses their own ClickHouse user and Freshdesk key. Nothing is pasted into chat.</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span><strong>No commercials, no customer PII.</strong> The commit check blocks both. Goals sheets are read live and never copied.</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span><strong>Every number has a source.</strong> An entry without an owner, a source and a verified date cannot be committed.</span></li>
+      <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span><strong>Personal stays personal.</strong> Your voice and side projects stay in your own setup, under names that never clash with team skills.</span></li>
+    </ul>
+  </section>
+
+  <section class="panel" aria-labelledby="asks">
+    <h2 id="asks">What we need from you</h2>
+    <ul class="asks">
+      <li><div><h3>Connect your tools</h3><p class="small">Arali, Slack, Gmail, Google Drive, Google Calendar, Google Sheets and Atlassian at claude.ai, Settings, Connectors. Then restart Claude Code.</p></div><span class="chip next">Before install</span></li>
+      <li><div><h3>Get your own ClickHouse user and Freshdesk key</h3><p class="small">A read-only ClickHouse Cloud user from data/eng, and the API key from your Freshdesk profile. Setup walks you through the rest.</p></div><span class="chip next">Before install</span></li>
+      <li><div><h3>Own an area</h3><p class="small">One owner each for Vini Service, Vini Platform, Studio, Lot Service, Contact Service, Marketplace, Dealer OS, data warehouse and integrations.</p></div><span class="chip review">Volunteers needed</span></li>
+      <li><div><h3>Name one job you would hand off</h3><p class="small">The recurring task you would most like the OS to draft for you. It shapes what gets built after the weekly loop.</p></div><span class="chip planned">Reply to Yash</span></li>
+    </ul>
+  </section>
+
+  <section class="panel" aria-labelledby="install">
+    <div class="cmd-row">
+      <h2 id="install">Install</h2>
+      <button class="copy" id="copy-install" type="button">Copy commands</button>
+    </div>
+    <p class="small">Available once the repo is published. Run these inside Claude Code.</p>
+    <div class="cmd"><pre id="install-cmds">/plugin marketplace add &lt;repo-url&gt;
+/plugin install pm-os@spyne-pm-os
+/pm-os:setup</pre></div>
+  </section>
+
+  <footer>Spyne PM OS v0.1 · Questions go to Yash Sharma</footer>
+</main>
+
+<script>
+document.getElementById("copy-install").addEventListener("click", function () {
+  var btn = this;
+  var text = document.getElementById("install-cmds").textContent;
+  function done(label) { btn.textContent = label; setTimeout(function () { btn.textContent = "Copy commands"; }, 1500); }
+  try {
+    navigator.clipboard.writeText(text).then(function () { done("Copied"); }, function () { selectText(); });
+  } catch (e) { selectText(); }
+  function selectText() {
+    var range = document.createRange();
+    range.selectNodeContents(document.getElementById("install-cmds"));
+    var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+    done("Press Cmd+C to copy");
+  }
+});
+</script>
