@@ -44,6 +44,43 @@ const COMMERCIALS = [
   [/\$\s?\d[\d,.]*\s?(M|K|mn|million|k)\b/, "dollar figure in K/M (check it is not a Spyne commercial)"],
 ];
 
+export function scanText(text, file = "") {
+  const found = [];
+  const fakeOk = /^evals\/[^/]+\/cases\//.test(file); // eval cases plant fake PII and commercials on purpose
+  text.split("\n").forEach((line, i) => {
+    if (line.includes("pm-os-allow:")) return;
+    for (const [re, label] of SECRETS) if (re.test(line)) found.push({ line: i + 1, level: "error", msg: `S1 secret: ${label}` });
+    if (fakeOk) return;
+    for (const [re, label] of PII) if (re.test(line)) found.push({ line: i + 1, level: "error", msg: `S2 PII: ${label}` });
+    for (const [re, label] of COMMERCIALS) {
+      if (re.test(line)) found.push({ line: i + 1, level: label.startsWith("dollar") ? "warn" : "error", msg: `S3 commercials: ${label}` });
+    }
+  });
+  return found;
+}
+
+export function validateEntry(parsed, sub, path = "") {
+  const found = [];
+  const e = (msg) => found.push({ level: "error", msg });
+  if (!parsed) { e("S4 missing frontmatter"); return found; }
+  const { meta, body } = parsed;
+  for (const k of REQUIRED) if (!meta[k]) e(`S4 missing field: ${k}`);
+  if (meta.kind && !KINDS[meta.kind]) e(`S4 unknown kind: ${meta.kind}`);
+  if (meta.status && !STATUSES.includes(meta.status)) e(`S4 unknown status: ${meta.status}`);
+  if (meta.confidence && !CONFIDENCE.includes(meta.confidence)) e(`S4 unknown confidence: ${meta.confidence}`);
+  if (meta.verified && !/^\d{4}-\d{2}-\d{2}$/.test(meta.verified)) e("S4 verified must be YYYY-MM-DD");
+  if (!/\*\*Rule:\*\*/.test(body)) e("S4 body needs a **Rule:** line");
+  if (sub === "queue" && meta.status !== "candidate") e("S4 queue entries must be status: candidate");
+  if (sub === "context") {
+    if (meta.status === "candidate") e("S4 context entries must be stable or deprecated");
+    const dir = KINDS[meta.kind];
+    if (dir && path && !path.startsWith(`context/${dir}/`)) e(`S4 kind ${meta.kind} belongs in context/${dir}/`);
+    if (meta.status === "stable" && ageDays(meta.verified) > STALE_DAYS) found.push({ level: "warn", msg: `S5 stale: verified ${meta.verified}, over ${STALE_DAYS} days. Re-verify or deprecate.` });
+  }
+  return found;
+}
+
+const isMain = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
 const errors = [];
 const warnings = [];
 const err = (file, line, msg) => errors.push(`${file}${line ? `:${line}` : ""}  ${msg}`);
@@ -58,41 +95,20 @@ function files() {
 }
 
 // S1-S3: content scan
-for (const file of files()) {
+if (isMain) for (const file of files()) {
   if (!TEXT.test(file) || SELF.has(file) || !existsSync(join(ROOT, file))) continue;
-  const lines = readFileSync(join(ROOT, file), "utf8").split("\n");
-  lines.forEach((text, i) => {
-    if (text.includes("pm-os-allow:")) return;
-    for (const [re, label] of SECRETS) if (re.test(text)) err(file, i + 1, `S1 secret: ${label}`);
-    for (const [re, label] of PII) if (re.test(text)) err(file, i + 1, `S2 PII: ${label}`);
-    for (const [re, label] of COMMERCIALS) {
-      if (re.test(text)) (label.startsWith("dollar") ? warn : err)(file, i + 1, `S3 commercials: ${label}`);
-    }
-  });
+  for (const f of scanText(readFileSync(join(ROOT, file), "utf8"), file)) (f.level === "warn" ? warn : err)(file, f.line, f.msg);
 }
 
-// S4: entry schema, for context/ and queue/
-for (const sub of ["context", "queue"]) {
+// S4-S5: entry schema, for context/ and queue/
+if (isMain) for (const sub of ["context", "queue"]) {
   for (const e of entries(sub)) {
-    if (!e.parsed) { err(e.path, 0, "S4 missing frontmatter"); continue; }
-    const { meta, body } = e.parsed;
-    for (const k of REQUIRED) if (!meta[k]) err(e.path, 0, `S4 missing field: ${k}`);
-    if (meta.kind && !KINDS[meta.kind]) err(e.path, 0, `S4 unknown kind: ${meta.kind}`);
-    if (meta.status && !STATUSES.includes(meta.status)) err(e.path, 0, `S4 unknown status: ${meta.status}`);
-    if (meta.confidence && !CONFIDENCE.includes(meta.confidence)) err(e.path, 0, `S4 unknown confidence: ${meta.confidence}`);
-    if (meta.verified && !/^\d{4}-\d{2}-\d{2}$/.test(meta.verified)) err(e.path, 0, "S4 verified must be YYYY-MM-DD");
-    if (!/\*\*Rule:\*\*/.test(body)) err(e.path, 0, "S4 body needs a **Rule:** line");
-    if (sub === "queue" && meta.status !== "candidate") err(e.path, 0, "S4 queue entries must be status: candidate");
-    if (sub === "context") {
-      if (meta.status === "candidate") err(e.path, 0, "S4 context entries must be stable or deprecated; promote with scripts/promote.mjs");
-      const dir = KINDS[meta.kind];
-      if (dir && !e.path.startsWith(`context/${dir}/`)) err(e.path, 0, `S4 kind ${meta.kind} belongs in context/${dir}/`);
-      if (meta.status === "stable" && ageDays(meta.verified) > STALE_DAYS) warn(e.path, 0, `S5 stale: verified ${meta.verified}, over ${STALE_DAYS} days. Re-verify or deprecate.`);
-    }
+    for (const f of validateEntry(e.parsed, sub, e.path)) (f.level === "warn" ? warn : err)(e.path, 0, f.msg);
   }
 }
 
 // S6: index must match the entries
+if (isMain) {
 const indexPath = join(ROOT, "context", "INDEX.md");
 const current = existsSync(indexPath) ? readFileSync(indexPath, "utf8") : "";
 if (current !== renderIndex()) err("context/INDEX.md", 0, "S6 index out of date; run node scripts/index.mjs");
@@ -101,3 +117,4 @@ for (const w of warnings) console.log(`warn   ${w}`);
 for (const e of errors) console.log(`ERROR  ${e}`);
 console.log(`\npm-os check: ${errors.length} error(s), ${warnings.length} warning(s)`);
 process.exit(errors.length ? 1 : 0);
+}

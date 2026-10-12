@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decision", "risk", "tests", "source_check", "duplicates", "conflicts_with", "supersedes", "reasons"],
+  "properties": {
+    "decision": { "type": "string", "enum": ["merge", "hold", "reject"] },
+    "risk": { "type": "string", "enum": ["low", "medium", "high"] },
+    "tests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["C1", "C2", "C3", "C4", "C5", "C7", "C8"],
+      "properties": {
+        "C1": { "type": "boolean" }, "C2": { "type": "boolean" }, "C3": { "type": "boolean" },
+        "C4": { "type": "boolean" }, "C5": { "type": "boolean" }, "C7": { "type": "boolean" }, "C8": { "type": "boolean" }
+      }
+    },
+    "source_check": { "type": "string", "enum": ["verified", "unverifiable", "contradicted"] },
+    "source_evidence": { "type": "string", "description": "What you opened and what it showed, one line" },
+    "duplicates": { "type": "array", "items": { "type": "string" } },
+    "conflicts_with": { "type": "array", "items": { "type": "string" } },
+    "supersedes": { "type": "array", "items": { "type": "string" } },
+    "reasons": { "type": "array", "items": { "type": "string" }, "maxItems": 4 },
+    "fix_hint": { "type": "string" },
+    "revised_body": { "type": "string", "description": "Only for wording fixes; full body after the frontmatter" }
+  }
+}
