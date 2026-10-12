@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "freshdesk": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/freshdesk-server.mjs"],
+      "env": {
+        "FRESHDESK_API_KEY": "${user_config.freshdesk_api_key}",
+        "FRESHDESK_DOMAIN": "spyne"
+      }
+    },
+    "clickhouse": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/clickhouse-server.mjs"],
+      "env": {
+        "CLICKHOUSE_HOST": "leio048s4j.us-east-1.aws.clickhouse.cloud",
+        "CLICKHOUSE_PORT": "8443",
+        "CLICKHOUSE_USER": "${user_config.clickhouse_user}",
+        "CLICKHOUSE_PASSWORD": "${user_config.clickhouse_password}"
+      }
+    }
+  }
+}

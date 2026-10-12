@@ -2,6 +2,32 @@
   "name": "pm-os",
   "version": "0.1.0",
   "description": "Spyne PM OS: shared context, skills and weekly rituals for Spyne product managers. Start with /pm-os:setup.",
-  "author": { "name": "Spyne Product" },
-  "keywords": ["product-management", "spyne", "dealer", "team-os"]
+  "author": {
+    "name": "Spyne Product"
+  },
+  "keywords": [
+    "product-management",
+    "spyne",
+    "dealer",
+    "team-os"
+  ],
+  "userConfig": {
+    "freshdesk_api_key": {
+      "type": "string",
+      "title": "Freshdesk API key (your own)",
+      "description": "Freshdesk > your profile picture > Profile settings > Your API key. Notes post under this key's owner, so never use someone else's.",
+      "sensitive": true
+    },
+    "clickhouse_user": {
+      "type": "string",
+      "title": "ClickHouse user",
+      "description": "Your own read-only ClickHouse Cloud user. Ask data/eng in Slack if you do not have one."
+    },
+    "clickhouse_password": {
+      "type": "string",
+      "title": "ClickHouse password",
+      "description": "The password for your read-only ClickHouse user.",
+      "sensitive": true
+    }
+  }
 }

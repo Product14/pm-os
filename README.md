@@ -4,48 +4,32 @@ The product team's shared Claude Code setup: one place for what we know about ho
 
 It replaces each PM's private setup. Your personal preferences stay personal. Team knowledge, skills and weekly rituals live here.
 
-## Install (10 minutes)
+## Install (no terminal)
 
-**1. Connect your tools first.** At claude.ai > Settings > Connectors, connect:
+Everything happens inside Claude Code: the VS Code extension, the desktop app or the CLI.
 
-| Tool | Why |
+**1. Connect your claude.ai tools.** At claude.ai > Settings > Connectors, connect Arali, Slack, Gmail, Google Drive, Google Calendar, Google Sheets and Atlassian. Then quit and reopen Claude Code.
+
+**2. Get the plugin.**
+- **Team rollout (recommended):** an org Owner adds this repo once under claude.ai Organization settings > Plugins & skills and marks `pm-os` Required. It then appears for every PM with nothing to install.
+- **Until then:** in Claude Code, type `/plugins` (VS Code) or `/plugin` (CLI), open Marketplaces, add `Product14/pm-os`, then install `pm-os` from the Plugins tab.
+
+**3. Type `/pm-os:setup`.** Claude checks every tool, fixes what it can with you, and walks you through the rest:
+- **ClickHouse and Freshdesk** go into the plugin's Configure dialog (`/plugins` > Installed > pm-os > Configure). They are stored in your system's credential store, never in the chat.
+- **GitHub sign-in** is a one-time code you enter at github.com/login/device. Claude starts it for you.
+
+Re-run `/pm-os:setup` any time something stops working.
+
+## Everyday use
+
+| Type | When |
 |---|---|
-| Arali | Customer calls, emails, WhatsApp, Freshdesk ticket reads |
-| Slack | Threads, decisions, delivering updates |
-| Gmail | Dealer and stakeholder threads, drafts |
-| Google Drive | PRDs, docs |
-| Google Calendar | Weekly planning |
-| Google Sheets | Your quarterly goals sheet |
-| Atlassian | Jira and Confluence |
+| `/pm-os:capture` | You learned something another PM would hit too |
+| `/pm-os:status` | See what happened to what you captured, and what is new |
+| `/pm-os:veto` | A shared entry is wrong |
+| `/pm-os:propose-skill` | A PM OS skill should work differently |
 
-And the GitHub CLI (`gh auth login`), so you can contribute with `/pm-os:capture`.
-
-You also need:
-- **ClickHouse:** your own read-only ClickHouse Cloud user. Ask data/eng. Setup gives you the exact command.
-- **Freshdesk:** your own API key (Freshdesk > Profile settings). Never use someone else's: notes post under the key owner's name.
-
-Then **quit and restart Claude Code**. Connectors load at session start.
-
-**2. Install the plugin.** In Claude Code:
-
-```
-/plugin marketplace add Product14/pm-os
-/plugin install pm-os@spyne-pm-os
-```
-
-**3. Clone this repo** (you need it to read and contribute shared context):
-
-```
-gh repo clone Product14/pm-os ~/pm-os
-```
-
-**4. Run setup:**
-
-```
-/pm-os:setup
-```
-
-Setup probes every connector, tells you exactly what is missing and how to fix it, links your goals sheet, and writes `~/.pm-os/profile.json`. Re-run it any time something stops working.
+Nobody approves contributions by hand: the reviewer agent decides, and anyone can veto afterwards.
 
 ## What is in here
 

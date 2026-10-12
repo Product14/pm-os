@@ -12,7 +12,7 @@ Paths below are relative to this skill's base directory. The plugin root is `../
 ## Rules
 
 - **The PM never uses a terminal.** You run every command. Explain each step in plain words, never as a command for them to type.
-- **Never ask for a password, API key or token in the chat**, and never read a secrets file's contents into the conversation. Credentials go into a private file that `scripts/secret-file.sh` opens in TextEdit for the PM to fill in. Check it with `scripts/secret-status.sh`, which only says filled or empty. If a PM pastes a secret into the chat anyway, tell them to rotate it.
+- **Never ask for a password, API key or token in the chat**, and never read a secrets file's contents into the conversation. Keys and passwords go only into the plugin's Configure dialog, which keeps them in the system credential store and hands them only to the plugin's own Freshdesk and ClickHouse servers. If a PM pastes a secret into the chat anyway, tell them to rotate it.
 - Every probe is a tiny read. Never write anything to a connected system during setup.
 - Ask every question with the AskUserQuestion tool, with concrete options.
 - Report each result plainly: pass, fail, or not loaded. Do not round "not loaded" up to "probably fine".
@@ -32,8 +32,8 @@ Read `../../connectors.json`. For every connector, in file order:
    - `fail`: the tool exists but errored (auth expired, permission denied, wrong database).
 
 Extra checks:
-- **ClickHouse:** after `list_databases` passes, confirm every database in the probe's `expect_databases` appears. Any missing database is a `fail` with the message "ask data/eng to grant read on <db>". The PM supplies their own user and password in their own terminal.
-- **Freshdesk:** `whoami` prints the agent name and email the key belongs to. If that email is not the PM's own, mark it `fail`. Say: "This key belongs to <name>. Notes would be posted under their name. Use your own key." Never accept a borrowed key.
+- **ClickHouse:** after `list_databases` passes, confirm every database in the probe's `expect_databases` appears. Any missing database is a `fail` with the message "ask data/eng to grant read on <db>". The PM's user and password come from the plugin's Configure dialog.
+- **Freshdesk:** the `whoami` tool returns the name and email the key belongs to. If that email is not the PM's own, mark it `fail`. Say: "This key belongs to <name>. Notes would be posted under their name. Use your own key." Never accept a borrowed key.
 
 Show one table:
 
@@ -44,10 +44,10 @@ For anything not `pass`, the Fix column is the `connect` text from `connectors.j
 
 Then:
 - If any required claude.ai connector is `not loaded`, tell the PM to connect it at claude.ai > Settings > Connectors, then **quit and restart Claude Code** (connectors load at session start) and run `/pm-os:setup` again. Stop here.
-- Fix local items with the PM right now, one at a time. Each probe's `setup` field in `connectors.json` lists the scripts to run, with `${CLAUDE_PLUGIN_ROOT}` replaced by the plugin root:
-  - **Freshdesk:** run the `secret-file.sh` step, which opens the file in TextEdit. Tell the PM where to find their key (the `connect` text) and to paste it, save and close the window. When they say done, run `secret-status.sh`, then the `whoami` probe.
-  - **ClickHouse:** if they do not have a ClickHouse user yet, tell them who to ask, and that setup continues without it. Once they have one, run `secret-file.sh`, wait for them to fill it in, run `secret-status.sh`, then `add-clickhouse.sh`. If that script says the `claude` command is not available, tell the PM the ClickHouse step needs the PM OS owner's help, and continue.
-  - **GitHub:** if `gh` is missing, install it with `brew install gh` (if Homebrew is missing, point them to the GitHub CLI download page and wait). Then run `gh auth login --web --git-protocol https --hostname github.com` in the background, read the one-time code from its output, and tell the PM: "Open github.com/login/device and enter this code." Wait for it to finish.
+- Fix the rest with the PM right now, one at a time, in plain words:
+  - **Freshdesk and ClickHouse** live in the plugin's Configure dialog. Walk the PM through the `connect` text. When they say they have saved it, ask them to type `/reload-plugins` (or quit and reopen Claude Code if the tools still do not appear), then re-run that probe.
+  - **ClickHouse** needs a read-only user first. If the PM does not have one, tell them to ask data/eng in Slack, and continue without it.
+  - **GitHub:** if `gh` is missing, install it with `brew install gh`. If Homebrew is missing too, point them to the GitHub CLI download page and wait. Then run `gh auth login --web --git-protocol https --hostname github.com` in the background, read the one-time code from its output, and tell the PM: "Open github.com/login/device and enter this code." Wait for it to finish.
 - ClickHouse and Freshdesk can be finished later. Mark them `pending` and continue. Re-run `/pm-os:setup` any time to retry.
 - Optional connectors (`required: false`) never block. List them as "recommended".
 
