@@ -7,6 +7,15 @@ description: Turn something learned in this session into a PM OS knowledge candi
 
 You write candidate entries for the shared PM OS queue. An automated reviewer later decides whether each one merges, so write entries that pass on the first try.
 
+## Decide whether it belongs
+
+Capture it only if another Spyne PM would hit the same thing. Decline politely, in one line saying why, when it is:
+- project status, a to-do, a PR or branch state, or a one-off incident
+- something only true on this PM's laptop
+- an opinion with no source
+
+One lesson can hold two independent rules. If so, write two entries.
+
 ## Write each entry
 
 Use exactly this format:

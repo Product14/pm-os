@@ -16,8 +16,7 @@
       "owner": "yash.sharma",
       "track": "groundwork",
       "path": "plugin/skills/capture",
-      "does": "Turns a lesson from a session into a queue candidate for the reviewer agent.",
-      "last_change": "2026-10-12"
+      "does": "Turns a lesson from a session into a queue candidate for the reviewer agent."
     },
     {
       "name": "reviewer",
