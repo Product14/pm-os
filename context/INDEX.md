@@ -6,31 +6,74 @@ Company and dealer-domain context lives in the org `us-dealer-domain` skill, not
 
 ## Data traps (read before any metric query)
 
+- `context/traps/abr-booking-lag-right-edge.md` [vini-sales] Treat only the last 1-2 days of an ABR series as truncated by booking lag, not the whole final week.
+- `context/traps/abr-depth-sum-replay-jitter.md` [vini-sales] Do not treat a difference of up to 0.1 in `depth_sum` between two runs of unchanged `abr-trends.sql` as a regression.
 - `context/traps/agent-call-type-not-direction.md` [data-warehouse] Never derive SMS direction or motion from `agentTypes.agentCallType` or `smsFlowJourneySource`.
 - `context/traps/agent-self-report-fields.md` [vini-sales] Do not trust the agent's own qualified / transferred / intent fields; use deterministic tool evidence.
 - `context/traps/aggregated-product-details-current-state.md` [data-warehouse] Never treat `aggregated_product_details` (or `conversationNotifications`) as history; an as_of replay describes old days with today's roster.
+- `context/traps/calls-table-replicated-duplicate-rows.md` [vini-service] Collapse replicated duplicate rows in `conversational_ai_pg.calls` before you sample or count Service Inbound calls.
+- `context/traps/carfax-record-count-via-jsonlength.md` [integrations] Count Carfax detailed records with `JSONLength(detailed_history)`, not the "N Detailed Records" text.
+- `context/traps/clickhouse-multiif-first-branch-timezone.md` [data-warehouse] Never return DateTime values from ClickHouse `multiIf` branches that use different timezones. Make every branch return an integer instead.
+- `context/traps/clickhouse-nullable-left-join-booked.md` [data-warehouse] Wrap columns that come from a ClickHouse LEFT JOIN in `ifNull` before comparing them.
+- `context/traps/color-arrays-are-option-lists.md` [integrations] Do not read a multi-value color array in listing metadata as the vehicle's color.
 - `context/traps/conversation-fact-unreliable.md` [data-warehouse] Never use `vini_reporting.conversation_fact` for Vini reporting.
+- `context/traps/conversationeval-outcome-fields-are-strings.md` [data-warehouse] Treat `conversationEval.outcomeAchievable` and `outcomeAchieved` as Nullable(String) categories, and filter out empty values before using `argMax`.
+- `context/traps/csm-owner-join-both-keys.md` [data-warehouse] Join the CSM owner from `eventila.enterprise_poc_details` on both `enterprise_id` and `product_line_details_id`, never on enterprise alone.
 - `context/traps/data-aggregator-carries-commercial-fields.md` [vini-platform] Strip `/data-aggregator/get-enterprise-details-list` to ids and names before any use.
+- `context/traps/dealer-action-items-polymorphic.md` [data-warehouse] Never count raw `dealerActionItems`; normalise shape and naming first.
 - `context/traps/dealer-leads-join-traps.md` [data-warehouse] Dedupe every dealer-leads table to one row per key before joining it.
 - `context/traps/duration-seconds-includes-hold-tail.md` [data-warehouse] Do not compare call `duration_seconds` across the ~June 2026 boundary.
+- `context/traps/eval-export-flags-are-string-0-1.md` [data-warehouse] Compare outcome flags in conversation eval exports to the string `'1'` explicitly. Never test them for truthiness.
+- `context/traps/eval-v3-na-is-pitch-inapplicable.md` [vini-sales] Compute pitch rate over pitch-eligible conversations only (eval code `V3` = pass or fail), treating `V3 = 'n/a'` as pitch-inapplicable.
+- `context/traps/featuresnap-fixed-keys-always-false.md` [integrations] Do not use the fixed checkbox keys in `featureSnap` to decide what features a vehicle has.
 - `context/traps/finance-inquiry-report-claims.md` [vini-sales] Do not reuse the headline claims in `finance-inquiry-report.md`; they fail matched comparison.
+- `context/traps/full-images-from-rooftopinventories.md` [integrations] Pull a VIN's full processed image list from `PartnerSystem.rooftopinventories.processedImageUrls`.
+- `context/traps/live-inventory-rows-may-be-sold.md` [integrations] Re-check a VDP's liveness on the dealer site before showing it in a demo.
+- `context/traps/reference-prompt-per-generation.md` [vini-service] When you score Service Inbound calls against the system prompt, use the reference prompt of each call's own prompt generation, and make the week's default reference the majority generation.
+- `context/traps/service-report-placeholder-overview-evalreport.md` [vini-service] Never read `overview` or `evalreport` from service reports. The backend service extractor writes placeholders into them.
+- `context/traps/service-tool-status-vs-response-body.md` [vini-service] Judge every Service Inbound tool result, including the booking result, from its response body, never from the logged status.
 - `context/traps/sms-handoff-from-outcome-is-circular.md` [vini-sales] Never measure SMS handoff from `conversationAnalytics.outcome` or from voice transfer findings; measure it from action-item intents.
+- `context/traps/sms-status-failed-is-delivery-failure.md` [data-warehouse] Do not drop `conversations.status='failed'` from SMS funnels; it is the failed-delivery population.
+- `context/traps/stl-notask-vs-skipped.md` [vini-sales] Treat `noTask` (no STL task was ever created) and `skipped` (a task was created and then declined) as separate defects.
 - `context/traps/transfer-from-agent-wording.md` [vini-sales] Never measure transfers (or any agent behaviour) by phrase-matching what the agent says.
 - `context/traps/transfer-outcome-fields.md` [data-warehouse] Do not read transfer success from `callTransferred`, `answered_at`, `callTransferEvents` or a `bridged` status.
+- `context/traps/vdp-url-key-by-row-age.md` [integrations] Read both VDP URL keys in `inventory.dealerVinMapping.vinDetails` when pulling a vehicle's VDP link.
 
 ## Metric definitions
 
-_None yet._
+- `context/metrics/abr-attempt-times-close.md` [vini-sales] Decompose ABR (from the shipped `abr-trends.sql`) into attempt rate and close-given-attempt, where attempt = `booking_tool_fired`.
+- `context/metrics/agent-closed-out-is-queue-hygiene.md` [vini-sales] Count leads the agent closed out (opt out, not interested, already purchased, wrong number) as queue hygiene, not as lost leads.
+- `context/metrics/call-booking-window-plus-minus-7-days.md` [data-warehouse] Attribute a meeting to a Vini call when it was created within ±7 days of the call, and do not apply the SMS >30s rule.
+- `context/metrics/calls-have-no-separate-engaged-step.md` [vini-sales] Do not add an Engaged step to the call funnel. The `role='user'` check that defines connected is already the only signal that the customer spoke.
+- `context/metrics/exclude-appt-reminders-from-booking-rate.md` [data-warehouse] Exclude the `appt_reminders` bucket (`task_type = 'APPOINTMENT_REMINDER'`) from any booking or appointment-rate numerator.
+- `context/metrics/live-rooftop-roster.md` [data-warehouse] Define a live Vini inbound rooftop with the predicate from call-hours-7d.sql / roster-at.sql copied verbatim, never with a hardcoded enterprise blocklist.
+- `context/metrics/sms-booking-requires-meeting-after-30s.md` [data-warehouse] Count an SMS conversation as booked only if its `dealer_leads.meetings` row (strict `conversation_id` match, `source='spyne'`, `is_active=1`) was created more than 30 seconds after the conversation.
+- `context/metrics/sms-qualified-allowlists.md` [vini-sales] Score SMS qualified with separate sales and service outcome allowlists, and include `Vehicle Inquiry` and `General Engagement` in the sales list.
+- `context/metrics/split-never-engaged-from-engaged-no-outcome.md` [vini-sales] Split silent leads into never-engaged (no user turns at all) and engaged-no-outcome, and count only engaged-no-outcome as agent failure.
+- `context/metrics/stl-coverage-eligible-by-type.md` [vini-sales] Compute STL (speed-to-lead) coverage as `smsSent / eligibleByType`, with eligibility from the exact resolver below.
+- `context/metrics/stl-vs-follow-up-task-type.md` [vini-sales] Split STL from follow-up activity by `sequenceTasks.taskType`: `STL` and `STL_FOLLOW_UP` count as STL, and `FOLLOW_UP` counts as follow-up sequences.
+- `context/metrics/transfer-reach-clean-series.md` [vini-service] Report Service Inbound transfer reach as human-reach on the clean series. Never use raw eligible counts or the `bridged` status.
+- `context/metrics/unique-booked-phones-from-customer-mobile.md` [data-warehouse] Deduplicate booked leads by phone using `leads.customer_id -> customer.mobile_number`, normalized to the last 10 digits, never `conversations.number`.
+- `context/metrics/weekly-appts-credit-first-appt-week.md` [data-warehouse] At weekly grain, credit a booking only to the week that contains the lead's `first_appt`.
 
 ## System facts
 
 - `context/facts/agent-channel-coverage.md` [vini-platform] Split every Vini metric by agent type and channel before comparing.
 - `context/facts/appointment-transfer-coupled-in-prompt.md` [vini-sales] Expect any new guardrail or fallible pre-ask tool to raise transfers AND cut the appointment ask together.
+- `context/facts/call-prompt-variables-whitelist.md` [vini-platform] Send only the promptVariables keys declared in `call-prompt-variables.dto.ts`. The API rejects any other key.
 - `context/facts/console-local-env-hits-prod.md` [vini-platform] Assume a local spyne-console-microfrontends run reads and writes PROD unless a per-app `.env.local` overrides it.
+- `context/facts/every-ask-more-rule-needs-a-stop-rule.md` [vini-platform] Give every prompt rule that tells the agent to ask more a matching stop rule.
+- `context/facts/exclude-demo-bookings-is-demo-meeting.md` [vini-platform] Exclude demo bookings from appointment counts with `is_demo_meeting`.
+- `context/facts/gate-prompt-go-live-on-multi-turn-sims.md` [vini-platform] Gate Vini prompt go-live on multi-turn simulated-customer evals, not single-reply checks.
+- `context/facts/live-eval-scores-from-audio-not-stt.md` [vini-platform] Do not treat the STT transcript as ground truth when you score Vini agent quality.
+- `context/facts/no-literal-values-in-prompt-examples.md` [vini-platform] Never put literal values in agent prompt examples.
+- `context/facts/outbound-journey-router-default-fallback.md` [vini-platform] Do not assume an outbound journeyName has its own prompt. Inside the router's journey chain, any name it does not match exactly gets `default-outbound-sales.xml`.
 - `context/facts/prompt-routing-decides-active-prompt.md` [vini-sales] When dating a prompt change, diff the routing code and grep only files the active root includes.
+- `context/facts/rooftop-timezone-write-path.md` [vini-service] Set a rooftop's timezone only through user-management `set-working-days`. Do not set it through `update-team-info` or the conv-ai working-hours save.
 - `context/facts/sales-inbound-prompt-location-and-history.md` [vini-platform] Find agent prompts and their history in `conversational-ai-backend` git + Mongo `AgentTypeLog`, never in ClickHouse.
 - `context/facts/service-policies-wire-contract.md` [vini-service] Read-modify-write the whole `entityConfig.service.policies` block; never partial-write it.
+- `context/facts/service-retention-bands-resolve-to-due-services.md` [vini-platform] Treat the overdue, lapsing and winback service campaigns as DUE_SERVICES. They have no separate journey.
 
 ## Decisions
 
-_None yet._
+- `context/decisions/stl-rooftop-verdict-precedence.md` [vini-sales] Classify each rooftop's STL verdict with this ordered precedence: volume < 20, then no STL-capable feed, then nothing eligible, then blocked sales-inquiry volume, then coverage bands on `smsSent / eligibleByType`.
