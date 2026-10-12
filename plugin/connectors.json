@@ -8,7 +8,7 @@
       "required": true,
       "kind": "claude.ai connector",
       "why": "Customer calls, emails, WhatsApp, and Freshdesk ticket reads (Arali ingests Freshdesk).",
-      "connect": "claude.ai > Settings > Connectors > Arali > Connect",
+      "connect": "claude.ai > Settings > Connectors > Arali > Connect. Then quit and reopen Claude Code.",
       "probe": {
         "find": "mcp__claude_ai_Arali__get-tickets",
         "call": {
@@ -29,7 +29,7 @@
       "required": true,
       "kind": "claude.ai connector",
       "why": "Read decisions and threads; deliver updates and release notes after approval.",
-      "connect": "claude.ai > Settings > Connectors > Slack > Connect",
+      "connect": "claude.ai > Settings > Connectors > Slack > Connect. Then quit and reopen Claude Code.",
       "probe": {
         "find": "mcp__claude_ai_Slack__slack_search_channels",
         "call": {
@@ -54,7 +54,7 @@
       "required": true,
       "kind": "claude.ai connector",
       "why": "Read dealer and stakeholder threads; draft release notes and updates.",
-      "connect": "claude.ai > Settings > Connectors > Gmail > Connect",
+      "connect": "claude.ai > Settings > Connectors > Gmail > Connect. Then quit and reopen Claude Code.",
       "probe": {
         "find": "mcp__claude_ai_Gmail__list_labels",
         "call": {}
@@ -71,7 +71,7 @@
       "required": true,
       "kind": "claude.ai connector",
       "why": "Read PRDs, docs and the goals sheet.",
-      "connect": "claude.ai > Settings > Connectors > Google Drive > Connect",
+      "connect": "claude.ai > Settings > Connectors > Google Drive > Connect. Then quit and reopen Claude Code.",
       "probe": {
         "find": "mcp__claude_ai_Google_Drive__search_files",
         "call": {
@@ -93,7 +93,7 @@
       "required": true,
       "kind": "claude.ai connector",
       "why": "Plan the week around real meetings; find decision meetings.",
-      "connect": "claude.ai > Settings > Connectors > Google Calendar > Connect",
+      "connect": "claude.ai > Settings > Connectors > Google Calendar > Connect. Then quit and reopen Claude Code.",
       "probe": {
         "find": "mcp__claude_ai_Google_Calendar__list_calendars",
         "call": {
@@ -111,7 +111,7 @@
       "required": true,
       "kind": "claude.ai connector",
       "why": "Read and write status on each PM's quarterly goals sheet. Drive alone cannot write cells.",
-      "connect": "claude.ai > Settings > Connectors > Google Sheets > Connect",
+      "connect": "claude.ai > Settings > Connectors > Google Sheets > Connect. Then quit and reopen Claude Code.",
       "probe": {
         "search": "google sheets spreadsheet read range values",
         "match": "Google_Sheets",
@@ -129,7 +129,7 @@
       "required": true,
       "kind": "claude.ai connector",
       "why": "Read sprint and ticket movement for plans and updates; file PRD stories; read Confluence docs.",
-      "connect": "claude.ai > Settings > Connectors > Atlassian > Connect",
+      "connect": "claude.ai > Settings > Connectors > Atlassian > Connect. Then quit and reopen Claude Code.",
       "probe": {
         "search": "jira confluence atlassian accessible resources user",
         "match": "Atlassian",
@@ -148,7 +148,7 @@
       "required": true,
       "kind": "local MCP server",
       "why": "All metrics. Every PM uses their own ClickHouse Cloud user; the OS never stores credentials.",
-      "connect": "Ask data/eng for a read-only ClickHouse Cloud user, then run in your own terminal (not in chat): claude mcp add clickhouse-local --scope user -e CLICKHOUSE_HOST=leio048s4j.us-east-1.aws.clickhouse.cloud -e CLICKHOUSE_PORT=8443 -e CLICKHOUSE_USER=<you> -e CLICKHOUSE_PASSWORD=<password> -e CLICKHOUSE_SECURE=true -e CLICKHOUSE_VERIFY=true -- uvx --python 3.10 mcp-clickhouse",
+      "connect": "Claude does this with you; no terminal. 1) Ask data/eng in Slack for a read-only ClickHouse Cloud user. 2) Claude opens ~/.pm-os/clickhouse.env in TextEdit; paste CLICKHOUSE_USER and CLICKHOUSE_PASSWORD after the = signs, save, close. 3) Claude registers it and asks you to restart Claude Code.",
       "probe": {
         "find": "mcp__clickhouse-local__list_databases",
         "call": {},
@@ -157,7 +157,8 @@
           "dealer_leads",
           "conversation_ai",
           "eventila"
-        ]
+        ],
+        "setup": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/secret-file.sh clickhouse.env CLICKHOUSE_USER CLICKHOUSE_PASSWORD; then bash ${CLAUDE_PLUGIN_ROOT}/scripts/secret-status.sh clickhouse.env CLICKHOUSE_USER CLICKHOUSE_PASSWORD; then bash ${CLAUDE_PLUGIN_ROOT}/scripts/add-clickhouse.sh"
       },
       "used_by": [
         "metric-qa",
@@ -173,9 +174,10 @@
       "required": true,
       "kind": "API key",
       "why": "Post internal notes on tickets. Reads come through Arali. Public replies are drafted, never posted by the OS.",
-      "connect": "Freshdesk > profile picture > Profile settings > copy API key. Then in your own terminal: mkdir -p ~/.pm-os && printf 'FRESHDESK_API_KEY=%s\\nFRESHDESK_DOMAIN=spyne\\n' '<key>' > ~/.pm-os/secrets.env && chmod 600 ~/.pm-os/secrets.env",
+      "connect": "Claude does this with you; no terminal. 1) In Freshdesk, click your profile picture, then Profile settings, then copy Your API key. 2) Claude opens ~/.pm-os/secrets.env in TextEdit; paste it after FRESHDESK_API_KEY=, save, close. 3) Claude checks the key is yours.",
       "probe": {
-        "run": "node ${CLAUDE_PLUGIN_ROOT}/scripts/freshdesk.mjs whoami"
+        "run": "node ${CLAUDE_PLUGIN_ROOT}/scripts/freshdesk.mjs whoami",
+        "setup": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/secret-file.sh secrets.env FRESHDESK_API_KEY FRESHDESK_DOMAIN; then bash ${CLAUDE_PLUGIN_ROOT}/scripts/secret-status.sh secrets.env FRESHDESK_API_KEY"
       },
       "used_by": [
         "ticket-triage",
@@ -204,7 +206,7 @@
       "required": true,
       "kind": "CLI",
       "why": "Contributing: /pm-os:capture opens a PR that the intake Action merges automatically. Also prompt and code history for change detection.",
-      "connect": "brew install gh && gh auth login",
+      "connect": "Claude does this with you; no terminal. If the GitHub CLI is missing, Claude installs it. Then Claude starts sign-in and shows you a one-time code: open github.com/login/device in your browser and enter it. You also need to be added to the Product14/pm-os repo.",
       "probe": {
         "run": "gh auth status"
       },

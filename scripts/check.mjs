@@ -103,6 +103,7 @@ if (isMain) for (const file of files()) {
 // S4-S5: entry schema, for context/ and queue/
 if (isMain) for (const sub of ["context", "queue"]) {
   for (const e of entries(sub)) {
+    if (e.path.startsWith("queue/vetoes/")) continue; // veto requests are not entries
     for (const f of validateEntry(e.parsed, sub, e.path)) (f.level === "warn" ? warn : err)(e.path, 0, f.msg);
   }
 }

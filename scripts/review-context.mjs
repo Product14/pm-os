@@ -183,6 +183,7 @@ function apply(res, own) {
   for (const k of ["held_since", "hold_reason"]) t = t.replace(new RegExp(`^${k}:.*\\n?`, "m"), "");
   t = setField(t, "status", "stable");
   if (verdict.source_check === "verified") t = setField(t, "verified", today());
+  if (!meta.author) t = setField(t, "author", meta.owner);
   if (own[meta.area]) t = setField(t, "owner", own[meta.area]);
   t = setField(t, "reviewed_by", `pm-os-reviewer/rubric-v${RUBRIC_VERSION}`);
   t = setField(t, "review_date", today());
@@ -234,8 +235,8 @@ if (process.argv[1] && import.meta.url === `file://${process.argv[1]}`) {
   log(results, cost);
   try { execSync("node scripts/check.mjs", { cwd: ROOT, stdio: "inherit" }); }
   catch { console.error("check failed after applying verdicts; nothing committed"); process.exit(1); }
-  if (flag("--commit") && execSync("git status --porcelain queue context review-log", { cwd: ROOT, encoding: "utf8" }).trim()) {
-    execSync("git add -A queue context review-log", { cwd: ROOT });
+  if (flag("--commit") && execSync("git status --porcelain queue context review-log reviewer", { cwd: ROOT, encoding: "utf8" }).trim()) {
+    execSync("git add -A queue context review-log reviewer/vetoes.md 2>/dev/null || git add -A queue context review-log", { cwd: ROOT, shell: "/bin/bash" });
     const msg = `pm-os reviewer: ${tally.merge || 0} merged, ${tally.hold || 0} held, ${tally.repair || 0} sent to repair, ${tally.reject || 0} rejected (rubric v${RUBRIC_VERSION})`;
     execSync(`git -c user.name="pm-os-reviewer" -c user.email="pm-os-reviewer@spyne.ai" commit -q -m ${JSON.stringify(msg)}`, { cwd: ROOT, stdio: "inherit" });
     if (flag("--push")) execSync("git push -q", { cwd: ROOT, stdio: "inherit" });

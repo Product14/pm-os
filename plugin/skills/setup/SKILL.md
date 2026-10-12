@@ -11,7 +11,8 @@ Paths below are relative to this skill's base directory. The plugin root is `../
 
 ## Rules
 
-- Never ask the PM to paste a password, API key or token into the chat. Credentials go into their own terminal or into `~/.pm-os/secrets.env`, which they write themselves. If they paste one anyway, tell them to rotate it.
+- **The PM never uses a terminal.** You run every command. Explain each step in plain words, never as a command for them to type.
+- **Never ask for a password, API key or token in the chat**, and never read a secrets file's contents into the conversation. Credentials go into a private file that `scripts/secret-file.sh` opens in TextEdit for the PM to fill in. Check it with `scripts/secret-status.sh`, which only says filled or empty. If a PM pastes a secret into the chat anyway, tell them to rotate it.
 - Every probe is a tiny read. Never write anything to a connected system during setup.
 - Ask every question with the AskUserQuestion tool, with concrete options.
 - Report each result plainly: pass, fail, or not loaded. Do not round "not loaded" up to "probably fine".
@@ -43,15 +44,19 @@ For anything not `pass`, the Fix column is the `connect` text from `connectors.j
 
 Then:
 - If any required claude.ai connector is `not loaded`, tell the PM to connect it at claude.ai > Settings > Connectors, then **quit and restart Claude Code** (connectors load at session start) and run `/pm-os:setup` again. Stop here.
-- If only local items fail (ClickHouse, Freshdesk), the PM can fix them now in their terminal. Use the `!` prefix so the output lands in this session. Then re-probe only those items.
+- Fix local items with the PM right now, one at a time. Each probe's `setup` field in `connectors.json` lists the scripts to run, with `${CLAUDE_PLUGIN_ROOT}` replaced by the plugin root:
+  - **Freshdesk:** run the `secret-file.sh` step, which opens the file in TextEdit. Tell the PM where to find their key (the `connect` text) and to paste it, save and close the window. When they say done, run `secret-status.sh`, then the `whoami` probe.
+  - **ClickHouse:** if they do not have a ClickHouse user yet, tell them who to ask, and that setup continues without it. Once they have one, run `secret-file.sh`, wait for them to fill it in, run `secret-status.sh`, then `add-clickhouse.sh`. If that script says the `claude` command is not available, tell the PM the ClickHouse step needs the PM OS owner's help, and continue.
+  - **GitHub:** if `gh` is missing, install it with `brew install gh` (if Homebrew is missing, point them to the GitHub CLI download page and wait). Then run `gh auth login --web --git-protocol https --hostname github.com` in the background, read the one-time code from its output, and tell the PM: "Open github.com/login/device and enter this code." Wait for it to finish.
+- ClickHouse and Freshdesk can be finished later. Mark them `pending` and continue. Re-run `/pm-os:setup` any time to retry.
 - Optional connectors (`required: false`) never block. List them as "recommended".
 
-Continue to Step 2 only when every required connector passes.
+Continue to Step 2 when every claude.ai connector and GitHub pass. ClickHouse and Freshdesk may be pending.
 
 ## Step 2. Shared repo
 
 1. Find the PM OS repo clone. Check `~/pm-os`, then `~/Documents/pm-os`, then ask. A clone has `pm-os.config.json` and `scripts/check.mjs` at its root.
-2. If there is no clone, give the PM this command for their own terminal: `gh repo clone Product14/pm-os ~/pm-os`.
+2. If there is no clone, run `gh repo clone Product14/pm-os ~/pm-os` yourself. If it fails with "not found", the PM has not been added to the repo yet: tell them to ask the PM OS owner to add their GitHub username.
 3. In the clone, run `git config core.hooksPath .githooks` so the safety check runs on every commit.
 4. Run `node scripts/check.mjs` once and report the result.
 
@@ -84,4 +89,4 @@ Write `~/.pm-os/profile.json` with `chmod 600`. No secrets go in this file.
 
 ## Step 6. Close
 
-Show what now works and what each connector unlocks, using `used_by` from `connectors.json`. End with three commands to try first, for example `/pm-os:plan-week` once that skill ships. Only name skills that exist in the plugin's `skills/` directory.
+Show what now works and what each connector unlocks, using `used_by` from `connectors.json`. End with the three things to try first, written as what to type in Claude Code: `/pm-os:capture` at the end of a session that taught them something, `/pm-os:status` to see what happened to it, and `/pm-os:veto` when an entry is wrong. Only name skills that exist in the plugin's `skills/` directory.

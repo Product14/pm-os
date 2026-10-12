@@ -6,6 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 PUSH="${1:-}"
 git pull --ff-only -q 2>/dev/null || true
+node scripts/apply-vetoes.mjs
 node scripts/repair.mjs
 node scripts/review-context.mjs --commit $PUSH
 node scripts/review-skills.mjs --commit $PUSH

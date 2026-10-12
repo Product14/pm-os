@@ -23,8 +23,32 @@
       "status": "stable",
       "owner": "yash.sharma",
       "track": "groundwork",
-      "path": "reviewer/",
-      "does": "Reviews queue candidates and skill proposals; auto-merges under a fixed policy. Evaluated by scripts/eval-reviewer.mjs."
+      "path": "plugin/skills/reviewer",
+      "does": "Maintainer: runs the reviewer pipeline or its eval locally. The reviewer itself lives in reviewer/ and scripts/."
+    },
+    {
+      "name": "veto",
+      "status": "candidate",
+      "owner": "yash.sharma",
+      "track": "groundwork",
+      "path": "plugin/skills/veto",
+      "does": "Files a veto for a wrong context entry as a queue file; applied with no human step."
+    },
+    {
+      "name": "status",
+      "status": "candidate",
+      "owner": "yash.sharma",
+      "track": "groundwork",
+      "path": "plugin/skills/status",
+      "does": "Shows what happened to the PM's contributions and what is new in the shared context."
+    },
+    {
+      "name": "propose-skill",
+      "status": "candidate",
+      "owner": "yash.sharma",
+      "track": "groundwork",
+      "path": "plugin/skills/propose-skill",
+      "does": "Turns a PM's idea for a skill change into a proposal the skill reviewer can judge."
     },
     {
       "name": "plan-week",
