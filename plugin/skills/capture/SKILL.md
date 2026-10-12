@@ -66,4 +66,6 @@ When you have file and shell access, contribute the entries as a pull request. N
 
 If `gh` is not authenticated, stop after step 3 and tell the PM to run `gh auth login`.
 
+If the repo has no `origin` remote (a local test install), skip the branch and PR. Commit the entries on the current branch, then tell the PM to run `bash scripts/pm-os-review.sh` in the repo to get the verdict.
+
 When you have no file access, return the entry markdown only.
