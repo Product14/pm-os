@@ -5,7 +5,7 @@ description: Install or re-check the Spyne PM OS for this PM. Connects and verif
 
 # PM OS setup
 
-Paths below are relative to this skill's base directory. The plugin root is `../..`.
+Paths below are relative to this skill's base directory. The plugin root is `../..`. Steps 1 and 2 need only the plugin. Everything after step 2 reads team settings from `pm-os.config.json` in the repo clone.
 
 **Connect tools first. Nothing else in the OS works without them, so do not skip ahead to the profile or the goals sheet while a required connector is failing.**
 
@@ -31,7 +31,7 @@ Read `../../connectors.json`. For every connector, in file order:
    - `fail`: the tool exists but errored (auth expired, permission denied, wrong database).
 
 Extra checks:
-- **ClickHouse:** after `list_databases` passes, confirm every database in `pm-os.config.json` `clickhouse.required_databases` appears. Any missing database is a `fail` with the message "ask data/eng to grant read on <db>". When it is `not loaded`, fill the `connect` command with `clickhouse.host` and `clickhouse.port` from `pm-os.config.json`. The PM supplies their own user and password in their own terminal.
+- **ClickHouse:** after `list_databases` passes, confirm every database in the probe's `expect_databases` appears. Any missing database is a `fail` with the message "ask data/eng to grant read on <db>". The PM supplies their own user and password in their own terminal.
 - **Freshdesk:** `whoami` prints the agent name and email the key belongs to. If that email is not the PM's own, mark it `fail`. Say: "This key belongs to <name>. Notes would be posted under their name. Use your own key." Never accept a borrowed key.
 
 Show one table:
@@ -48,25 +48,25 @@ Then:
 
 Continue to Step 2 only when every required connector passes.
 
-## Step 2. Profile
+## Step 2. Shared repo
 
-Ask with AskUserQuestion:
-- **Area:** options from `pm-os.config.json` `areas`. Allow multiSelect.
-- **Name and Spyne email:** offer the values found from the Freshdesk `whoami` and `git config user.email` as options. The PM can correct them.
+1. Find the PM OS repo clone. Check `~/pm-os`, then `~/Documents/pm-os`, then ask. A clone has `pm-os.config.json` and `scripts/check.mjs` at its root.
+2. If there is no clone, give the PM this command for their own terminal: `gh repo clone Product14/pm-os ~/pm-os`.
+3. In the clone, run `git config core.hooksPath .githooks` so the safety check runs on every commit.
+4. Run `node scripts/check.mjs` once and report the result.
 
-## Step 3. Goals sheet
+## Step 3. Goals sheet (after the repo is found)
 
-1. Ask for the URL of the PM's quarterly goals sheet, which is their copy of the team template (`goals_sheet.template_url` in `pm-os.config.json`).
+1. If `goals_sheet.template_url` in `pm-os.config.json` is `TODO`, skip this step: record the goals sheet as `pending` and tell the PM the planning skills will ask for it once the template ships. Otherwise ask for the URL of the PM's own copy of the template.
 2. Read it with Google Sheets and identify the tab and the rows this PM owns.
 3. Show the PM the first 3 goal rows (item, current state, target, owner). Do not show any column matching `goals_sheet.never_copy_columns_matching`. Ask "Are these your goals?"
 4. Store only the sheet ID, the tab name and the owner name as written in the sheet. Never store sheet contents.
 
-## Step 4. Shared repo
+## Step 4. Profile
 
-1. Find the PM OS repo clone. Check `~/pm-os`, then `~/Documents/pm-os`, then ask.
-2. If there is no clone, give the PM the clone command for their own terminal. The repo URL is in the plugin README.
-3. In the clone, run `git config core.hooksPath .githooks` so the safety check runs on every commit.
-4. Run `node scripts/check.mjs` once and report the result.
+Ask with AskUserQuestion:
+- **Area:** options from `pm-os.config.json` `areas`. Allow multiSelect.
+- **Name and Spyne email:** offer the values found from the Freshdesk `whoami` and `git config user.email` as options. The PM can correct them.
 
 ## Step 5. Write the profile
 
