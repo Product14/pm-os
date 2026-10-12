@@ -22,14 +22,13 @@ const argv = process.argv.slice(2);
 const flag = (f) => argv.includes(f);
 const opt = (f, d) => (argv.includes(f) ? argv[argv.indexOf(f) + 1] : d);
 const JUDGE_SCHEMA = JSON.parse(readFileSync(join(ROOT, "reviewer", "skill-judge.schema.json"), "utf8"));
-const NO_TOOLS = ["Bash", "Write", "Edit", "NotebookEdit", "WebFetch", "WebSearch", "Agent", "Skill", "Read", "Grep", "Glob"];
 
 // ---------- safety gate (deterministic) ----------
 const ADDED_RISK = [
   [/mcp__\w+__\w*(send|create|update|delete|post|reply|share|trash|label|schedule|upload|move|copy)\w*/i, "adds a write-capable connector tool"],
   [/\b(git push|--no-verify|curl|wget)\b/i, "adds a push, hook bypass or raw network call"],
   [/https?:\/\/(?!claude\.ai\/settings)/i, "adds an external URL"],
-  [/\b(auto-?send|without (asking|approval|review|confirmation)|skip (the )?(approval|review))\b/i, "removes a human step"],
+  [/\bauto-?(send|post|publish|merge)\b|\b(send|post|publish|reply|merge|push|act)\b.{0,40}\bwithout (asking|approval|review|confirmation)\b|\bskip (the )?(approval|review)\b/i, "removes a human step"],
   [/\b(send|post|publish|reply)\b.{0,40}\b(slack|email|gmail|freshdesk|dealer|customer|channel)\b/i, "adds an outbound send"],
 ];
 const REMOVED_GUARD = /\b(approv\w*|never|must not|do not|don't|draft|pm-os-allow|commercials|PII|credential)\b/i;
@@ -64,15 +63,15 @@ async function runSkill(skillText, input) {
     sysFile = join(d, "skill.md");
     writeFileSync(sysFile, `Follow this skill for the user's request. You have no tools; everything you need is in the request.\n\n${skillText}`);
   }
-  const r = await claudeRun({ prompt: input, systemPromptFile: sysFile, cwd: tmpdir(), disallowedTools: NO_TOOLS, budgetUsd: 1 });
-  return { text: r.ok ? r.json.result : `(run failed: ${r.error})`, cost: r.cost };
+  const r = await claudeRun({ prompt: input, systemPromptFile: sysFile, cwd: tmpdir(), tools: [], budgetUsd: 1 });
+  return { ok: r.ok, text: r.ok ? r.json.result : null, error: r.error, cost: r.cost };
 }
 
 async function judge(c, baseOut, candOut) {
   const flip = Math.random() < 0.5;
   const [A, B] = flip ? [candOut, baseOut] : [baseOut, candOut];
   const prompt = `## Case input\n\n${c.input}\n\n## Rubric (score each line in order)\n\n${c.rubric}\n\n## Output A\n\n${A}\n\n## Output B\n\n${B}`;
-  const r = await claudeRun({ prompt, systemPromptFile: join(ROOT, "reviewer", "skill-judge.md"), schema: JUDGE_SCHEMA, cwd: tmpdir(), disallowedTools: NO_TOOLS, budgetUsd: 1 });
+  const r = await claudeRun({ prompt, systemPromptFile: join(ROOT, "reviewer", "skill-judge.md"), schema: JUDGE_SCHEMA, cwd: tmpdir(), tools: [], budgetUsd: 1 });
   if (!r.ok) return { error: r.error, cost: r.cost };
   const j = r.json.structured_output;
   const [cand, base] = flip ? [j.A, j.B] : [j.B, j.A];
@@ -91,11 +90,13 @@ export function decide({ isNew, results, baseLen, candLen }) {
     if (d >= 0.5 && candMean >= 3.5) return { action: "merge", why: `new skill beats plain Claude: ${summary}` };
     return { action: "reject", why: `new skill does not clearly beat plain Claude: ${summary}` };
   }
+  const baseMean = mean(results.map((r) => r.base.overall));
+  if (baseMean < 3) return { action: "hold", why: `current version scores ${baseMean.toFixed(2)}; the eval cases or harness look broken, so no change can be judged: ${summary}` };
   const worst = Math.min(...deltas);
   if (worst < -0.5) return { action: "reject", why: `regresses a case by ${worst.toFixed(2)}: ${summary}` };
   if (growth > 0.25 && d < 0.5) return { action: "reject", why: `grows the skill over 25% without a 0.5 gain: ${summary}` };
   if (d >= 0.25) return { action: "merge", why: `improves: ${summary}` };
-  if (d >= -0.1 && growth <= -0.1) return { action: "merge", why: `same quality, shorter: ${summary}` };
+  if (d >= -0.1 && growth <= -0.1 && candMean >= 3.5) return { action: "merge", why: `same quality, shorter: ${summary}` };
   return { action: "reject", why: `no meaningful improvement: ${summary}` };
 }
 
@@ -122,9 +123,11 @@ async function review(propDir) {
   let cost = 0;
   const results = await pool(cs, 3, async (c) => {
     const [b, k] = await Promise.all([runSkill(isNew ? null : baseText, c.input), runSkill(candText, c.input)]);
+    cost += b.cost + k.cost;
+    if (!b.ok || !k.ok) return { case: c.name, error: `skill run failed: ${b.error || k.error}` };
     const j = await judge(c, b.text, k.text);
-    cost += b.cost + k.cost + (j.cost || 0);
-    return { case: c.name, ...j };
+    cost += j.cost || 0;
+    return { case: c.name, ...j, outputs: { current: b.text, proposed: k.text } };
   });
   const bad = results.filter((r) => r.error);
   if (bad.length) return { propDir, skill, action: "hold", why: `judge failed on ${bad.map((r) => r.case).join(", ")}`, results, cost };

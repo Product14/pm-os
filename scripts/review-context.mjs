@@ -115,6 +115,7 @@ export async function review(path, override = {}) {
     schema: SCHEMA,
     cwd: ROOT,
     addDirs: override.sourceRoots ?? SOURCE_ROOTS,
+    tools: ["Read", "Grep", "Glob", "Bash"],
     allowedTools: ["Read", "Grep", "Glob", "Bash(git log:*)", "Bash(git show:*)", "Bash(ls:*)"],
   });
   const verdict = r.ok ? r.json.structured_output : null;
@@ -137,7 +138,21 @@ export async function review(path, override = {}) {
 function apply(res, own) {
   const { path, applied, verdict } = res;
   const src = join(ROOT, path);
-  if (applied.action === "reject") { if (existsSync(src)) unlinkSync(src); return; }
+  if (applied.action === "reject") {
+    // Fixable rejects go to the repairer instead of waiting on a person. Never
+    // park text that failed C7 (sensitive) or a deterministic gate, and give
+    // each lineage one repair attempt.
+    const repairable = verdict && verdict.fix_hint && verdict.tests?.C7 !== false && !(Number(res.parsed.meta.repair_attempts) >= 1);
+    if (repairable) {
+      let t = setField(res.text, "reject_reasons", [applied.why, ...(verdict.reasons || [])].join("; ").replace(/\n/g, " "));
+      t = setField(t, "fix_hint", verdict.fix_hint.replace(/\n/g, " "));
+      mkdirSync(join(ROOT, "queue", "repair"), { recursive: true });
+      writeFileSync(join(ROOT, "queue", "repair", basename(path)), t);
+    }
+    if (existsSync(src)) unlinkSync(src);
+    res.applied.action = repairable ? "repair" : "reject";
+    return;
+  }
   if (applied.action === "hold") {
     let t = setField(res.text, "held_since", res.parsed.meta.held_since || today());
     t = setField(t, "hold_reason", applied.why.replace(/\n/g, " "));
@@ -197,13 +212,16 @@ if (process.argv[1] && import.meta.url === `file://${process.argv[1]}`) {
 
   const own = owners();
   for (const r of results) apply(r, own);
+  for (const k of Object.keys(tally)) delete tally[k];
+  for (const r of results) tally[r.applied.action] = (tally[r.applied.action] || 0) + 1;
+  console.log(`applied: ${JSON.stringify(tally)}`);
   writeFileSync(join(ROOT, "context", "INDEX.md"), renderIndex());
   log(results, cost);
   try { execSync("node scripts/check.mjs", { cwd: ROOT, stdio: "inherit" }); }
   catch { console.error("check failed after applying verdicts; nothing committed"); process.exit(1); }
   if (flag("--commit")) {
     execSync("git add -A queue context review-log", { cwd: ROOT });
-    const msg = `pm-os reviewer: ${tally.merge || 0} merged, ${tally.hold || 0} held, ${tally.reject || 0} rejected (rubric v${RUBRIC_VERSION})`;
+    const msg = `pm-os reviewer: ${tally.merge || 0} merged, ${tally.hold || 0} held, ${tally.repair || 0} sent to repair, ${tally.reject || 0} rejected (rubric v${RUBRIC_VERSION})`;
     execSync(`git -c user.name="pm-os-reviewer" -c user.email="pm-os-reviewer@spyne.ai" commit -q -m ${JSON.stringify(msg)}`, { cwd: ROOT, stdio: "inherit" });
     if (flag("--push")) execSync("git push -q", { cwd: ROOT, stdio: "inherit" });
   }

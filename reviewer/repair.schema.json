@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["entries", "dropped_reason"],
+  "properties": {
+    "entries": {
+      "type": "array",
+      "maxItems": 6,
+      "items": { "type": "string", "description": "One full entry: frontmatter plus body" }
+    },
+    "dropped_reason": { "type": "string", "description": "Why rules from the original were dropped; empty if none" }
+  }
+}

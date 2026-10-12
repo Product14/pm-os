@@ -5,7 +5,7 @@
 import { spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
 
-export function claudeRun({ prompt, systemPromptFile, schema, model = "opus", cwd, addDirs = [], allowedTools = [], disallowedTools = [], budgetUsd = 1.5, timeoutMs = 300_000 }) {
+export function claudeRun({ prompt, systemPromptFile, schema, model = "opus", cwd, addDirs = [], allowedTools = [], disallowedTools = [], tools, budgetUsd = 1.5, timeoutMs = 300_000 }) {
   const args = [
     "-p", prompt,
     "--output-format", "json",
@@ -13,9 +13,14 @@ export function claudeRun({ prompt, systemPromptFile, schema, model = "opus", cw
     "--no-session-persistence",
     "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}',
     "--max-budget-usd", String(budgetUsd),
+    // Headless runs must be hermetic: a PM's own plugins and hooks (for example a
+    // memory plugin's Stop hook) re-prompt the model and replace its answer.
+    "--setting-sources", "",
+    "--settings", '{"disableAllHooks":true}',
   ];
   if (schema) args.push("--json-schema", JSON.stringify(schema));
   if (systemPromptFile) args.push("--append-system-prompt", readFileSync(systemPromptFile, "utf8"));
+  if (tools !== undefined) args.push("--tools", tools.join(","));
   if (allowedTools.length) args.push("--allowedTools", ...allowedTools);
   if (disallowedTools.length) args.push("--disallowedTools", ...disallowedTools);
   for (const d of addDirs) args.push("--add-dir", d);
@@ -33,7 +38,9 @@ export function claudeRun({ prompt, systemPromptFile, schema, model = "opus", cw
     const tryParse = () => {
       try {
         const j = JSON.parse(out);
-        finish({ ok: !j.is_error && j.subtype === "success", json: j, cost: j.total_cost_usd || 0, error: j.is_error ? (j.result || j.subtype) : null });
+        const empty = !j.structured_output && !(j.result || "").trim();
+        const ok = !j.is_error && j.subtype === "success" && !empty;
+        finish({ ok, json: j, cost: j.total_cost_usd || 0, error: ok ? null : j.is_error ? (j.result || j.subtype) : empty ? `empty output after ${j.num_turns} turns` : j.subtype });
       } catch {}
     };
     const timer = setTimeout(() => finish({ ok: false, error: `timeout after ${timeoutMs}ms`, cost: 0 }), timeoutMs);
