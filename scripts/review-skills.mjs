@@ -202,7 +202,7 @@ if (process.argv[1] && import.meta.url === `file://${process.argv[1]}`) {
   try { execSync("node scripts/check.mjs", { cwd: ROOT, stdio: "inherit" }); }
   catch { console.error("check failed after applying; nothing committed"); process.exit(1); }
   if (flag("--commit")) {
-    execSync("git add -A proposals plugin registry.json CHANGELOG.md review-log", { cwd: ROOT });
+    execSync(`git add -A ${["proposals", "plugin", "registry.json", "CHANGELOG.md", "review-log"].filter((p) => existsSync(join(ROOT, p))).join(" ")}`, { cwd: ROOT });
     const t = results.reduce((a, r) => ((a[r.action] = (a[r.action] || 0) + 1), a), {});
     execSync(`git -c user.name="pm-os-reviewer" -c user.email="pm-os-reviewer@spyne.ai" commit -q -m ${JSON.stringify(`pm-os skill reviewer: ${t.merge || 0} merged, ${t.hold || 0} held, ${t.reject || 0} rejected`)}`, { cwd: ROOT, stdio: "inherit" });
     if (flag("--push")) execSync("git push -q", { cwd: ROOT, stdio: "inherit" });
