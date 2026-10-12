@@ -88,6 +88,8 @@ button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px
 .verdicts button[aria-pressed="true"][data-v="drop"] { background: var(--danger-subtle); color: var(--danger); }
 .feedback { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
 textarea { width: 100%; min-height: 64px; resize: vertical; font: 400 14px/1.5 var(--font); color: var(--text); background: var(--panel); border: 1px solid var(--control); border-radius: 6px; padding: 8px 12px; }
+.steps { margin: 0; padding-left: 20px; color: var(--text-subtle); display: grid; gap: 8px; }
+.steps strong { color: var(--text); font-weight: 600; }
 .limits { margin: 0; padding-left: 18px; color: var(--text-subtle); display: grid; gap: 4px; }
 footer { color: var(--text-muted); font-size: 12px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -95,7 +97,7 @@ footer { color: var(--text-muted); font-size: 12px; }
 
 <main class="page">
   <header class="stack">
-    <span class="overline">Spyne PM OS · v0.2 · local build</span>
+    <span class="overline">Spyne PM OS · v0.3 · local build</span>
     <h1>PM OS Test Plan</h1>
     <p class="lede">Every capability the PM OS has today, how it works, and exactly how to test it. Mark each one works, partial, broken or skip and leave a note. Your verdicts save as you go, and Claude reads them back to fix what you flag. The last group lists what is not built yet, so you can rank it.</p>
   </header>
@@ -109,30 +111,17 @@ footer { color: var(--text-muted); font-size: 12px; }
 
   <section class="panel" aria-labelledby="run">
     <div class="stack">
-      <h2 id="run">Run it locally</h2>
-      <p class="subtle">The repo lives at <code>~/Documents/claude-code/apps/pm-os</code>. Nothing is published, so everything below runs on your laptop.</p>
+      <h2 id="run">Get it running (no terminal)</h2>
+      <p class="subtle">Everything below happens inside Claude Code. When a step says "type", type it into the Claude Code prompt. When it says "ask Claude", say it in plain words and Claude runs whatever is needed.</p>
     </div>
-    <div class="stack">
-      <h3>Option A: load the plugin for one session (best while testing)</h3>
-      <p class="small">Picks up edits immediately. Nothing is installed.</p>
-      <div class="cmd"><pre id="cmd-a">cd ~/Documents/claude-code/apps/pm-os
-claude --plugin-dir ./plugin</pre><button class="copy" type="button" data-copy="cmd-a">Copy</button></div>
-    </div>
-    <div class="stack">
-      <h3>Option B: install it like a teammate would</h3>
-      <p class="small">Claude copies the plugin into its cache. After editing the plugin, run the update line, then restart Claude Code.</p>
-      <div class="cmd"><pre id="cmd-b">claude plugin marketplace add ~/Documents/claude-code/apps/pm-os
-claude plugin install pm-os@spyne-pm-os
-# after edits:
-claude plugin marketplace update spyne-pm-os</pre><button class="copy" type="button" data-copy="cmd-b">Copy</button></div>
-    </div>
-    <div class="stack">
-      <h3>Run the reviewer pipeline</h3>
-      <p class="small">Repair, then context review, then skill review. The source roots let the reviewer open your memory files and workspace to verify sources.</p>
-      <div class="cmd"><pre id="cmd-c">cd ~/Documents/claude-code/apps/pm-os
-PM_OS_SOURCE_ROOTS="$HOME/.claude/projects/-Users-yash-Documents-claude-code/memory:$HOME/Documents/claude-code" \
-  bash scripts/pm-os-review.sh</pre><button class="copy" type="button" data-copy="cmd-c">Copy</button></div>
-    </div>
+    <ol class="steps">
+      <li><strong>Add the plugin.</strong> In Claude Code, type <code>/plugins</code> (in the terminal app it is <code>/plugin</code>). Open the Marketplaces tab and add this folder path: <code>~/Documents/claude-code/apps/pm-os</code>. Then open the Plugins tab and install <strong>pm-os</strong>.</li>
+      <li><strong>Start a new conversation</strong> so the plugin loads. You should see a line saying the PM OS is not set up yet.</li>
+      <li><strong>Type <code>/pm-os:setup</code>.</strong> When it asks for the repo, give it <code>~/Documents/claude-code/apps/pm-os</code>.</li>
+      <li><strong>Add your keys.</strong> Type <code>/plugins</code>, open Installed, choose pm-os, then Configure. Fill in your Freshdesk API key and your ClickHouse user and password. Then type <code>/reload-plugins</code>.</li>
+      <li><strong>After you edit the PM OS,</strong> open <code>/plugins</code>, Marketplaces, and update spyne-pm-os so Claude picks up the change.</li>
+    </ol>
+    <p class="small">For the team, none of this is needed: an org Owner adds the repo once under claude.ai Organization settings, Plugins and skills, and pm-os appears for every PM.</p>
   </section>
 
   <div id="groups"></div>
@@ -140,10 +129,11 @@ PM_OS_SOURCE_ROOTS="$HOME/.claude/projects/-Users-yash-Documents-claude-code/mem
   <section class="panel" aria-labelledby="known">
     <h2 id="known">Known limits before you start</h2>
     <ul class="limits">
-      <li>The GitHub Actions cannot run until the repo is published, so capability 20 and 21 are untested.</li>
+      <li>The last two capabilities need the repo published to GitHub, so they cannot be tested yet.</li>
       <li>The goals sheet template link is still missing, so setup skips the goals step and records it as pending.</li>
       <li>Google Sheets and Atlassian did not load in the build session. Setup will tell you if they load for you.</li>
-      <li>Setup looks for the repo at <code>~/pm-os</code> or <code>~/Documents/pm-os</code>. Yours is elsewhere, so it will ask for the path.</li>
+      <li>Setup looks for the repo in your home folder first. Yours is elsewhere, so it will ask for the folder.</li>
+      <li>Until the repo is published, contributions are saved on your laptop and reviewed when you type <code>/pm-os:reviewer run</code>.</li>
       <li>Reviewer runs cost about $0.11 per entry. The reviewer eval costs about $1.</li>
     </ul>
   </section>
@@ -154,121 +144,146 @@ PM_OS_SOURCE_ROOTS="$HOME/.claude/projects/-Users-yash-Documents-claude-code/mem
 <script>
 var CAPS = [
   { group: "Install and setup", items: [
-    { id: "install", name: "Plugin install", status: "built",
-      what: "Packages the OS as a Claude Code plugin with two skills (setup, capture) and two hooks.",
-      how: "The repo is a plugin marketplace (spyne-pm-os) holding one plugin (pm-os). About 218 tokens load into every session.",
-      test: ["Run option A or B above.", "Type /pm-os and look at the suggestions.", "Optional: run claude plugin details pm-os@spyne-pm-os after option B."],
-      expect: "/pm-os:setup and /pm-os:capture appear. Details show 2 skills and 2 hooks." },
+    { id: "install", name: "Plugin install from inside Claude Code", status: "built",
+      what: "The OS arrives as one plugin with six skills, two hooks and two built-in connections (Freshdesk and ClickHouse).",
+      how: "The repo is a plugin marketplace. You add it once from the plugin manager. For the team, an org Owner can push it to everyone instead.",
+      test: ["Follow steps 1 and 2 in Get it running.", "Type /pm-os and look at the suggestions."],
+      expect: "Six commands appear: setup, capture, status, veto, propose-skill and reviewer." },
     { id: "session-hook", name: "Session start nudge and context pointer", status: "built",
-      what: "Every new session either nudges you to run setup or points Claude at the shared context index.",
-      how: "A SessionStart hook checks ~/.pm-os/profile.json. With a profile, it pulls the repo (fast-forward only) and prints the index path and the number of queued candidates.",
-      test: ["Before setup: start a session with the plugin and ask \"what does the PM OS hook say?\"", "After setup: start a new session and ask the same."],
-      expect: "Before: a line saying the OS is not set up. After: the INDEX.md path and a candidate count." },
-    { id: "setup-connectors", name: "Setup: connect and verify tools first", status: "untested",
-      what: "Checks all 10 required tools and 1 optional one with a tiny read each, and blocks the rest of setup until they pass.",
-      how: "/pm-os:setup reads plugin/connectors.json and probes Arali, Slack, Gmail, Drive, Calendar, Sheets, Atlassian, ClickHouse (and its 4 databases), Freshdesk and GitHub. It shows pass, fail or not loaded with the exact fix.",
-      test: ["Run /pm-os:setup.", "Read the table.", "Optional: disconnect one connector at claude.ai, restart, and run it again."],
-      expect: "An accurate table. Missing claude.ai connectors tell you to connect and restart. It never asks you to paste a key into chat." },
-    { id: "setup-freshdesk-owner", name: "Setup: rejects a borrowed Freshdesk key", status: "untested",
+      what: "Every new conversation either nudges you to run setup or points Claude at the shared knowledge.",
+      how: "A hook runs when a conversation starts. With a profile, it refreshes the shared repo and tells Claude where the index is.",
+      test: ["Before setup, start a new conversation and ask Claude: \"What did the PM OS say when this session started?\"", "After setup, start another conversation and ask the same."],
+      expect: "Before: the OS is not set up yet. After: the index location and how many contributions are waiting." },
+    { id: "setup-connectors", name: "Setup checks every tool first", status: "untested",
+      what: "Checks all 10 required tools with a tiny read each and fixes what it can with you before anything else.",
+      how: "/pm-os:setup tries Arali, Slack, Gmail, Drive, Calendar, Sheets, Atlassian, ClickHouse, Freshdesk and GitHub, then shows pass, fail or not loaded, with the fix in plain words.",
+      test: ["Type /pm-os:setup.", "Read the table it shows.", "Check that no step asked you to open a terminal or paste a key into the chat."],
+      expect: "An accurate table, plain-language fixes, and no terminal steps." },
+    { id: "setup-keys", name: "Keys stay out of the chat", status: "untested",
+      what: "Your Freshdesk key and ClickHouse password go into the plugin's Configure dialog, never the conversation.",
+      how: "Claude Code keeps them in the system credential store and hands them only to the plugin's Freshdesk and ClickHouse connections.",
+      test: ["Do step 4 in Get it running.", "Ask Claude: \"Which Freshdesk account is my PM OS key for?\"", "Ask Claude: \"Using the PM OS ClickHouse connection, list the databases I can read.\""],
+      expect: "Claude names your own Freshdesk account and lists databases including dealer_leads and vini_reporting. It never shows the key or password." },
+    { id: "setup-freshdesk-owner", name: "Setup rejects a borrowed Freshdesk key", status: "untested",
       what: "Stops notes from posting under someone else's name.",
-      how: "The Freshdesk probe runs whoami and compares the key owner's email with yours.",
-      test: ["Put a Freshdesk key in ~/.pm-os/secrets.env (chmod 600) as FRESHDESK_API_KEY.", "Run /pm-os:setup and watch the Freshdesk row."],
-      expect: "Your own key passes. The key from Otto's .env.local fails with \"This key belongs to Dilip Bhagtani\"." },
-    { id: "setup-profile", name: "Setup: repo, profile and goals sheet", status: "untested",
-      what: "Finds your repo clone, installs the commit guard, asks your area and writes your profile.",
-      how: "Writes ~/.pm-os/profile.json (no secrets). Skips the goals sheet while the template link is TODO.",
-      test: ["Finish /pm-os:setup and give it the repo path when asked.", "Open ~/.pm-os/profile.json."],
-      expect: "Profile has your name, email, areas, repo_path and connector statuses. Goals sheet shows pending." },
+      how: "Setup asks Freshdesk whose key it is and compares that with you.",
+      test: ["Put a colleague's key in the Configure dialog (for example the one Otto uses).", "Type /pm-os:setup and read the Freshdesk row.", "Put your own key back afterwards."],
+      expect: "It fails and names the key's owner. Your own key passes." },
+    { id: "setup-github", name: "GitHub sign-in with a one-time code", status: "untested",
+      what: "Lets you contribute without a terminal.",
+      how: "If you are not signed in, Claude starts GitHub sign-in and shows you a short code to enter in your browser.",
+      test: ["Ask Claude: \"Sign me out of the GitHub CLI\" (only if you want to test sign-in again).", "Type /pm-os:setup and follow the GitHub step."],
+      expect: "Claude shows a code and the address github.com/login/device. After you enter it, the GitHub row passes." },
+    { id: "setup-profile", name: "Setup saves your profile", status: "untested",
+      what: "Remembers your repo, area and connector status.",
+      how: "Writes a small private profile file with no keys in it. The goals sheet step is skipped while the template link is missing.",
+      test: ["Finish /pm-os:setup.", "Ask Claude: \"Show me my PM OS profile.\""],
+      expect: "Your name, email, areas, repo location and connector statuses. Goals sheet shows pending. No keys." },
     { id: "usage-log", name: "Skill usage log", status: "built",
       what: "Records which skills you run, for the weekly digest and the audit.",
-      how: "A PreToolUse hook on the Skill tool appends the skill name and time to ~/.pm-os/usage.jsonl. No arguments, no content.",
-      test: ["Run any skill, for example /pm-os:capture.", "Run tail ~/.pm-os/usage.jsonl."],
-      expect: "One line per skill run with a timestamp and the skill name only." }
+      how: "A hook notes the skill name and time on every skill run. No arguments or content.",
+      test: ["Run any PM OS skill.", "Ask Claude: \"Show me my PM OS skill usage log.\""],
+      expect: "One line per skill run, with the time and skill name only." }
   ]},
   { group: "Shared knowledge", items: [
     { id: "context-quality", name: "62 live context entries", status: "built",
       what: "32 data traps, 15 system facts, 14 metric definitions and 1 decision, each one rule with a source.",
-      how: "Seeded from your memories, then reviewed, repaired and merged by the reviewer agent. Listed in context/INDEX.md.",
-      test: ["Open context/INDEX.md.", "Read 10 entries in areas you know best, especially context/metrics/.", "Mark anything wrong."],
-      expect: "Every entry you read is correct, specific and still true. Note any you would veto." },
-    { id: "context-use", name: "Sessions actually use the context", status: "untested",
+      how: "Seeded from your memories, then reviewed, repaired and merged by the reviewer agent.",
+      test: ["Ask Claude: \"Show me the PM OS metric definitions, one line each.\"", "Ask it to open 10 entries in areas you know best.", "Mark anything wrong, and veto it with /pm-os:veto."],
+      expect: "Every entry you read is correct, specific and still true." },
+    { id: "context-use", name: "Conversations actually use the knowledge", status: "untested",
       what: "Claude should apply the traps when you ask a data question, without being told.",
-      how: "The session hook points Claude at INDEX.md. Claude loads only the entries that match the question.",
-      test: ["After setup, start a fresh session with the plugin.", "Ask: \"Write a ClickHouse query for Vini appointments booked last week by rooftop.\"", "Ask: \"Where do I find the history of the Sales Inbound prompt?\""],
-      expect: "It uses dealer_leads.meetings, not conversation_fact, and points to git plus Mongo AgentTypeLog, not ClickHouse. If it ignores the index, mark broken." },
+      how: "The start-of-conversation hook points Claude at the index. Claude loads only the entries that match the question.",
+      test: ["After setup, start a new conversation.", "Ask: \"Write a ClickHouse query for Vini appointments booked last week by rooftop.\"", "Ask: \"Where do I find the history of the Sales Inbound prompt?\""],
+      expect: "It uses dealer_leads.meetings, not conversation_fact, and points to git plus Mongo AgentTypeLog, not ClickHouse. If it ignores the knowledge, mark broken." },
     { id: "capture", name: "/pm-os:capture", status: "built",
-      what: "Turns a lesson from a session into a queue candidate, declines project status, and splits two lessons into two entries.",
-      how: "Writes queue/<id>.md in the right format, runs the commit check, and commits. With a remote it opens a PR. Without one it tells you to run the reviewer.",
-      test: ["In a session, describe a real trap you hit recently and run /pm-os:capture.", "Try one that is pure project status.", "Try one with a rooftop name in it."],
-      expect: "A clean entry with a real source and no customer names. Status-only input is declined with a reason." }
+      what: "Turns a lesson from a conversation into a contribution. Declines project status and splits two lessons into two entries.",
+      how: "Writes the entry, runs the safety check and saves it. With the published repo it opens a pull request that merges by itself.",
+      test: ["In a conversation, describe a real trap you hit recently, then type /pm-os:capture.", "Try one that is only project status.", "Try one that mentions a rooftop by name."],
+      expect: "A clean entry with a real source and no customer names. Status-only input is declined with a reason." },
+    { id: "status", name: "/pm-os:status", status: "built",
+      what: "Shows what happened to your contributions and what is new in the shared knowledge.",
+      how: "Reads the shared repo and the reviewer log. Changes nothing.",
+      test: ["After capturing something and running the reviewer, type /pm-os:status."],
+      expect: "Your entries grouped by merged, held, being repaired or rejected, each with what happens next." }
   ]},
   { group: "Reviewer agent (no human step)", items: [
     { id: "reviewer-eval", name: "Reviewer eval", status: "built",
       what: "Proves the reviewer catches bad entries before it is allowed to merge anything.",
-      how: "13 planted cases: good entries, plus project status, customer names, commercials in words, duplicates, contradictions, unsourced numbers, a fake source file and a prompt injection.",
-      test: ["Run node scripts/eval-reviewer.mjs.", "Open evals/reviewer/last-run.md.", "Optional: add your own case in evals/reviewer/cases/ and run again."],
-      expect: "13/13 passed, 0 false merges, about $1." },
-    { id: "reviewer-merge", name: "Context review and auto-merge", status: "built",
-      what: "Reviews every candidate against the rubric and merges, holds or rejects it with no approval step.",
-      how: "The model returns a structured verdict. Code applies the policy: merge low risk; merge medium risk only with a verified source; hold the rest. Verdicts go to review-log/.",
-      test: ["Write a good candidate into queue/ (or use capture).", "Run the reviewer pipeline command above.", "Check context/INDEX.md and today's review-log file."],
-      expect: "A good entry merges into context/ with reviewed_by set. The log explains each decision." },
-    { id: "repair", name: "Repair loop for fixable rejects", status: "built",
+      how: "13 planted cases, including project status, customer names, commercials written in words, duplicates, a fake source file and a prompt injection.",
+      test: ["Type /pm-os:reviewer eval."],
+      expect: "13 of 13 passed, 0 false merges, about $1." },
+    { id: "reviewer-merge", name: "Review and auto-merge", status: "built",
+      what: "Reviews every contribution and merges, holds or rejects it with no approval step.",
+      how: "The reviewer returns a verdict. Fixed rules decide: merge low risk, merge medium risk only with a checked source, hold the rest.",
+      test: ["Capture a good lesson with /pm-os:capture.", "Type /pm-os:reviewer run.", "Type /pm-os:status."],
+      expect: "Your entry merges, and the reason is shown." },
+    { id: "repair", name: "Repair for fixable rejects", status: "built",
       what: "A rejected entry that only needs splitting or a corrected source is rewritten and reviewed again, so nothing waits on a person.",
-      how: "Fixable rejects move to queue/repair/. On the next run a separate repair agent rewrites them and a fresh review decides. One repair attempt per entry.",
-      test: ["Queue one candidate that bundles three unrelated rules.", "Run the pipeline twice (first run rejects it to repair, second run repairs and re-reviews).", "Read the Repair section of today's review-log."],
+      how: "A separate repair agent rewrites it on the next run, then a fresh review decides. One repair attempt per entry.",
+      test: ["Capture one lesson that packs three unrelated rules together.", "Type /pm-os:reviewer run twice.", "Type /pm-os:status."],
       expect: "It becomes separate single-rule entries that merge, or a clear reason why parts were dropped." },
-    { id: "hold-expiry", name: "Hold expiry", status: "built",
+    { id: "hold-expiry", name: "Holds expire", status: "built",
       what: "Held entries cannot sit forever.",
       how: "After 14 days a held entry gets one more review, then is rejected if still unsure.",
-      test: ["Open queue/held/data-trap--outcome-label-taxonomy-drift.md.", "Change held_since to a date more than 14 days ago.", "Run the pipeline."],
-      expect: "It is re-reviewed and either merges or is rejected with a logged reason." },
-    { id: "veto", name: "Veto after the fact", status: "built",
-      what: "Any PM can overturn a wrong merge with one command, and the reviewer learns from it.",
-      how: "Marks the entry deprecated, drops it from the index, and logs it in reviewer/vetoes.md, which the reviewer reads on every run.",
-      test: ["Pick an entry you think is wrong (or any one, then git revert after).", "Run node scripts/veto.mjs <entry-id> \"why it is wrong\".", "Check context/INDEX.md and reviewer/vetoes.md."],
-      expect: "The entry leaves the index and the veto is logged with your reason." },
-    { id: "certification", name: "Fail-safe when the reviewer is not certified", status: "built",
-      what: "The reviewer cannot merge if its latest eval did not fully pass or the rubric changed without a new eval.",
-      how: "review-context.mjs reads evals/reviewer/last-run.md and downgrades merges to holds when it is not clean for the current rubric version.",
-      test: ["Change rubric_version to 2 in reviewer/RUBRIC.md.", "Queue a good candidate and run the pipeline.", "Undo the change afterwards with git checkout reviewer/RUBRIC.md."],
-      expect: "The candidate is held with \"reviewer not certified\" instead of merging." }
+      test: ["Ask Claude: \"In the PM OS repo, mark the held entry as held 30 days ago.\"", "Type /pm-os:reviewer run."],
+      expect: "It is reviewed again and either merges or is rejected with a reason." },
+    { id: "veto", name: "/pm-os:veto", status: "built",
+      what: "Any PM can overturn a wrong entry, and the reviewer learns from it.",
+      how: "Files a veto as a contribution. On the next reviewer run the entry is marked deprecated and leaves the index.",
+      test: ["Type /pm-os:veto and describe an entry you think is wrong.", "Type /pm-os:reviewer run.", "Afterwards ask Claude to undo the test veto if it was only a test."],
+      expect: "It asks you to confirm, then the entry disappears from the shared knowledge with your reason logged." },
+    { id: "certification", name: "Reviewer stops merging if it is not certified", status: "built",
+      what: "If the reviewer's latest eval did not fully pass, or its rules changed without a new eval, it only holds.",
+      how: "Before merging, it checks that the current rule version has a clean eval on record.",
+      test: ["Ask Claude: \"In the PM OS repo, change the reviewer rubric_version to 2.\"", "Capture a good lesson, then type /pm-os:reviewer run.", "Ask Claude to change the rubric back."],
+      expect: "The entry is held with \"reviewer not certified\" instead of merging." }
   ]},
   { group: "Skill improvements (no human step)", items: [
+    { id: "propose-skill", name: "/pm-os:propose-skill", status: "built",
+      what: "Turns your idea for how a skill should behave into a proposal the skill reviewer can judge.",
+      how: "Writes the improved skill and, when needed, a new test case for it, then contributes it.",
+      test: ["Type /pm-os:propose-skill and describe something capture should do better, with an example."],
+      expect: "A proposal plus a test case covering your example, and a plain explanation of what happens next." },
     { id: "skill-safety", name: "Skill safety gate", status: "built",
-      what: "Holds any skill change that adds a send or write action, an external URL, or removes an approval or guard rule.",
-      how: "A line diff of the proposal against the current skill, checked with fixed patterns. Held proposals expire in 14 days.",
-      test: ["Look at proposals/skills/capture/announce-in-slack/HOLD.md (already held).", "Make your own proposal that removes the \"Never include\" block, run node scripts/review-skills.mjs."],
-      expect: "Both are held with the exact offending line named." },
+      what: "Holds any skill change that adds sending or writing, an outside link, or removes an approval or safety rule.",
+      how: "Compares the proposal line by line with the current skill.",
+      test: ["Type /pm-os:propose-skill and ask for capture to post every new entry to a Slack channel.", "Type /pm-os:reviewer run."],
+      expect: "The proposal is held, and the exact offending line is named." },
     { id: "skill-eval", name: "Skill eval gate", status: "built",
-      what: "A skill change merges only if it beats the current version on that skill's eval cases.",
-      how: "Both versions run on each case in evals/<skill>/cases/. A separate judge scores them blind. Needs a mean gain of 0.25 and no case dropping more than 0.5.",
-      test: ["Copy plugin/skills/capture/SKILL.md to proposals/skills/capture/<slug>/SKILL.md and make a real improvement.", "Add a one-line WHY.md.", "Run node scripts/review-skills.mjs and read the per-case scores."],
-      expect: "A real improvement merges and bumps the plugin version. A regression is rejected with the case that dropped." }
+      what: "A skill change merges only if it beats the current version on that skill's test cases.",
+      how: "Both versions answer each test case. A separate judge scores them without knowing which is which.",
+      test: ["Propose a real improvement with /pm-os:propose-skill.", "Type /pm-os:reviewer run and read the per-case scores."],
+      expect: "A real improvement merges. A regression is rejected with the case that got worse." }
   ]},
   { group: "Guardrails", items: [
-    { id: "commit-guard", name: "Commit check", status: "built",
-      what: "Blocks secrets, customer PII, Spyne commercials and badly formed entries on every commit.",
-      how: "scripts/check.mjs runs as a pre-commit hook. It also warns on entries not re-verified in 90 days and fails if the index is out of date.",
-      test: ["Add a scratch file with a made-up US phone number, a non-Spyne email and the word for annual recurring revenue as its acronym.", "Try to git commit it.", "Remove the file."],
-      expect: "The commit is blocked and each line is named with its rule." },
-    { id: "freshdesk-script", name: "Freshdesk notes script", status: "built",
-      what: "Lets the OS post private notes on tickets. Public replies are blocked in code.",
-      how: "plugin/scripts/freshdesk.mjs supports whoami, ticket and note (private only). reply exits with an error by design.",
-      test: ["node plugin/scripts/freshdesk.mjs whoami", "node plugin/scripts/freshdesk.mjs ticket <id> on a test ticket.", "Optional: post a note to a test ticket only.", "node plugin/scripts/freshdesk.mjs reply 1"],
-      expect: "whoami shows your name. The note is private. reply refuses." }
+    { id: "commit-guard", name: "Safety check on every contribution", status: "built",
+      what: "Blocks secrets, customer details, Spyne commercials and badly formed entries.",
+      how: "Runs before anything is saved to the shared repo, and again in the intake check.",
+      test: ["Ask Claude: \"In the PM OS repo, try to commit a scratch file containing a made-up US phone number and the acronym for annual recurring revenue, then delete it.\""],
+      expect: "The commit is refused and each problem line is named." },
+    { id: "freshdesk-notes", name: "Freshdesk private notes only", status: "built",
+      what: "Claude can read a ticket and post a private note. There is no way for it to post a public reply.",
+      how: "The plugin's Freshdesk connection has three tools: whoami, get_ticket and add_private_note.",
+      test: ["Ask Claude: \"Read Freshdesk ticket <a test ticket number> with the PM OS Freshdesk connection.\"", "Optional, test ticket only: ask it to add a private note.", "Ask it to send a public reply on that ticket."],
+      expect: "Reading works, the note is private, and it says public replies are not possible and offers a draft instead." },
+    { id: "clickhouse-readonly", name: "ClickHouse is read-only", status: "built",
+      what: "Claude can query but never change data.",
+      how: "The plugin's ClickHouse connection accepts only read statements, one at a time, and the server enforces read-only too.",
+      test: ["Ask Claude: \"Using the PM OS ClickHouse connection, count rows in dealer_leads.meetings.\"", "Ask it to drop a table or create one."],
+      expect: "The count works. The change is refused." }
   ]},
   { group: "Automation (needs the repo published)", items: [
-    { id: "action-intake", name: "Intake Action", status: "untested",
-      what: "Auto-merges contribution PRs that touch only queue/ or proposals/ and pass the commit check.",
-      how: ".github/workflows/pm-os-intake.yml. Any other PR gets a comment saying a human must review it.",
-      test: ["Publish to Product14/pm-os.", "Open a PR adding one queue file.", "Open a PR that edits a script."],
-      expect: "The first merges by itself. The second gets the human-review comment." },
-    { id: "action-review", name: "Review Action", status: "untested",
-      what: "Runs the reviewer on every push to main that adds candidates, nightly at 03:00 IST, and weekly runs the reviewer eval.",
-      how: ".github/workflows/pm-os-review.yml runs scripts/pm-os-review.sh --push with a Claude token secret.",
-      test: ["Add the CLAUDE_CODE_OAUTH_TOKEN secret.", "Merge a candidate PR.", "Watch the Actions tab."],
-      expect: "A bot commit with the verdict within minutes. No loop of repeated runs." }
+    { id: "action-intake", name: "Contributions merge by themselves", status: "untested",
+      what: "Pull requests that only add contributions merge on their own after the safety check.",
+      how: "A GitHub check merges them. Anything that changes scripts or rules waits for a person.",
+      test: ["Publish the repo.", "Capture something with /pm-os:capture."],
+      expect: "The pull request merges within a couple of minutes with no one approving it." },
+    { id: "action-review", name: "Reviewer runs on its own", status: "untested",
+      what: "The reviewer runs after every contribution, every night, and re-checks itself weekly.",
+      how: "A scheduled GitHub job runs the same pipeline as /pm-os:reviewer run.",
+      test: ["After publishing and adding the Claude token, capture something.", "A few minutes later, type /pm-os:status."],
+      expect: "The verdict appears without anyone running the reviewer." }
   ]},
   { group: "Not built yet: rank these", ranking: true, items: [
     { id: "nb-plan-week", name: "/pm-os:plan-week", status: "notbuilt", what: "Monday plan from your goals sheet, last update, Jira, tickets and calendar. Flags goals with nothing planned." },

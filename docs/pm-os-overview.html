@@ -251,7 +251,7 @@ footer { color: var(--text-muted); font-size: 12px; }
     <h2 id="asks">What we need from you</h2>
     <ul class="asks">
       <li><div><h3>Connect your tools</h3><p class="small">Arali, Slack, Gmail, Google Drive, Google Calendar, Google Sheets and Atlassian at claude.ai, Settings, Connectors. Then restart Claude Code.</p></div><span class="chip next">Before install</span></li>
-      <li><div><h3>Get your own ClickHouse user and Freshdesk key</h3><p class="small">A read-only ClickHouse Cloud user from data/eng, and the API key from your Freshdesk profile. Setup walks you through the rest.</p></div><span class="chip next">Before install</span></li>
+      <li><div><h3>Get your own ClickHouse user and Freshdesk key</h3><p class="small">A read-only ClickHouse Cloud user from data/eng, and the API key from your Freshdesk profile. You paste them into the plugin's Configure dialog, never into the chat. Setup walks you through it.</p></div><span class="chip next">Before install</span></li>
       <li><div><h3>Watch an area</h3><p class="small">No approvals. Skim your area in the weekly digest and veto anything wrong with one command. Needed for Vini Service, Vini Platform, Studio, Lot Service, Contact Service, Marketplace, Dealer OS, data warehouse and integrations.</p></div><span class="chip review">Volunteers needed</span></li>
       <li><div><h3>Capture what you learn</h3><p class="small">End a session with /pm-os:capture when you hit a trap or a definition other PMs would hit too. The reviewer does the rest.</p></div><span class="chip next">Every week</span></li>
       <li><div><h3>Name one job you would hand off</h3><p class="small">The recurring task you would most like the OS to draft for you. It shapes what gets built after the weekly loop.</p></div><span class="chip planned">Reply to Yash</span></li>
@@ -263,8 +263,8 @@ footer { color: var(--text-muted); font-size: 12px; }
       <h2 id="install">Install</h2>
       <button class="copy" id="copy-install" type="button">Copy commands</button>
     </div>
-    <p class="small">Available once the repo is published. Run these inside Claude Code.</p>
-    <div class="cmd"><pre id="install-cmds">/plugin marketplace add &lt;repo-url&gt;
+    <p class="small">No terminal needed. Once the repo is published, an org Owner can add it for everyone under claude.ai Organization settings, Plugins and skills. Until then, type these into Claude Code (in VS Code, <code>/plugins</code> opens the same manager).</p>
+    <div class="cmd"><pre id="install-cmds">/plugin marketplace add Product14/pm-os
 /plugin install pm-os@spyne-pm-os
 /pm-os:setup</pre></div>
   </section>
