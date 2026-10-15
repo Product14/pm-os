@@ -39,3 +39,19 @@
 - who: engineering
 - how: Ask the integrations engineer who answered on 2026-09-07 (E5) whether GET /tekion/leads/:leadId/vehicles returns vehicles attached after lead creation, and what it costs per call.
 - status: open
+
+### Q6
+- slot: frequency
+- unknown: How many other Tekion rooftops have leads whose vehicle of interest is empty at dial time because it was attached after lead creation? Spyne staff suspect all Tekion rooftops (E30); nobody has checked (E31).
+- blocks: whether the vehicle half is a one-rooftop fix or a Tekion-wide integration gap, and the priority of direction 2
+- who: engineering
+- how: Count outbound sales dials in the last 90 days on Tekion rooftops where the lead had no vehicle of interest, then spot-check a sample against Tekion to see how many have a vehicle there now.
+- status: open
+
+### Q7
+- slot: directions
+- unknown: Who owns the polling workaround agreed on 2026-10-14, what it polls, and when it ships; and will Tekion's lead webhooks come back (E28, E29, E32)?
+- blocks: direction 2 scope and whether to wait for Tekion webhooks instead of polling
+- who: engineering
+- how: Ask the integrations engineer named in comment 33 for an owner, a date and whether polling reuses GET /tekion/leads/:leadId/vehicles (E13); ask the Tekion partner contact for the webhook status.
+- status: open

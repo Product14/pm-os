@@ -21,7 +21,7 @@
 - unknown: Does parseAdf keep a lead type or appointment time from the ADF and write it into the lead's external_type or notes?
 - blocks: Direction 2 scope
 - who: engineering
-- how: Read ParsedEmailData in integrations-backend src/email-parsing/email-parser.service.ts (parseAdf at line 315), then run the dealer's sample emails from Q2 through the parser on UAT.
+- how: Read ParsedEmailData in integrations-backend src/email-parsing/email-parser.service.ts (parseAdf at line 315), then run the dealer's sample emails from Q2 through the parser on UAT. Or query stored lead records for this team, as suggested internally (E30); the same question has been open in the ticket since 2026-10-07 (E29).
 - status: open
 
 ### Q4
@@ -46,4 +46,20 @@
 - blocks: Future Arali pulls for this rooftop
 - who: csm
 - how: Vini CS confirms in Arali and asks ops to merge the duplicate company record.
+- status: open
+
+### Q7
+- slot: directions
+- unknown: Should an online appointment in the forwarded ADF also be created as a Spyne appointment (E29), or only confirmed by Ava as the dealer asked (E1, E5)?
+- blocks: Direction 2 scope
+- who: pm
+- how: Decide at the PRD step; first ask the dealer's software development manager whether a Spyne-side copy helps or duplicates the appointment already in their in-house system (E12).
+- status: open
+
+### Q8
+- slot: request
+- unknown: What answer and ETA does product give the CSM on point 1 (STL by lead type), after 14 days with no product reply (E28, E31)?
+- blocks: The expectation already set with the dealer (E10)
+- who: pm
+- how: PM replies on Freshdesk 24140 with the chosen direction and a date, or the phased start of direction 1, so the CSM can update the dealer thread.
 - status: open

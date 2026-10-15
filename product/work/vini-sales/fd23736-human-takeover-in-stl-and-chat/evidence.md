@@ -167,3 +167,24 @@
 - side: pm
 - role: unknown
 - text: PM confirmed the problem is valid and asked whether RETCONVAI-5165 already covers it fully or a new PRD is needed.
+
+### E25
+- source: freshdesk:23736#desc
+- date: 2026-09-21
+- side: spyne
+- role: csm
+- text: "once a chat is taken over by a human, a note is added in the CRM stating that the chat is now being handled by a human and the AI has been paused, to avoid any confusion." Only ask in the description; type Enhancement, company-level blocker Medium.
+
+### E26
+- source: freshdesk:23736#7
+- date: 2026-09-25
+- side: spyne
+- role: unknown
+- text: Internal chase to engineering: "Is this done as the Jira status shows as backlog". No reply on the thread.
+
+### E27
+- source: freshdesk:23736#9
+- date: 2026-09-29
+- side: spyne
+- role: unknown
+- text: Second internal chase to engineering: "Kindly check and share an update on this". Last message on the ticket; no revised ETA given.

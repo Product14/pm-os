@@ -21,10 +21,10 @@ fetched_code: 2026-10-15
 # When a rep takes over a Vini text or chat, the dealer's CRM never shows who owns the lead
 
 ## Ask
-Raised internally by the Vini CSM, not by the dealer: "Feature- Human takeover in STL & chatbot enhancement" (E1). The ticket body did not come through the API. Spyne's own reading of the ask is a CRM note whenever a rep takes over, "saying a human is handling the lead and the AI is paused, the same way the Console already shows it" (E4). A Spyne product lead added the reverse case, a human handing the lead back to the AI (E2). Engineering filed it as RETCONVAI-5165 with an ETA of 2026-09-24 (E3). That date has passed, and the story has been in Product Backlog since 2026-09-23 (E5).
+Raised internally by the Vini CSM, not by the dealer: "Feature- Human takeover in STL & chatbot enhancement" (E1). The ticket description, written by the CSM, asks for one thing: "once a chat is taken over by a human, a note is added in the CRM stating that the chat is now being handled by a human and the AI has been paused, to avoid any confusion", similar to the Console (E25). "Chatbot enhancement" in the subject is this same note, not a second ask; the description does not say whether "chat" means STL SMS, web chat or both. Spyne's automated triage read it the same way (E4). A Spyne product lead added the reverse case, a human handing the lead back to the AI (E2). Engineering filed it as RETCONVAI-5165 with an ETA of 2026-09-24 (E3). That date has passed, and the story has been in Product Backlog since 2026-09-23 (E5).
 
 ## Job
-The sales floor works leads in DriveCentric, not in the Spyne Console. In the dealer's words, "our sales team lives in the CRM" (E6). When Vini texts a lead and a rep takes over in the Console, the people working that lead in the CRM cannot tell whether Vini is still texting. They double-text the customer or are unsure who owns the conversation (E5, Spyne-written). The job is a single owner per lead that is visible where the floor works, so speed-to-lead does not turn into two voices or no voice. In P&L terms this is staff time (no checking two systems) and gross on internet leads that would otherwise go cold or get annoyed. That framing is inferred from E5 and E8; no figure is available.
+The sales floor works leads in DriveCentric, not in the Spyne Console. In the dealer's words, "our sales team lives in the CRM" (E6). When Vini texts a lead and a rep takes over in the Console, the people working that lead in the CRM cannot tell whether Vini is still texting. They double-text the customer or are unsure who owns the conversation (E5, Spyne-written; the CSM's "to avoid any confusion", E25). The job is a single owner per lead that is visible where the floor works, so speed-to-lead does not turn into two voices or no voice. In P&L terms this is staff time (no checking two systems) and gross on internet leads that would otherwise go cold or get annoyed. That framing is inferred from E5 and E8; no figure is available.
 
 The dealer has also tied doing more with Spyne to this visibility: "I don't wanna do all this if it doesn't show up in our CRM" (E8), and "if ... I can see all the conversations in DriveCentric, I feel like I'm ready to do more" (E9). At that time the rooftop used DriveCentric's own AI for text and lead response (E7).
 
@@ -48,6 +48,7 @@ The sales team and BDC working leads in DriveCentric (E5, Spyne-written; E6, dea
 - The reverse direction is not covered by the ticket or by RETCONVAI-5165. A rep who works the lead in DriveCentric never triggers a Spyne takeover, so Vini keeps texting (E16). Whether the floor here uses the Console at all is unknown.
 - Takeover pauses SMS but not calls (E13, E17), so a CRM note saying "AI paused" would be partly untrue for call cadences.
 - Possible two-AI overlap: in July the dealer's text and lead response ran on DriveCentric AI (E7). Whether Spyne STL is now live here is not confirmed.
+- Against RETCONVAI-5165 (E23): the full description (E25) asks for nothing 5165 does not already cover. It asks only for the takeover note; 5165 also covers flag, hand back and auto-resume, and both STL SMS and web chat. The open gap on the ticket is delivery: the ETA of 2026-09-24 passed, and two internal chases for status (E26, E27) got no reply on the thread.
 
 ## Candidate directions
 1. Build RETCONVAI-5165 as specified: one CRM note per takeover, flag, hand back and auto-resume, DriveCentric first, reusing the existing note path (E14). Angle: staff time saved on double-checking two systems, and gross kept on leads that are not double-texted. Fix the call-task gap (E13) first so the note is true.
@@ -69,3 +70,4 @@ The sales team and BDC working leads in DriveCentric (E5, Spyne-written; E6, dea
 | Gap | SUPPORTED | at least 1 E-id or code reference |
 | Candidate directions | SUPPORTED | 2 or more directions, with a P&L angle (days, cost, gross, absorption, hours per RO, retention, CSI) |
 | Frequency | SUPPORTED | a count, backed by at least 1 E-id |
+

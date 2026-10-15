@@ -181,3 +181,73 @@
 - side: system
 - role: engineering
 - text: "Range 2026-07-17 to 2026-10-15, no company filter, 30 hits. Other companies with the same ask: 0. Hits were unrelated console pop-ups, feed and sync tickets."
+
+### E27
+- source: freshdesk:24641#desc
+- date: 2026-10-08
+- side: spyne
+- role: csm
+- text: "as we are getting more adoption and pushing spyne as a tool. We need a central screen where the dealership can operate from and getting the full context of everything." (description, written by the account's onboarding manager)
+
+### E28
+- source: freshdesk:24641#desc
+- date: 2026-10-08
+- side: spyne
+- role: csm
+- text: "Five status counters at the top [...] Needs a human (red) [...] Customer replied (blue) [...] AI active (purple) [...] On track (green) [...] AI paused or done (grey). The list is sorted by what needs a person first"
+
+### E29
+- source: freshdesk:24641#desc
+- date: 2026-10-08
+- side: spyne
+- role: csm
+- text: "Each row carries one status chip, the owner, and the CRM status. The detail panel opens with \"Why this needs you\" and a single \"Next action,\" followed by Take over, Assign and Mark resolved."
+
+### E30
+- source: freshdesk:24641#desc
+- date: 2026-10-08
+- side: spyne
+- role: csm
+- text: "Board 2, the customer journey. Seven stages from lead arrival to close. [...] The footer holds the core rule: CRM status and human activity override the AI schedule."
+
+### E31
+- source: freshdesk:24641#desc
+- date: 2026-10-08
+- side: spyne
+- role: csm
+- text: "[A dealer contact] said \"unanswered phone call or unanswered message\" is what he wants on opening. That is why \"Needs a human\" and \"Customer replied\" are separate" (CSM relaying the dealer; speaker's dealer role not stated)
+
+### E32
+- source: freshdesk:24641#desc
+- date: 2026-10-08
+- side: spyne
+- role: csm
+- text: "There is no Customers section [...] Action items live inside the conversation, so the dealership doesn't switch tabs. This matches his \"combination of the two.\""
+
+### E33
+- source: freshdesk:24641#desc
+- date: 2026-10-08
+- side: spyne
+- role: csm
+- text: "Rep assignment decides who gets notified. [The dealer contact] wants the Spyne text notifications tied to assignment, not sent to everyone."
+
+### E34
+- source: freshdesk:24641#desc
+- date: 2026-10-08
+- side: spyne
+- role: csm
+- text: "Human Active: a salesperson engages or takes over, and the AI pauses. [...] CRM Updated: VinSolutions reflects the outcome, with no duplicate appointment. Resolved: the related Action Item closes automatically, with history kept."
+
+### E35
+- source: freshdesk:24641#desc
+- date: 2026-10-08
+- side: spyne
+- role: csm
+- text: "Acceptance: a manager can understand the opportunity from one screen, without opening Customers, Action Items or the CRM. [...] Simplify Action Items [...] instead of becoming another queue to manage."
+
+### E36
+- source: freshdesk:24641#desc
+- date: 2026-10-08
+- side: spyne
+- role: csm
+- text: "Description cites an attached screenshot of client feedback and an Arali meeting (e1f399b9-6ab5-41d6-b7d8-5fd4d43c6081) as its basis. Neither the screenshot nor that meeting is in this case's evidence."

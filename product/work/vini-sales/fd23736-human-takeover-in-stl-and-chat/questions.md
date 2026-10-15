@@ -38,7 +38,7 @@
 - blocks: quoting the ask exactly, including what "chatbot enhancement" in the subject covers (possibly the chat vs voice consistency issue in E19)
 - who: pm
 - how: Open ticket 23736 in the Freshdesk UI and read the description; ask the CSM what "chatbot enhancement" refers to.
-- status: open
+- status: answered (E25)
 
 ### Q6
 - slot: how_it_works_today
@@ -62,4 +62,12 @@
 - blocks: which PM owns the PRD
 - who: pm
 - how: Confirm with the area owners in `OWNERS.md`; the STL half is sales, the web chat half may sit with the Smartview or chat owner.
+- status: open
+
+### Q9
+- slot: gap
+- unknown: Who owns delivery of RETCONVAI-5165 and what is the revised ETA? Two internal chases (E26, E27) got no reply and the 2026-09-24 ETA has passed.
+- blocks: whether this case closes on 5165 alone or needs PM escalation to get it scheduled
+- who: engineering
+- how: PM asks the 5165 assignee in Jira or the Vini engineering channel for status and a date, then the support specialist updates the CSM on the ticket.
 - status: open

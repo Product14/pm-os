@@ -139,3 +139,94 @@
 - side: pm
 - role: unknown
 - text: PM: if this does not work correctly today, the fix must go into both the Sales and the Service agents. The ticket names one, but a callback can land on either.
+
+### E21
+- source: freshdesk:22370#desc
+- date: 2026-08-27
+- side: spyne
+- role: csm
+- text: Spyne onboarding manager (ticket requester): the rooftop went live the day before with the "7-Day-Old Lead Follow-Up Outbound" campaign; leads come from Tekion and the integration is established and working.
+
+### E22
+- source: freshdesk:22370#desc
+- date: 2026-08-27
+- side: spyne
+- role: csm
+- text: "During outbound calls, the Agent is not mentioning the VIN/Vehicle of Interest associated with the lead." On callbacks after a missed call the agent "simply responds with 'How can I help you?'"
+
+### E23
+- source: freshdesk:22370#desc
+- date: 2026-08-27
+- side: spyne
+- role: csm
+- text: "This is creating confusion for customers, as they are calling back specifically in response to the missed outbound call." (Spyne's account of shopper reaction; no dealer staff quoted.)
+
+### E24
+- source: freshdesk:22370#desc
+- date: 2026-08-27
+- side: spyne
+- role: csm
+- text: "Please ensure the Agent retains and communicates the relevant lead context, including the Vehicle of Interest/VIN, during both outbound and inbound callback interactions." Callbacks should acknowledge the previous outreach first.
+
+### E25
+- source: freshdesk:22370#desc
+- date: 2026-08-27
+- side: spyne
+- role: csm
+- text: "Requesting this to be prioritised, as the account went live yesterday; this is a make-or-break situation for us."
+
+### E26
+- source: freshdesk:22370#11
+- date: 2026-09-17
+- side: spyne
+- role: unknown
+- text: Request to the Tekion partner contact: "Need a way to fetch updates on already created leads from Tekion either through webhook or API Integration"
+
+### E27
+- source: freshdesk:22370#16
+- date: 2026-09-24
+- side: spyne
+- role: engineering
+- text: "tekion was working on webhooks for lead which were to release these quarter they released it now, we now need to setup those webhooks in our system" and asked product to prioritise the task.
+
+### E28
+- source: freshdesk:22370#19
+- date: 2026-09-29
+- side: spyne
+- role: unknown
+- text: "We have to prioritize the integration of new webhooks that Tekion released. However, we notice that Tekion has probably rolled back the new webhooks that were released."
+
+### E29
+- source: freshdesk:22370#25
+- date: 2026-09-30
+- side: spyne
+- role: unknown
+- text: Raised with Tekion on 2026-09-30 (comment 23). Asked whether Tekion gave an ETA for the lead webhooks, the answer was "NO". A re-check was requested on 2026-10-05 (comment 26).
+
+### E30
+- source: freshdesk:22370#28
+- date: 2026-10-05
+- side: spyne
+- role: unknown
+- text: "can we explore a workaround here, as all of our Tekion clients might be impacted because of this." (Comment 27 also asked whether other Tekion rooftops are affected.)
+
+### E31
+- source: freshdesk:22370#29
+- date: 2026-10-05
+- side: spyne
+- role: unknown
+- text: "I have not seen any similar ticket, but i have not manually checked other rooftops to confirm if this does not exists in other rooftops."
+
+### E32
+- source: freshdesk:22370#33
+- date: 2026-10-14
+- side: spyne
+- role: unknown
+- text: After talking with integrations engineering: "since there is no context on webhook integration so, polling is the workaround for now." Last message on the ticket; no owner or date given.
+
+### E33
+- source: freshdesk:22370#33
+- date: 2026-10-15
+- side: system
+- role: unknown
+- text: Comments 11 to 33 (2026-09-17 to 2026-10-14) cover only the Tekion vehicle-of-interest half. None mentions the callback context, a re-test, or a fix verified on this rooftop. Support follow-ups (comments 18, 31) got no resolution.

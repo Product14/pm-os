@@ -174,3 +174,45 @@
 - side: system
 - role: engineering
 - text: "Create a new lead (and send STL) when a returning customer sends a new CRM lead", Ready For Dev. Adjacent STL change; no Jira found for a lead-type-specific STL opener in the last 180 days.
+
+### E26
+- source: freshdesk:24140#desc
+- date: 2026-09-28
+- side: spyne
+- role: csm
+- text: "The client wants to enable the STL for his website leads... For existing appointments and credit applications, Ava will identify the lead type and adjust the conversation accordingly"
+
+### E27
+- source: freshdesk:24140#desc
+- date: 2026-09-28
+- side: spyne
+- role: csm
+- text: "the client wants to disable the call option to ensure the call flow is consistent during both working hours and after-hours. Please let us know how to enable SMS-only feature on the widget."
+
+### E28
+- source: freshdesk:24140#14
+- date: 2026-10-07
+- side: spyne
+- role: unknown
+- text: "its been 9 days since the ticket was raised and point 1 is still not picked up. Please update an ETA on this." (leadership copied)
+
+### E29
+- source: freshdesk:24140#15
+- date: 2026-10-07
+- side: spyne
+- role: unknown
+- text: "do our ADF email parsers also pick up appointment details when a lead books an appointment via the website form? If not, we'd like to read and process that info so the appointment gets created as well."
+
+### E30
+- source: freshdesk:24140#16
+- date: 2026-10-08
+- side: spyne
+- role: unknown
+- text: "can you not check that in our database?" (reply to E29; no answer on whether the parser keeps appointment details follows in the thread)
+
+### E31
+- source: freshdesk:24140#17
+- date: 2026-10-12
+- side: spyne
+- role: unknown
+- text: "Team, is this done?" (last message; no product-side reply anywhere in the 17-message thread)

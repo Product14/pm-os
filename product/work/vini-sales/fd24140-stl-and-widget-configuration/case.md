@@ -21,13 +21,13 @@ fetched_code: 2026-10-15
 # After-hours website leads need a first text that fits the lead: confirm an existing appointment, acknowledge a credit app, or set an appointment (plus an SMS-only website widget)
 
 ## Ask
-Raised internally by the Spyne CSM on the dealer's behalf; every Freshdesk message is Spyne-side. Two asks:
+Raised internally by the Spyne CSM on the dealer's behalf; the ticket description and all 17 Freshdesk messages are Spyne-side. Two asks:
 
-1. **STL on website leads, by lead type** (E1): "enable the STL for his website leads": existing appointment, confirm it and answer basic questions; no appointment, work toward one; online credit application, confirm receipt and say the team will follow up, with no PII. The dealer's own words match (E5): "drive appointments when there aren't appointments and confirm appointments when there are appointments."
-2. **Website widget without the call button** (E2, E7): "is the widget configurable so that... I don't want it to be a call, but I do want it to, engage with SMS only."
+1. **STL on website leads, by lead type** (E26, E1): "enable the STL for his website leads": existing appointment, confirm it and answer basic questions; no appointment, work toward one; online credit application, confirm receipt and say the team will follow up, with no PII. The dealer's own words match (E5): "drive appointments when there aren't appointments and confirm appointments when there are appointments."
+2. **Website widget without the call button** (E27, E2, E7): "Please let us know how to enable SMS-only feature on the widget" (E27). The dealer's words: "is the widget configurable so that... I don't want it to be a call, but I do want it to, engage with SMS only."
 
 ## Job
-The rooftop's BDC works website leads the next business day (E8). The dealer will forward only leads that arrive outside business hours, inquiries and credit applications both (E9). The job is to reach those leads overnight without sending the wrong message. A lead with an online appointment should get a confirmation, not a new appointment push (E6). A credit-application lead should get an acknowledgment with no PII (E5). Inferred P&L angle: fewer next-morning callbacks for BDC staff, kept appointments that are already on the board, and no compliance exposure from an AI talking credit. The dealer also wants a call during business hours to reach a human, not Ava (E7). That protects the BDC's phone process, so the widget should text only (inferred from E7).
+The rooftop's BDC works website leads the next business day (E8). The dealer will forward only leads that arrive outside business hours, inquiries and credit applications both (E9). The job is to reach those leads overnight without sending the wrong message. A lead with an online appointment should get a confirmation, not a new appointment push (E6). A credit-application lead should get an acknowledgment with no PII (E5). Inferred P&L angle: fewer next-morning callbacks for BDC staff, kept appointments that are already on the board, and no compliance exposure from an AI talking credit. The dealer also wants a call during business hours to reach a human, not Ava (E7). That protects the BDC's phone process, so the widget should text only (inferred from E7). The CSM's ticket gives a compatible reason: one consistent call flow in and after business hours (E27).
 
 ## Customer context (30 days)
 - 2026-09-24 meeting: the VP Marketing set out the three lead types and the no-PII rule (E5, E6) and asked for an SMS-only widget (E7). Ava's after-hours inbound is live; outbound to website leads is "phase two."
@@ -47,13 +47,13 @@ The rooftop's BDC works website leads the next business day (E8). The dealer wil
 
 ## Gap
 - The dealer needs three different openers chosen per lead (E1, E5). STL can only turn on or off per lead type or source (E20), and no per-type opener was found (E18). Unless engineering finds one, the gap is a build: a type-aware first message plus a no-PII credit-app script.
-- Lead type must reach STL in the first place. We don't know whether the forwarded email, as parsed (E19), carries "appointment with date, time and store" or "credit application" into the lead record.
-- The CSM has already told the dealer this is in progress (E10), with no Jira behind it (E25). That is an expectation gap.
-- Widget: no product gap remains for this rooftop (E4). Open items are whether the smartview-config failure (E3) was fixed in code or worked around once, and the dealer's go-ahead (E11).
+- Lead type must reach STL in the first place. We don't know whether the forwarded email, as parsed (E19), carries "appointment with date, time and store" or "credit application" into the lead record. Spyne staff asked the same question internally on 2026-10-07 (E29) and it was still unanswered on 2026-10-12 (E30, E31).
+- The CSM has already told the dealer this is in progress (E10), with no Jira behind it (E25). That is an expectation gap, and it is widening: on 2026-10-07 the Spyne side escalated that point 1 was "still not picked up" after 9 days (E28), and the last message on 2026-10-12 asks "is this done?" with no product reply in the thread (E31).
+- Widget: no product gap remains for this rooftop (E4); the 2026-10-07 escalation treats point 2 as done (E28). Open items are whether the smartview-config failure (E3) was fixed in code or worked around once, and the dealer's go-ahead (E11).
 
 ## Candidate directions
 1. Configure, no build: start STL on after-hours website inquiries with the standard opener. Have the dealer's forward mark lead type, and set appointment and credit-app types to STL off (E20) until direction 2 exists. Removes the overnight wait on inquiry leads (BDC callback hours, days to first contact) with no risk of pushing a new appointment on someone who already booked one.
-2. Build a lead-type-aware STL opener: parse a type field from the forwarded ADF (E19) and route to three first messages: confirm the appointment, acknowledge the credit app with no PII, or set an appointment (default). Protects show rate on booked online appointments and cuts next-day BDC confirmation calls (cost, staff hours).
+2. Build a lead-type-aware STL opener: parse a type field from the forwarded ADF (E19) and route to three first messages: confirm the appointment, acknowledge the credit app with no PII, or set an appointment (default). Protects show rate on booked online appointments and cuts next-day BDC confirmation calls (cost, staff hours). A Spyne-side idea in the thread goes further, creating the appointment in Spyne from the ADF (E29); the dealer did not ask for that (Q7).
 3. Decline the build for now and close the loop: tell the dealer the type-specific messaging is not scheduled (correcting E10), ship direction 1, and put CRM write-back (E12) ahead of it. The dealer said write-back decides whether STL scales, and without it every overnight conversation costs their staff manual entry time.
 
 Widget: no build. Keep the SMS-only config (E4) and get the dealer's go-ahead (E11).
@@ -74,3 +74,4 @@ Widget: no build. Keep the SMS-only config (E4) and get the dealer's go-ahead (E
 | Gap | SUPPORTED | at least 1 E-id or code reference |
 | Candidate directions | SUPPORTED | 2 or more directions, with a P&L angle (days, cost, gross, absorption, hours per RO, retention, CSI) |
 | Frequency | SUPPORTED | a count, backed by at least 1 E-id |
+
