@@ -15,7 +15,7 @@ PM work artifacts. Not reviewed knowledge: durable rules live in `context/`.
 ## Rules
 
 - Work folder names describe the topic, never the rooftop.
-- Rooftop names appear only in `case.md` frontmatter and the generated `rooftops.yaml`. Dealer staff are named by role everywhere.
+- Rooftop names appear only in `case.md` frontmatter, triage snapshots and the generated `rooftops.yaml`. Dealer staff are named by role everywhere.
 - Customer context is read live from Arali each run. Raw pulls go to `.cache/` (gitignored) and are never committed.
 - Every case passes `node scripts/case-lint.mjs` (check S7). Every THIN or EMPTY slot has an open question.
 - Nothing here is edited by hand once a PRD is approved, except through `/pm-os:prd`.
