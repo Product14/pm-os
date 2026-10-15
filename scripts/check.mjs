@@ -11,8 +11,9 @@
 import { readFileSync, existsSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { join, relative } from "node:path";
-import { ROOT, KINDS, STATUSES, CONFIDENCE, REQUIRED, STALE_DAYS, walk, entries, ageDays } from "./lib.mjs";
-import { renderIndex } from "./index.mjs";
+import { ROOT, KINDS, KIND_FIELDS, KIND_BODY, LESSON_TARGETS, PERSONAS, STATUSES, CONFIDENCE, REQUIRED, STALE_DAYS, walk, entries, ageDays, destDir } from "./lib.mjs";
+import { renderIndex, renderProductIndexes } from "./index.mjs";
+import { lintAllCases } from "./case-lint.mjs";
 
 const TEXT = /\.(md|json|mjs|js|ts|sh|ya?ml|txt|sql|csv|html)$/;
 // Files that must contain the patterns they police.
@@ -46,7 +47,7 @@ const COMMERCIALS = [
 
 export function scanText(text, file = "") {
   const found = [];
-  const fakeOk = /^evals\/[^/]+\/cases\//.test(file); // eval cases plant fake PII and commercials on purpose
+  const fakeOk = /^evals\/[^/]+\/(cases\/|last-run\.md$)/.test(file); // eval cases plant fake PII and commercials on purpose; eval logs quote them
   text.split("\n").forEach((line, i) => {
     if (line.includes("pm-os-allow:")) return;
     for (const [re, label] of SECRETS) if (re.test(line)) found.push({ line: i + 1, level: "error", msg: `S1 secret: ${label}` });
@@ -69,12 +70,21 @@ export function validateEntry(parsed, sub, path = "") {
   if (meta.status && !STATUSES.includes(meta.status)) e(`S4 unknown status: ${meta.status}`);
   if (meta.confidence && !CONFIDENCE.includes(meta.confidence)) e(`S4 unknown confidence: ${meta.confidence}`);
   if (meta.verified && !/^\d{4}-\d{2}-\d{2}$/.test(meta.verified)) e("S4 verified must be YYYY-MM-DD");
-  if (!/\*\*Rule:\*\*/.test(body)) e("S4 body needs a **Rule:** line");
+  for (const k of KIND_FIELDS[meta.kind] || []) if (!meta[k]) e(`S4 ${meta.kind} needs field: ${k}`);
+  if (meta.kind === "lesson" && meta.target && !LESSON_TARGETS.includes(meta.target)) e(`S4 unknown lesson target: ${meta.target}`);
+  if (meta.kind === "observation") {
+    if (meta.persona && !PERSONAS.includes(meta.persona)) e(`S4 unknown persona: ${meta.persona}`);
+    if (Number(meta.support_rooftops) < 2) e("S4 an observation needs support_rooftops of 2 or more; single-rooftop signals go to the watchlist");
+    if (!/\*\*Predicts:\*\*/.test(body)) e("S4 observation body needs a **Predicts:** line");
+    if (!/\*\*Evidence:\*\*/.test(body)) e("S4 observation body needs an **Evidence:** section");
+  }
+  const bodyLine = KIND_BODY[meta.kind] || "Rule";
+  if (!new RegExp(`\\*\\*${bodyLine}:\\*\\*`).test(body)) e(`S4 body needs a **${bodyLine}:** line`);
   if (sub === "queue" && meta.status !== "candidate") e("S4 queue entries must be status: candidate");
   if (sub === "context") {
     if (meta.status === "candidate") e("S4 context entries must be stable or deprecated");
-    const dir = KINDS[meta.kind];
-    if (dir && path && !path.startsWith(`context/${dir}/`)) e(`S4 kind ${meta.kind} belongs in context/${dir}/`);
+    const dir = KINDS[meta.kind] && destDir(meta);
+    if (dir && path && !path.startsWith(`${dir}/`)) e(`S4 kind ${meta.kind} belongs in ${dir}/`);
     if (meta.status === "stable" && ageDays(meta.verified) > STALE_DAYS) found.push({ level: "warn", msg: `S5 stale: verified ${meta.verified}, over ${STALE_DAYS} days. Re-verify or deprecate.` });
   }
   return found;
@@ -113,6 +123,13 @@ if (isMain) {
 const indexPath = join(ROOT, "context", "INDEX.md");
 const current = existsSync(indexPath) ? readFileSync(indexPath, "utf8") : "";
 if (current !== renderIndex()) err("context/INDEX.md", 0, "S6 index out of date; run node scripts/index.mjs");
+for (const [rel, want] of Object.entries(renderProductIndexes())) {
+  const p = join(ROOT, rel);
+  if ((existsSync(p) ? readFileSync(p, "utf8") : "") !== want) err(rel, 0, "S6 generated index out of date; run node scripts/index.mjs");
+}
+
+// S7: every case file meets the evidence bar, and every THIN or EMPTY slot has an open question
+for (const r of lintAllCases()) for (const p of r.problems) (p.level === "warn" ? warn : err)(r.path, 0, `S7 ${p.msg}`);
 
 for (const w of warnings) console.log(`warn   ${w}`);
 for (const e of errors) console.log(`ERROR  ${e}`);

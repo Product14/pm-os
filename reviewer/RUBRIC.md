@@ -1,8 +1,8 @@
 ---
-rubric_version: 1
+rubric_version: 2
 ---
 
-# Reviewer rubric v1
+# Reviewer rubric v2
 
 The rubric is version-locked. Change it only in its own commit, then bump `rubric_version` and re-run `node scripts/eval-reviewer.mjs`. Every eval case must pass before the new version reviews anything.
 
@@ -30,6 +30,41 @@ A candidate is **merged** only when every test passes.
 - **reject:** it fails C1, C2, C3, C4, C5 or C7, or the source is `contradicted`, or it duplicates a stable entry. Say exactly what would make it mergeable.
 
 **Fixable defects.** If the only problem is wording (too long, no imperative verb, a missing "Instead" that the Why already implies), return `revised_body` with the fix and decide as if the fix were applied. Never use `revised_body` to add facts the candidate did not contain, and never to split one entry into two.
+
+## Lessons (`kind: lesson`)
+
+A lesson tells a skill or a reviewer persona how to behave differently next time, learned from a PM's feedback or override in a real run. C1 to C8 apply, read this way:
+
+| # | For a lesson, fails when |
+|---|---|
+| C2 | It restates a rubric line or says "be thorough", "consider edge cases", "think about the dealer". It must name the situation and the behaviour |
+| C3 | It only applies to one ticket or one rooftop ("for this store, do X") |
+| C5 | Its source is not a work folder file (`product/work/.../decisions.md`, `run.json` or a review file) or a vetoed entry |
+| C8 | It contradicts the org's five facts (for example, justifying a build by selling more cars, or routing around the DMS) or a stable lesson for the same target without saying it supersedes it |
+
+`target` must match who uses it: `prd-drafting`, `decide`, `fit-check`, `triage`, `persona-refresh`, or `reviewer-<role>`. A lesson whose Rule is aimed at a different target than its `target` fails C2.
+
+Risk: `low` for a new lesson whose source exists in the repo. `medium` when it supersedes a stable lesson.
+
+## Persona observations (`kind: observation`)
+
+An observation says how a dealer role thinks or decides, so a reviewer persona can predict real reactions. It is judged on its own **Evidence:** lines; Arali pointers in `sources` cannot be opened from here, so `source_check` is `unverifiable` and that is expected.
+
+Merge only when all of these hold (on top of C1, C2, C4 and C7):
+
+| # | Test | Fails when |
+|---|---|---|
+| O1 | About the person | It describes our product's behaviour or a defect ("the agent mispronounces...") |
+| O2 | Predicts a reaction | The Predicts line does not say what this role would push back on or insist on |
+| O3 | Dealer voice | Any Evidence line is a Spyne CSM, AM, AE or other Spyne staff, or the role is unknown |
+| O4 | No solution | The Pattern is a feature request ("wants a survey button") instead of the job behind it |
+| O5 | Two rooftops | `support_rooftops` is under 2, or the Evidence lines do not show at least two distinct rooftops (A, B) |
+| O6 | Scrubbed | A quote names a person or a rooftop, or contains a phone or email (this is C7) |
+| O7 | No vendor figures | It contains a rate, dollar amount or percentage that a Spyne person said |
+
+Risk: `low` for a new observation that passes, and for an update that only raises the support counts, moves `last_seen` and adds Evidence lines to an observation with the same id. `medium` when it changes the Pattern or Predicts of an existing observation.
+
+The worked in-or-out examples live in `plugin/skills/persona-refresh/reference/in-or-out.md`. Use them as calibration.
 
 ## The policy the script applies (you do not decide this)
 

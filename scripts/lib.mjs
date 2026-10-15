@@ -12,7 +12,28 @@ export const KINDS = {
   "metric-definition": "metrics",
   "system-fact": "facts",
   "decision": "decisions",
+  "lesson": "lessons",
+  "observation": "personas",
 };
+// Lessons and persona observations live one or two levels deeper.
+export const LESSON_TARGETS = ["prd-drafting", "triage", "decide", "fit-check", "reviewer-gm", "reviewer-general-sales-manager", "reviewer-bdc-manager", "reviewer-service-manager", "reviewer-service-advisor", "reviewer-backend-engineer", "reviewer-ceo", "persona-refresh"];
+export const PERSONAS = ["gm", "general-sales-manager", "bdc-manager", "service-manager", "service-advisor", "backend-engineer", "ceo"];
+// Fields each kind needs on top of REQUIRED, and the body line that states it.
+export const KIND_FIELDS = {
+  lesson: ["target"],
+  observation: ["persona", "support_rooftops", "support_mentions", "last_seen"],
+};
+export const KIND_BODY = { observation: "Pattern" };
+// Files under context/ that are not entries.
+export const NOT_ENTRIES = /\/(INDEX|README|core|watchlist)\.md$/;
+
+export function destDir(meta) {
+  const dir = KINDS[meta.kind];
+  if (!dir) return null;
+  if (meta.kind === "lesson") return `context/lessons/${meta.target}`;
+  if (meta.kind === "observation") return `context/personas/${meta.persona}/observations`;
+  return `context/${dir}`;
+}
 export const STATUSES = ["candidate", "stable", "deprecated"];
 export const CONFIDENCE = ["high", "medium", "low"];
 export const REQUIRED = ["id", "kind", "area", "status", "owner", "source", "verified", "confidence"];
@@ -30,7 +51,7 @@ export function parseEntry(text) {
 }
 
 export function rule(body) {
-  const m = body.match(/\*\*Rule:\*\*\s*(.+)/);
+  const m = body.match(/\*\*(?:Rule|Pattern):\*\*\s*(.+)/);
   return m ? m[1].trim() : "";
 }
 
@@ -49,7 +70,7 @@ export function entries(sub) {
   let files = [];
   try { files = walk(base); } catch { return []; }
   return files
-    .filter(f => f.endsWith(".md") && !/\/(INDEX|README)\.md$/.test(f))
+    .filter(f => f.endsWith(".md") && !NOT_ENTRIES.test(f))
     .map(f => ({ path: relative(ROOT, f), text: readFileSync(f, "utf8") }))
     .map(e => ({ ...e, parsed: parseEntry(e.text) }));
 }

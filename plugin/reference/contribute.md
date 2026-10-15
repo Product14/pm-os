@@ -4,7 +4,7 @@ Every PM OS skill that writes to the shared repo follows these steps. The PM nev
 
 1. Read `repo_path` from `~/.pm-os/profile.json`. If there is no profile, tell the PM to run `/pm-os:setup` first and stop.
 2. In the repo, run `git switch main && git pull --ff-only`. Then create a branch named for the change, for example `capture/<id>` or `veto/<id>`.
-3. Write only the files the skill names. Every contribution stays inside `queue/` or `proposals/`, and the intake check merges those with no human review. Touching anything else means a person has to review it.
+3. Write only the files the skill names. The intake check merges these with no human review: `queue/`, `proposals/`, PM work in `product/work/`, `product/triage/` and `product/prds/`, the generated `product/*.yaml` indexes, and persona `watchlist.md` files. Touching anything else (config, skills, persona cores, scripts) means a person has to review it.
 4. Run `node scripts/check.mjs`. If it reports an error, fix the file and run it again. Never commit with `--no-verify`.
 5. Commit with a short message that names the change.
 6. Publish it:

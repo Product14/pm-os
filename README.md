@@ -28,6 +28,10 @@ Re-run `/pm-os:setup` any time something stops working.
 | `/pm-os:status` | See what happened to what you captured, and what is new |
 | `/pm-os:veto` | A shared entry is wrong |
 | `/pm-os:propose-skill` | A PM OS skill should work differently |
+| `/pm-os:triage` | See what is waiting on product in Freshdesk, with a case file per ticket |
+| `/pm-os:prd <folder or idea>` | Decide whether to build it, then a reviewed one-pager and PRD |
+| `/pm-os:prd-to-jira <folder>` | File an approved PRD in Jira (you approve the exact issue first) |
+| `/pm-os:persona-refresh` | Refresh the dealer personas from last week's customer conversations (runs weekly on its own) |
 
 Nobody approves contributions by hand: the reviewer agent decides, and anyone can veto afterwards.
 

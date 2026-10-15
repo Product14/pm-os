@@ -80,10 +80,12 @@
     },
     {
       "name": "triage",
-      "status": "planned",
+      "status": "local",
       "owner": "yash.sharma",
       "track": "3-tickets",
-      "does": "Classifies tickets, links PRDs and decisions, posts internal Freshdesk note; drafts public replies."
+      "does": "Freshdesk \"waiting on product\" queue (Vini Sales and Service) to one evidence-backed case file per ticket: rooftop, 30-day Arali context, code behaviour today, open questions. Read-only.",
+      "path": "plugin/skills/triage",
+      "last_change": "2026-10-15"
     },
     {
       "name": "rooftop-brief",
@@ -94,17 +96,30 @@
     },
     {
       "name": "prd",
-      "status": "planned",
+      "status": "local",
       "owner": "yash.sharma",
       "track": "4-prd",
-      "does": "Idea to one-pager to PRD with goal link, prediction, and rubric-based critics."
+      "does": "Case or idea to approved one-pager and PRD: decide (build, generalise, defer, decline), persona review loops grounded in real customers, fit check against the ask, PM-approved Jira, retro into lessons.",
+      "path": "plugin/skills/prd",
+      "last_change": "2026-10-15"
     },
     {
       "name": "prd-to-jira",
-      "status": "planned",
+      "status": "local",
       "owner": "yash.sharma",
       "track": "4-prd",
-      "does": "Approved PRD into Jira epics and stories with acceptance criteria."
+      "does": "Approved PRD or bug to one Jira issue, created only after the PM picks create.",
+      "path": "plugin/skills/prd-to-jira",
+      "last_change": "2026-10-15"
+    },
+    {
+      "name": "persona-refresh",
+      "status": "local",
+      "owner": "yash.sharma",
+      "track": "4-prd",
+      "path": "plugin/skills/persona-refresh",
+      "does": "Weekly: last 7 days of Arali conversations across all rooftops to persona observations, watchlists and routed signals, for the reviewer.",
+      "last_change": "2026-10-15"
     }
   ]
 }

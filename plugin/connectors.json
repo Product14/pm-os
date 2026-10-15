@@ -16,11 +16,14 @@
         }
       },
       "used_by": [
+        "eow-update",
+        "persona-refresh",
+        "personas",
+        "prd",
         "rooftop-brief",
         "ticket-triage",
-        "voc-themes",
-        "personas",
-        "eow-update"
+        "triage",
+        "voc-themes"
       ]
     },
     {
@@ -136,10 +139,12 @@
         "call": "the cheapest read tool found, e.g. current user or accessible resources"
       },
       "used_by": [
-        "plan-week",
+        "decision-lookup",
         "eow-update",
+        "plan-week",
+        "prd",
         "prd-to-jira",
-        "decision-lookup"
+        "triage"
       ]
     },
     {
@@ -162,10 +167,11 @@
         "note": "Either the plugin's own clickhouse server or an existing clickhouse-local server passes."
       },
       "used_by": [
-        "metric-qa",
         "agent-review",
         "launch-readout",
+        "metric-qa",
         "on-track-check",
+        "prd",
         "rooftop-brief"
       ]
     },
@@ -174,7 +180,7 @@
       "name": "Freshdesk (write)",
       "required": true,
       "kind": "bundled with the plugin",
-      "why": "Post private notes on tickets. Reads come through Arali. There is no tool for public replies.",
+      "why": "Search the 'waiting on product' queue, read tickets and companies, and post private notes. There is no tool for public replies.",
       "connect": "1) In Freshdesk, click your profile picture, then Profile settings, and copy Your API key. 2) Open the plugin manager: type /plugin (in VS Code: /plugins), choose Installed, then pm-os, then Configure. Paste it into Freshdesk API key and save. 3) Type /reload-plugins, or quit and reopen Claude Code.",
       "probe": {
         "search": "freshdesk whoami",
@@ -182,8 +188,10 @@
         "call": "whoami"
       },
       "used_by": [
+        "freshdesk-notes",
+        "prd",
         "ticket-triage",
-        "freshdesk-notes"
+        "triage"
       ]
     },
     {
@@ -191,15 +199,16 @@
       "name": "Spyne Blue Brain",
       "required": false,
       "kind": "claude.ai connector (org)",
-      "why": "Code knowledge graph, so PRDs match how the code works today.",
+      "why": "Code knowledge graph, so case files and PRDs cite how the product works today. Not required for setup, but triage and prd mark 'how it works today' as EMPTY without it.",
       "connect": "Enabled org-wide; if missing, ask the claude.ai org admin.",
       "probe": {
         "find": "mcp__claude_ai_Spyne_Blue_Brain__list_repos",
         "call": {}
       },
       "used_by": [
+        "change-detection",
         "prd",
-        "change-detection"
+        "triage"
       ]
     },
     {

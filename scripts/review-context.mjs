@@ -13,8 +13,8 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, unlinkSync, readdirSync, appendFileSync } from "node:fs";
 import { join, basename } from "node:path";
 import { execSync } from "node:child_process";
-import { ROOT, KINDS, parseEntry, entries, today, ageDays } from "./lib.mjs";
-import { renderIndex } from "./index.mjs";
+import { ROOT, parseEntry, entries, today, ageDays, destDir } from "./lib.mjs";
+import { renderIndex, renderProductIndexes } from "./index.mjs";
 import { scanText, validateEntry } from "./check.mjs";
 import { claudeRun, pool } from "./claude-run.mjs";
 
@@ -188,9 +188,9 @@ function apply(res, own) {
   t = setField(t, "reviewed_by", `pm-os-reviewer/rubric-v${RUBRIC_VERSION}`);
   t = setField(t, "review_date", today());
   t = setField(t, "review_risk", verdict.risk);
-  const dir = KINDS[meta.kind];
-  mkdirSync(join(ROOT, "context", dir), { recursive: true });
-  writeFileSync(join(ROOT, "context", dir, basename(path).replace(/^[a-z-]+--/, "")), t);
+  const dir = destDir(meta);
+  mkdirSync(join(ROOT, dir), { recursive: true });
+  writeFileSync(join(ROOT, dir, basename(path).replace(/^[a-z-]+--/, "")), t);
   unlinkSync(src);
   for (const id of verdict.supersedes || []) {
     const old = entries("context").find((e) => e.parsed?.meta.id === id);
@@ -232,6 +232,7 @@ if (process.argv[1] && import.meta.url === `file://${process.argv[1]}`) {
   for (const r of results) tally[r.applied.action] = (tally[r.applied.action] || 0) + 1;
   console.log(`applied: ${JSON.stringify(tally)}`);
   writeFileSync(join(ROOT, "context", "INDEX.md"), renderIndex());
+  for (const [rel, text] of Object.entries(renderProductIndexes())) writeFileSync(join(ROOT, rel), text);
   log(results, cost);
   try { execSync("node scripts/check.mjs", { cwd: ROOT, stdio: "inherit" }); }
   catch { console.error("check failed after applying verdicts; nothing committed"); process.exit(1); }

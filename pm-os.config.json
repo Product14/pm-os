@@ -45,5 +45,54 @@
     "dealer-os",
     "data-warehouse",
     "integrations"
-  ]
+  ],
+  "freshdesk": {
+    "queue": {
+      "status_label": "Waiting on Product",
+      "status_id": null,
+      "area_field": null,
+      "area_values": {
+        "vini-sales": null,
+        "vini-service": null
+      },
+      "note": "Discovered by /pm-os:triage via list_ticket_fields on first run, confirmed by the PM."
+    }
+  },
+  "jira": {
+    "site": "spyne.atlassian.net",
+    "cloud_id": null,
+    "areas": {},
+    "note": "Per-area defaults {project_key, issue_type, labels} saved after the PM confirms them at the first Jira step."
+  },
+  "prd": {
+    "max_review_rounds": 3,
+    "max_context_requests_per_stage": 5,
+    "max_lessons_per_target": 15,
+    "max_observations_per_persona": 10,
+    "stale_case_days": 7,
+    "word_budgets": {
+      "case": 1200,
+      "one_pager": 600,
+      "prd": 3000
+    },
+    "panel": {
+      "always": [
+        "gm",
+        "backend-engineer",
+        "ceo"
+      ],
+      "default_department": {
+        "vini-sales": "bdc-manager",
+        "vini-service": "service-manager"
+      },
+      "max_reviewers": 5
+    }
+  },
+  "persona_refresh": {
+    "schedule": "weekly, Monday 07:00 IST",
+    "window_days": 7,
+    "backfill_days": 30,
+    "max_arali_calls": 60,
+    "stale_days": 90
+  }
 }

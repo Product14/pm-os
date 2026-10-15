@@ -1,6 +1,8 @@
 # Auto-merges contribution PRs so no human has to approve them.
-# A PR merges here only if it touches nothing but queue/ and proposals/ and
-# passes the safety check. Quality review happens after merge, on main, by the
+# A PR merges here only if it touches nothing but queue/, proposals/, PM work
+# artifacts (product/work, product/triage, product/prds, the generated product
+# indexes) and persona watchlists, and passes the safety check, which includes
+# the case-file evidence lint (S7). Quality review happens after merge, on main, by the
 # reviewer agent (pm-os-review.yml). Anything else needs a human reviewer.
 name: pm-os intake
 
@@ -24,15 +26,15 @@ jobs:
         with:
           node-version: 22
 
-      - name: Only queue/ and proposals/ may change
+      - name: Only contribution paths may change
         id: scope
         run: |
           changed=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
           echo "$changed"
-          outside=$(echo "$changed" | grep -vE '^(queue|proposals)/' || true)
+          outside=$(echo "$changed" | grep -vE '^(queue/|proposals/|product/(work|triage|prds)/|product/(feature-index|rooftops)\.yaml$|context/personas/[^/]+/watchlist\.md$)' || true)
           if [ -n "$outside" ]; then
             echo "contribution=false" >> "$GITHUB_OUTPUT"
-            printf 'These files are outside queue/ and proposals/, so this PR needs a human reviewer:\n\n%s\n' "$outside" > scope.txt
+            printf 'These files are outside the contribution paths, so this PR needs a human reviewer:\n\n%s\n' "$outside" > scope.txt
           else
             echo "contribution=true" >> "$GITHUB_OUTPUT"
           fi
