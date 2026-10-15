@@ -55,3 +55,11 @@
 - who: engineering
 - how: Ask the integrations engineer named in comment 33 for an owner, a date and whether polling reuses GET /tekion/leads/:leadId/vehicles (E13); ask the Tekion partner contact for the webhook status.
 - status: open
+
+### Q8
+- slot: agents_affected
+- unknown: Does the Service outbound agent's prompt render the vehicle fields from the shared call prompt variables, where does its vehicle come from (DMS or CRM lead), and does a Service outbound summary reach a Sales inbound callback under the department filter?
+- blocks: the Service outbound row of Agents affected and the scope of the full-value direction (4)
+- who: engineering
+- how: Engineering checks the service_v2 outbound prompt template for the InterestedVehicle or owned-vehicle block and lists the agentType values the lead memory department filter matches (`conversational-ai-backend:src/memory/lead-memory.service.ts:262`).
+- status: open

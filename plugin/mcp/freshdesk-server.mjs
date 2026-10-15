@@ -23,6 +23,16 @@ async function call(method, path, body) {
   return text ? JSON.parse(text) : {};
 }
 
+let agentMap = null;
+async function agentName(id) {
+  if (!agentMap) {
+    const fields = await call("GET", "/ticket_fields");
+    const f = fields.find((x) => x.name === "agent");
+    agentMap = Object.fromEntries(Object.entries(f?.choices || {}).map(([name, aid]) => [String(aid), name]));
+  }
+  return agentMap[String(id)] || null;
+}
+
 serve({
   name: "pm-os-freshdesk",
   version: "1.0.0",
@@ -38,7 +48,7 @@ serve({
     },
     {
       name: "get_ticket",
-      description: "Read one Freshdesk ticket: its fields (status, priority, tags, custom fields), its description, and every conversation entry (replies and private notes), oldest first. Long bodies are cut at 4,000 characters and flagged.",
+      description: "Read one Freshdesk ticket: its fields (status, priority, tags, custom fields), who raised it (name, email, and whether they are a Spyne agent or a dealer contact), its description, and every conversation entry (replies and private notes), oldest first. Long bodies are cut at 4,000 characters and flagged.",
       inputSchema: { type: "object", properties: { ticket_id: { type: "integer", description: "Numeric Freshdesk ticket id" } }, required: ["ticket_id"], additionalProperties: false },
       run: async ({ ticket_id }) => {
         const id = Number(ticket_id);
@@ -50,12 +60,35 @@ serve({
           convs.push(...batch);
           if (batch.length < 100) break;
         }
+        // Who raised it. Internal tickets are raised by Spyne agents; dealer tickets by contacts.
+        // Reading /agents/{id} needs an admin-level key, so fall back to the agent id-to-name map in ticket_fields.
+        let requester = { id: t.requester_id };
+        if (t.requester_id) {
+          const tried = [];
+          try {
+            const a = await call("GET", `/agents/${t.requester_id}`);
+            requester = { id: t.requester_id, is_agent: true, name: a.contact?.name, email: a.contact?.email, via: "agents" };
+          } catch (e) {
+            tried.push(`agents: ${String(e.message || e).slice(0, 60)}`);
+            const name = await agentName(t.requester_id);
+            if (name) requester = { id: t.requester_id, is_agent: true, name, via: "ticket_fields agent list" };
+            else {
+              try {
+                const c = await call("GET", `/contacts/${t.requester_id}`);
+                requester = { id: t.requester_id, is_agent: false, name: c.name, email: c.email, via: "contacts" };
+              } catch (e2) {
+                tried.push(`contacts: ${String(e2.message || e2).slice(0, 60)}`);
+                requester = { id: t.requester_id, error: tried.join("; ") };
+              }
+            }
+          }
+        }
         const cut = (s) => (s && s.length > 4000 ? { text: s.slice(0, 4000), truncated: true } : { text: s || "", truncated: false });
         const desc = cut(t.description_text);
         return {
           id: t.id, subject: t.subject, description_text: desc.text, description_truncated: desc.truncated,
           status: t.status, priority: t.priority, type: t.type, tags: t.tags,
-          group_id: t.group_id, responder_id: t.responder_id, requester_id: t.requester_id, company_id: t.company_id, custom_fields: t.custom_fields,
+          group_id: t.group_id, responder_id: t.responder_id, requester, company_id: t.company_id, custom_fields: t.custom_fields,
           created_at: t.created_at, updated_at: t.updated_at,
           conversation_count: convs.length,
           conversations: convs.map((c) => {

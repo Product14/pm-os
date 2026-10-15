@@ -63,3 +63,43 @@
 - who: pm
 - how: PM replies on Freshdesk 24140 with the chosen direction and a date, or the phased start of direction 1, so the CSM can update the dealer thread.
 - status: open
+
+### Q9
+- slot: agents_affected
+- unknown: Do any service-department teams run STL? The STL gate has no department dimension (E36), so a per-type opener there would reach them too.
+- blocks: Agents affected (Service outbound); scope of the opener change
+- who: engineering
+- how: Query STL settings for teams whose department is service, and ask the STL owner whether resolveStlGate (:422) is reached for service leads.
+- status: open
+
+### Q10
+- slot: directions
+- unknown: How do conversations and confirmed or booked appointments get written back to a dealer system with no API (E12): outbound webhook, ADF email back, or a pull API the dealer calls?
+- blocks: Direction 3 (Full value) write-back scope
+- who: engineering
+- how: Integrations owner checks what integrations-backend or crm-core-service can already push to a dealer-built endpoint; CSM asks the dealer's software development manager which format they can ingest.
+- status: open
+
+### Q11
+- slot: agents_affected
+- unknown: Is ParsedEmailData (E35) also used for service or other leads, so that new lead-type and appointment fields change what other agents read from /leads/dealer (E38)?
+- blocks: Direction 3 blast radius; Agents affected (Service inbound)
+- who: engineering
+- how: Read callers of parseAdf in integrations-backend and list which lead sources and departments go through it.
+- status: open
+
+### Q12
+- slot: agents_affected
+- unknown: After the STL first text, which agent handles the customer's reply, and does the lead type and appointment reach its context so it keeps confirming instead of pushing a new appointment?
+- blocks: Agents affected (Sales inbound, Sales outbound follow-up); Direction 3 opener scope
+- who: engineering
+- how: Send one test lead per type on a UAT team, reply to the first text, and check the agent and prompt variables on the reply turn.
+- status: open
+
+### Q13
+- slot: directions
+- unknown: Where would per-rooftop, per-type opener templates live (STL settings via upsertSpeedToLeadSettings :47 or the console action, E34), and who edits them?
+- blocks: Direction 3 configuration design
+- who: engineering
+- how: STL owner confirms the settings schema and whether ops can edit it in Admin Tool > Vini Config like the channel switches (E4).
+- status: open

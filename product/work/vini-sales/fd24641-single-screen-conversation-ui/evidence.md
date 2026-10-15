@@ -251,3 +251,38 @@
 - side: spyne
 - role: csm
 - text: "Description cites an attached screenshot of client feedback and an Arali meeting (e1f399b9-6ab5-41d6-b7d8-5fd4d43c6081) as its basis. Neither the screenshot nor that meeting is in this case's evidence."
+
+### E37
+- source: pm:2026-10-15
+- date: 2026-10-15
+- side: pm
+- role: unknown
+- text: "The ask comes from one agent, but the impact is on all agents. Here the ask is for sales leads, but the same interface is used for service as well."
+
+### E38
+- source: bluebrain:conversational-ai-backend:src/action-items/action-items.controller.ts:59
+- date: 2026-10-15
+- side: system
+- role: engineering
+- text: "GET /action-items is one queue for the team, filtered by serviceType, agentType, assignedTo, pastSla and isSynced (Blue Brain get_endpoint). Sales and service action items share it; an assignee filter already exists here but not on the conversations list."
+
+### E39
+- source: bluebrain:spyne-console-microfrontends:apps/converse-ai/contexts/mainContext.tsx:241
+- date: 2026-10-15
+- side: system
+- role: engineering
+- text: "The converse-ai console app holds a global setServiceType in its main context, so the same pages switch between departments rather than existing per department (inferred from the symbol via find_symbol; file not read)."
+
+### E40
+- source: bluebrain:integrations-backend:src/webhook/helpers/service-type.helper.ts:22
+- date: 2026-10-15
+- side: system
+- role: engineering
+- text: "type LeadServiceType = 'sales' | 'service'. CRM and DMS fetchers (PBS, eLeads, Tekion, DriveCentric lambdas) each resolve a lead to sales or service, so service leads land in the same lead store the console reads."
+
+### E41
+- source: bluebrain:conversational-ai-backend:src/customers/customers.controller.ts:16
+- date: 2026-10-15
+- side: system
+- role: engineering
+- text: "Blue Brain get_endpoint card for GET /customers/conversations/team lists enterprise_id, team_id, unreadOnly, flowType, page, limit. No assignee parameter. The card omits serviceType, which E17 read in source; trace_handler resolved no helpers."

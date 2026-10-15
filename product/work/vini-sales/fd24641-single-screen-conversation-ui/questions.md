@@ -71,3 +71,35 @@
 - who: engineering
 - how: Ask the Vini Sales backend lead to mark each of the five as works, partial or missing; Blue Brain find_prior_art on "notify assigned salesperson" and "action item auto close"
 - status: open
+
+### Q10
+- slot: who_feels_this
+- unknown: Whether this rooftop (and which others) run Vini Service on the same console, and which service roles (advisor, service manager, BDC) work Conversations and Action Items daily
+- blocks: Who feels this (service rows are inferred), and whose workflow the PRD must test
+- who: csm
+- how: Ask the CSM whether this rooftop has Vini Service live; check console page views split by service type for the last 30 days
+- status: open
+
+### Q11
+- slot: agents_affected
+- unknown: Whether service leads and conversations carry an assigned advisor, so a per-assignee unanswered view and alert routing work in service as in sales (action items carry assignedTo, E38; the conversations list has no assignee filter, E41)
+- blocks: Direction 2 for service, and where the assignee comes from (CRM for sales, DMS or scheduler for service)
+- who: engineering
+- how: Ask the Vini backend lead how assignedTo is populated on action items per department; check the crm-core lead schema for an assignee on service leads
+- status: open
+
+### Q12
+- slot: agents_affected
+- unknown: Whether STL and website chat conversations appear in the team conversations list and action-item queue (flowType, channel and agentType values)
+- blocks: Agents affected rows for Sales STL and Sales chat
+- who: engineering
+- how: Ask the Vini backend lead for the flowType, channel and agentType enum values the list and queue accept
+- status: open
+
+### Q13
+- slot: directions
+- unknown: Whether the spec's status counters and seven-stage sales journey (E28, E30) mean anything for service customers, or need service-specific stages
+- blocks: Directions 2 and 3, and the PRD's service scope
+- who: pm
+- how: Walk the spec with a Vini Service CSM and one service manager persona review before the decide step
+- status: open

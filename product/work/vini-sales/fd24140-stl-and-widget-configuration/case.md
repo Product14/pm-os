@@ -8,6 +8,9 @@ rooftop_slug: superior-auto-inc
 rooftop_name: Superior Auto, INC
 freshdesk_company_id:
 arali_company: Superior Auto, INC
+raised_by: Deepanshu Agarwal
+raised_by_role: csm
+csm: abhijeet.mitra@spyne.ai
 feature:
 outcome:
 prd:
@@ -40,6 +43,14 @@ The rooftop's BDC works website leads the next business day (E8). The dealer wil
 - BDC (named by the VP Marketing in E8): enters and calls website leads the next day. These are the hours STL would take off them.
 - Dealer software development manager (E12, E13): builds the email forward, and will have to key Ava's outcomes into their system by hand until a sync exists.
 
+## Agents affected
+- Sales STL: yes. The opener change lands here. Today lead type is only an on/off gate dimension (`StlConfigDimension = 'source' | 'lead-type'`, `conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:13`; `resolveStlGate` :422) with no opener selection in that file (E36).
+- Sales inbound: unknown. When the customer replies to the first text, which agent carries the conversation, and whether it sees the lead type, is not visible in the graph (Q12). If it does not, a "confirm your appointment" opener could be followed by an appointment push.
+- Sales outbound: unknown. Follow-up uses the same STL service (`isFollowUpEnabled` :123, E36). Per-type follow-up was not asked, but a type-aware opener with a generic follow-up would contradict itself.
+- Sales chat: yes, for the widget half only. SMS-only is a per-team channel switch (E4) on the widget config route (E17). No build. Not touched by the STL opener.
+- Service inbound: no for the opener. The full-value path is a shared surface, though. Appointment and lead writes go through `integrations-backend`, which `conversational-ai-backend` already calls for `/appointments` (`src/api-wrapper/cdk-connect/cdk-connect-api.service.ts:41`, E37) and which feeds `dealer-leads-backend` `/leads/dealer` (E38). New ADF fields and write-back must not change what service agents read (Q11).
+- Service outbound: unknown. The STL gate keys on enterprise and team with no department dimension (E36), so an opener chosen there applies to any team running STL. The graph does not show whether service teams do (Q9).
+
 ## How it works today
 - Website widget: a route exists to update widget config, `conversational-ai-backend:src/call/call-web-call.controller.ts:65` (E17). On 2026-09-29, disabling calling did not push that smartview-config update until engineering stepped in (E3). Ops can now switch call, chat, email or STL per team in Admin Tool > Converse AI > Vini Script > Vini Config (E4). The call option is now off for this rooftop. The dealer has not approved go-live (E11).
 - Email lead intake: forwarded ADF emails are most likely parsed by `integrations-backend:src/email-parsing/email-parser.service.ts:315` (E19). The graph does not show whether a lead type, appointment time or credit-app flag survives parsing.
@@ -49,12 +60,18 @@ The rooftop's BDC works website leads the next business day (E8). The dealer wil
 - The dealer needs three different openers chosen per lead (E1, E5). STL can only turn on or off per lead type or source (E20), and no per-type opener was found (E18). Unless engineering finds one, the gap is a build: a type-aware first message plus a no-PII credit-app script.
 - Lead type must reach STL in the first place. We don't know whether the forwarded email, as parsed (E19), carries "appointment with date, time and store" or "credit application" into the lead record. Spyne staff asked the same question internally on 2026-10-07 (E29) and it was still unanswered on 2026-10-12 (E30, E31).
 - The CSM has already told the dealer this is in progress (E10), with no Jira behind it (E25). That is an expectation gap, and it is widening: on 2026-10-07 the Spyne side escalated that point 1 was "still not picked up" after 9 days (E28), and the last message on 2026-10-12 asks "is this done?" with no product reply in the thread (E31).
+- Shared surface: the STL gate has no department dimension (E36), and the ADF parser feeds the lead store other agents read (E38). A type-aware opener and new parsed fields are scoped to every team running STL, not only this sales team.
 - Widget: no product gap remains for this rooftop (E4); the 2026-10-07 escalation treats point 2 as done (E28). Open items are whether the smartview-config failure (E3) was fixed in code or worked around once, and the dealer's go-ahead (E11).
 
 ## Candidate directions
-1. Configure, no build: start STL on after-hours website inquiries with the standard opener. Have the dealer's forward mark lead type, and set appointment and credit-app types to STL off (E20) until direction 2 exists. Removes the overnight wait on inquiry leads (BDC callback hours, days to first contact) with no risk of pushing a new appointment on someone who already booked one.
-2. Build a lead-type-aware STL opener: parse a type field from the forwarded ADF (E19) and route to three first messages: confirm the appointment, acknowledge the credit app with no PII, or set an appointment (default). Protects show rate on booked online appointments and cuts next-day BDC confirmation calls (cost, staff hours). A Spyne-side idea in the thread goes further, creating the appointment in Spyne from the ADF (E29); the dealer did not ask for that (Q7).
-3. Decline the build for now and close the loop: tell the dealer the type-specific messaging is not scheduled (correcting E10), ship direction 1, and put CRM write-back (E12) ahead of it. The dealer said write-back decides whether STL scales, and without it every overnight conversation costs their staff manual entry time.
+1. Configure, no build: start STL on after-hours website inquiries with the standard opener. Have the dealer's forward mark lead type, and set appointment and credit-app types to STL off (E20) until direction 3 ships. Correct the "working on separate messaging" expectation (E10) with a date. Removes the overnight wait on inquiry leads (BDC callback hours, days to first contact) with no risk of pushing a new appointment on someone who already booked one.
+2. First step, opener only: parse a type field from the forwarded ADF (E19) and route to three first messages: confirm the appointment, acknowledge the credit app with no PII, or set an appointment (default). Protects show rate on booked online appointments and cuts next-day BDC confirmation calls (cost, staff hours). It still leaves every overnight outcome keyed by hand into the dealer's system (E12, E13), which the dealer said decides whether STL scales. A partial fix, not the resolution (E32, E33).
+3. **Full value:** CRM-first, lead-type-aware STL first message, planned now as the resolution (E32, E33). Lead type and appointment details are read from the dealer's CRM or ADF into the lead record, the first message is chosen by type, and the conversation and confirmed or booked appointment are written back to the dealer's own system (E12). Build scope:
+   - Lead type in: `ParsedEmailData` (`integrations-backend:src/email-parsing/email-parser.service.ts:14`, `parseAdf` :315) carries lead type, appointment date, time and store, and a credit-app flag into the lead via `dealer-leads-backend` `/leads/dealer` (E35, E38). Whether any of this survives today is open (Q3).
+   - Opener: STL selects a first message by normalized lead type (`normalizeLeadTypeKey` :396 already exists for the gate) instead of only allowing or blocking it (`resolveStlGate` :422, E36). Per-type opener templates are per-rooftop configuration beside the STL settings (`upsertSpeedToLeadSettings` :47, E36; console `spyne-console-backend:api/controllers/speed-to-lead/create-speed-to-lead.js:29`, E34). The credit-app template carries the no-PII rule (E5).
+   - Write-back: CRM first. This dealer has no API (E12), so the channel is open (Q10). The reply agent must carry the type past the first text (Q12).
+   - Other rooftops: 3 other companies raised adjacent type-aware first-touch jobs on calls (E22), so per-rooftop templates are reusable configuration, not a one-off.
+   P&L: kept appointments already on the board (show rate, front-end gross protected), BDC hours removed for next-day calls and manual entry, no AI credit exposure, and the dealer's full go-live, which direction 2 alone does not unlock (E13, E33).
 
 Widget: no build. Keep the SMS-only config (E4) and get the dealer's go-ahead (E11).
 
@@ -70,8 +87,10 @@ Widget: no build. Keep the SMS-only config (E4) and get the dealer's go-ahead (E
 | Job | SUPPORTED | at least 1 E-id behind the inferred job |
 | Customer context (30 days) | SUPPORTED | at least 1 dealer-side arali E-id dated within 30 days of fetched_arali |
 | Who feels this | SUPPORTED | at least 1 dealer-side E-id with a known role |
+| Agents affected | SUPPORTED | names the impact on both Sales and Service agents (yes, no or unknown for each), with an E-id or code reference |
 | How it works today | SUPPORTED | at least 1 bluebrain E-id or `repo:path:line` reference |
 | Gap | SUPPORTED | at least 1 E-id or code reference |
-| Candidate directions | SUPPORTED | 2 or more directions, with a P&L angle (days, cost, gross, absorption, hours per RO, retention, CSI) |
+| Candidate directions | SUPPORTED | 2 or more directions with a P&L angle, one of them labelled **Full value:** (the path that unlocks the dealer's full value, build scoped) |
 | Frequency | SUPPORTED | a count, backed by at least 1 E-id |
+
 

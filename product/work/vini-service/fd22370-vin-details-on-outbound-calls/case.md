@@ -8,6 +8,9 @@ rooftop_slug: bill-wright-toyota
 rooftop_name: Bill Wright Toyota
 freshdesk_company_id:
 arali_company: Bill Wright Toyota
+raised_by: Sudansh Tiruwa
+raised_by_role: onboarding
+csm:
 feature:
 outcome:
 prd:
@@ -37,6 +40,13 @@ None found in 30 days
 No dealer-side evidence. The voices in the thread are the Spyne onboarding manager and CSM (E1, E21). Spyne reports shoppers returning the missed call are confused (E23), but no dealer staff member is quoted. Inferred: the BDC manager or internet sales manager who works the returned leads.
 
 
+## Agents affected
+Fixed intent: any fix covers both the Sales and the Service agents (E20).
+- Sales outbound: yes. This is the campaign in the ticket. The vehicle of interest is prefetched into the call prompt (`conversational-ai-backend:src/call/dto/call-prompt-variables.dto.ts:59`, E8) and renders empty when the Tekion lead has none (E9), which is what happened on both reference calls (E3, E4).
+- Sales inbound: yes. A returned call gets lead memory only within 3 days and only from the same department (`conversational-ai-backend:src/agents/agents-v2.service.ts:3440`, E10, E11). September fixes for sales callbacks are live but untested here (E12, E15).
+- Service inbound: yes. The same memory query with the department filter serves the service agent (E10, E11), and the service_v2 inbound callback cannot explain prior outbound contact (E16, backlog).
+- Service outbound: unknown. The shared call prompt variables carry vehicle fields (E8), but only the sales_new prompt was checked (E9), and a service outbound vehicle normally comes from the DMS, not the CRM lead. Its summaries would not reach a sales inbound callback under the department filter (E11). Q8.
+
 ## How it works today
 - Outbound call prompts take vehicle of interest (make, model, year, trim, VIN) and a customer activity history as optional variables (`conversational-ai-backend:src/call/dto/call-prompt-variables.dto.ts:59`, E8). The sales_new prompt renders them into an InterestedVehicle block that is empty when the lead has no vehicle (`conversational-ai-backend:src/prompts/base-system-prompts/sales_new/context-data.xml:108`, E9).
 - For the two reference calls, the lead had no vehicle of interest in Spyne. Engineering's account: either the lead has no vehicle in Tekion, or the vehicle was attached after the lead was created and Tekion sends no event for that, because Tekion webhooks are per deal, not per lead (E3, E4, E5).
@@ -49,12 +59,13 @@ No dealer-side evidence. The voices in the thread are the Spyne onboarding manag
 2. Callback context: memory reaches the answering agent only within 3 days and only for the same department (E10, E11). A callback after day 3, or answered by an agent of another department, gets no reason for the call. The September fixes (E12, E15) may close part of this, but the full thread never returns to the callback half: no re-test or verification on this rooftop through 2026-10-14 (E33).
 3. Product was asked to prioritise the Tekion webhook work on 2026-09-24 (E27); the ticket is still open seven weeks after a make-or-break go-live (E25, E32).
 
+4. Shared surface: the callback half sits in the lead memory query used by both the Sales and Service agents (E10, E11), so a fix in one agent alone leaves the other answering "How can I help you?" (E20).
 
 ## Candidate directions
 1. Re-test and close (non-build): replay an outbound plus callback on this rooftop after the September fixes (E12, E15), since nobody has (E33); if the callback now explains the call, answer the onboarding manager and keep only the vehicle half open. Cost: one CSM hour, removes days of ticket age.
-2. Refresh the vehicle of interest right before each outbound sales dial using the existing Tekion lead-vehicles endpoint (E13), which is the polling workaround the thread agreed on 2026-10-14 (E32), instead of waiting for Tekion lead webhooks that have no ETA (E28, E29). Cost removed: BDC re-work on returned calls; no new data agreement if the endpoint is already permitted.
+2. Refresh the vehicle of interest right before each outbound sales dial using the existing Tekion lead-vehicles endpoint (E13), which is the polling workaround the thread agreed on 2026-10-14 (E32), instead of waiting for Tekion lead webhooks that have no ETA (E28, E29). Cost removed: BDC re-work on returned calls; no new data agreement if the endpoint is already permitted. Partial first step: fixes the vehicle half only.
 3. Widen callback memory: match by phone across departments and beyond 3 days for leads with an open outbound attempt, and have the agent state the purpose of the call even when no vehicle is known (E10, E11, E24). Removes the re-qualify cost on every returned call. Or decline the Tekion part until a second rooftop reports it (E18, E31).
-
+4. **Full value:** the agent always knows why the store called and which vehicle, in both agents. Keep the vehicle of interest current from Tekion, by polling now (E13, E32) and by lead-level webhooks when Tekion re-releases them (E27, E28), written to the lead before each dial so the outbound prompt names it (E8, E9). And give every inbound callback, Sales or Service, the prior outbound call's purpose, vehicle and summary regardless of department or the 3-day window (E10, E11, E16). Scope: Tekion poller and webhook handler in integrations-backend (CRM first, Tekion is the lead's system of record here), the lead memory query in conversational-ai-backend, and the service_v2 callback block. Every Tekion rooftop may need the vehicle half (E30) and every outbound campaign rooftop the callback half. Angle: BDC staff time and days to appointment on leads the store already paid for, and keeping a make-or-break account (E25).
 
 ## Frequency
 0 other rooftops raised the same job in the last 90 days (2026-07-17 to 2026-10-15) in tickets (E18) or call and meeting transcripts (E19). 1 adjacent rooftop had a different lookup problem. Inside the thread, Spyne staff flagged that all Tekion rooftops might be affected (E30), but nobody has checked other rooftops (E31). Internally, QA and engineering filed several callback-context bugs in the same period (E15, E16), so the pattern is known even though dealers have not raised it.
@@ -68,8 +79,10 @@ No dealer-side evidence. The voices in the thread are the Spyne onboarding manag
 | Job | SUPPORTED | at least 1 E-id behind the inferred job |
 | Customer context (30 days) | EMPTY | at least 1 dealer-side arali E-id dated within 30 days of fetched_arali |
 | Who feels this | THIN | at least 1 dealer-side E-id with a known role |
+| Agents affected | SUPPORTED | names the impact on both Sales and Service agents (yes, no or unknown for each), with an E-id or code reference |
 | How it works today | SUPPORTED | at least 1 bluebrain E-id or `repo:path:line` reference |
 | Gap | SUPPORTED | at least 1 E-id or code reference |
-| Candidate directions | SUPPORTED | 2 or more directions, with a P&L angle (days, cost, gross, absorption, hours per RO, retention, CSI) |
+| Candidate directions | SUPPORTED | 2 or more directions with a P&L angle, one of them labelled **Full value:** (the path that unlocks the dealer's full value, build scoped) |
 | Frequency | SUPPORTED | a count, backed by at least 1 E-id |
+
 

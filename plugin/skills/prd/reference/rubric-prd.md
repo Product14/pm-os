@@ -1,9 +1,9 @@
 ---
 rubric: prd
-version: 1
+version: 2
 ---
 
-# PRD rubric v1 (frozen; change only with a version bump and a passing eval)
+# PRD rubric v2 (frozen; change only with a version bump and a passing eval)
 
 Every reviewer scores these 1 to 5, plus their own persona "Review lens" criteria.
 
@@ -16,6 +16,7 @@ Every reviewer scores these 1 to 5, plus their own persona "Review lens" criteri
 | Measurable | Each goal names where it is measured (table, column or event) and a baseline or "unknown" | Metrics with no source, or a metric that contradicts a `context/metrics` definition or trap |
 | Dependencies | DMS, CRM and integration reads and writes listed, with what is available today and an owner for what is not | Missing dependencies that will block the build |
 | Rollout | Pilot by rooftop type, a flag or config, how it is watched, how it is rolled back | No rollout or rollback |
+| Every agent | Requirements and acceptance criteria cover each agent in case.md > Agents affected | A shared change specified for one agent only |
 | Dealer reality | A real person in each panel seat could run their day with this | Breaks the floor, the drive or the BDC in a way a dealer would notice in the first week |
 
 **Blocking for every reviewer:**

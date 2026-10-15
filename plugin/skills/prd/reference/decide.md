@@ -21,6 +21,8 @@ One subagent with `case.md`, `evidence.md`, `context/INDEX.md` (decisions lines)
 3. **Who else has this job:** <count of rooftops, last 90 days, same job not same words> [E.. search evidence]. Zero or unknown: say so; it is a question.
 4. **Smallest shared building block:** <a setting, policy, template, integration field or workflow step that serves the job for every rooftop that has it> [code ref or E..]
 5. **What varies per store:** <each difference, written as configuration on the building block>. Never a code branch for one rooftop.
+6. **Every agent it lands on:** <from case.md > Agents affected: Sales (inbound, outbound, STL, chat) and Service (inbound, outbound), yes, no or unknown>. A shared surface or behaviour is designed for every agent that uses it, not only the one that asked.
+7. **Full value:** <from case.md > Candidate directions, the direction labelled Full value>. Even when the outcome is a cheaper first step, the decision names the full-value path, whether it is planned, and when. Leaving it out makes the resolution incomplete.
 
 ## As asked vs as solved
 | Customer asked | We would build | Same, generalised, or different | Why |

@@ -14,7 +14,8 @@ Read `case-template.md` (path given to you) before writing anything. Follow it e
 
 ## 1. The ticket
 
-- `mcp__plugin_pm-os_freshdesk__get_ticket` with the id. Record `updated_at` as `ticket_updated_at`.
+- `mcp__plugin_pm-os_freshdesk__get_ticket` with the id. Record `updated_at` as `ticket_updated_at`. Read `description_text` first: it is the most important part of the ticket. Check `conversation_count` against the conversations returned.
+- Who raised it: `requester`. If it is a Spyne agent, write their name to `raised_by` and their function to `raised_by_role`, and `custom_fields.cf_csm_name` to `csm`. These are the people the PM may need to message or comment to. If the requester is a dealer contact, write `dealer (<role>)` and never their name.
 - The rooftop: Freshdesk `company_id` is usually empty on these tickets. Use `custom_fields.cf_enterprise_name` (format `<name> - <enterprise id>`) and `cf_team_id`. Call `get_company` only when `company_id` is set.
 - Area check: the area comes from `cf_ticket_pod`. If the subject, `cf_voc_l1` or the thread contradicts it (for example a Service pod on an outbound sales call), keep the pod's area, set it in the summary line `ask:` as `(area conflict: <why>)`, and write a question with `slot: ask`, `who: pm`.
 - Separate the dealer's messages (incoming, from the requester) from Spyne's replies and private notes. Private notes are Spyne-side context, never the customer's words.
@@ -34,6 +35,10 @@ Read `case-template.md` (path given to you) before writing anything. Follow it e
 - `get_repo` on the top 1 or 2 candidates, then `trace_handler` or `find_symbol` on the specific flow.
 - Write what the product does today for this exact situation, citing `repo:path:line`. Behaviour, not architecture. If the graph has nothing relevant, say "Not found". An empty slot becomes a question for engineering, which is fine.
 - Blue Brain cards with low confidence or marked degraded: say so in the evidence text.
+
+## 3b. Agents affected
+
+The ticket usually names one agent. Check the others. Use Blue Brain (`who_calls`, `trace_handler`) and the area cards to see whether the screen, tool, prompt or integration involved is shared across Sales (inbound, outbound, STL, chat) and Service (inbound, outbound). Fill the Agents affected slot with yes, no or unknown for each, and the reason. When the ticket comes from one department but the change would land on a shared surface, say so in Gap too.
 
 ## 4. Prior work
 

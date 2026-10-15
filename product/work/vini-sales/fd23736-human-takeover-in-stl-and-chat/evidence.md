@@ -188,3 +188,24 @@
 - side: spyne
 - role: unknown
 - text: Second internal chase to engineering: "Kindly check and share an update on this". Last message on the ticket; no revised ETA given.
+
+### E28
+- source: bluebrain:conversational-ai-backend:src/sms/sms.service.ts:2945
+- date: 2026-10-15
+- side: system
+- role: engineering
+- text: The only `handover` route in conversational-ai-backend is declared in `src/sms/sms.controller.ts`; the takeover method `toggleHumanHandoverLocked` is indexed at this line (differs from the 2026-10-06 clone in E11). trace_handler resolved no helpers, so no department or agent-type condition was confirmed either way.
+
+### E29
+- source: bluebrain:conversational-ai-backend:src/vapi/vapi-tools.controller.ts:479
+- date: 2026-10-15
+- side: system
+- role: engineering
+- text: Voice transfers to a human run through a separate live-call tool (`communicationTransferCallV3`, tool class at `src/tools/definitions/communication/communication-transfer-call-v3.tool.ts:135`), not through the SMS takeover flag or aiMode.
+
+### E30
+- source: search:find_prior_art:human takeover handover of SMS or chat for service agent, and voice call transfer
+- date: 2026-10-15
+- side: system
+- role: engineering
+- text: Top match chat-service, whose card describes chat between website visitors and sales agents; converse-ai-widget card lists service scheduling among widget conversations. No service-specific takeover path surfaced.

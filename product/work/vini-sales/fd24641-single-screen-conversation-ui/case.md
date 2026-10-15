@@ -8,6 +8,9 @@ rooftop_slug: bob-johnson-auto-group
 rooftop_name: Bob Johnson Auto Group
 freshdesk_company_id:
 arali_company: Bob Johnson Automotive Group
+raised_by: Tushar Srivastava
+raised_by_role: csm
+csm: tushar.srivastava@spyne.ai
 feature:
 outcome:
 prd:
@@ -21,52 +24,65 @@ fetched_code: 2026-10-15
 # Salespeople have to cross-check three screens to find and close the customer replies Vini left for them
 
 ## Ask
-The ticket was raised by the account's Vini CSM on the dealer's behalf (Internal, Enhancement). Its subject is "Streamline-lining Conversation UI - Single Screen for Dealership Operations" (E1). The description, written by the CSM, asks for "a central screen where the dealership can operate from" (E27) and specifies it: five status counters (Needs a human, Customer replied, AI active, On track, AI paused or done), a list sorted by what needs a person first, and a detail panel with "Why this needs you", one Next action, and Take over, Assign, Mark resolved (E28, E29). It adds a seven-stage journey board where CRM status and human activity override the AI schedule (E30), no Customers section, action items inside the conversation (E32), and text notifications routed by rep assignment (E33). It is built on a screenshot and an Arali meeting this case has not seen (E36). The CSM then asked for an ETA (E2). Spyne support moved it from Urgent to Medium because it is an enhancement (E3). Spyne support also flagged it as "an overhaul for the current UI of Spyne Console" that needs product sign-off (E4).
+Raised by the account's Vini CSM on the dealer's behalf (Internal, Enhancement): "Single Screen for Dealership Operations" (E1), "a central screen where the dealership can operate from" (E27). The CSM's spec: a command board of five status counters and a needs-a-person list with Take over, Assign, Mark resolved (E28, E29); a seven-stage journey board (E30); no Customers section (E32); alerts routed by rep (E33). Its screenshot and source meeting are unseen (E36). The CSM asked for an ETA (E2); support moved it to Medium (E3) and flagged it as a console overhaul needing product sign-off (E4).
 
-In the dealer's own words, the used car manager wants "to only stay in one screen rather than have to cross reference multiple" (E5). He described the screen he expects: a view that says "unanswered", where he clicks his own unanswered items and lands on a customer page with "all of the stuff connected" (E7). He also asked for a "customers unanswered" line on the Conversations page (E11). Per the CSM, a dealer contact wants "unanswered phone call or unanswered message" on opening (E31), which extends "unanswered" from texts to missed calls.
+In the dealer's words, the used car manager wants "to only stay in one screen rather than have to cross reference multiple" (E5): a view that says "unanswered", where he clicks his own and lands on a customer page with "all of the stuff connected" (E7), or a "customers unanswered" line on Conversations (E11). Per the CSM, a dealer contact wants "unanswered phone call or unanswered message" (E31).
 
-(area conflict: Freshdesk pod is "Vini - Platform", not Vini Sales. The product field is Sales and every quote is about sales leads. Kept as vini-sales; see questions.)
+(area conflict: Freshdesk pod is "Vini - Platform". Product field is Sales and every quote is about sales leads. Kept as vini-sales; the PM notes the surface is shared with service (E37).)
 
 ## Job
-The used car manager is about to add two salespeople as console members. He says he already has "trouble with them following up" (E6). The job is to get salespeople to answer the customer replies Vini creates, quickly and without switching screens. Otherwise those leads go cold in a tool the sales floor does not open. He puts the volume at about 600 leads a month (dealer-stated, not audited) (E10). He says the current flow, action items then conversations then the CRM "just to close a record", is one "there's no way that these guys would do" (E10).
+He is adding two salespeople as console members and already has "trouble with them following up" (E6). The job: salespeople answer the replies Vini creates, fast, without switching screens, so AI-engaged leads do not go cold in a tool the floor does not open (E16). About 600 leads a month (dealer-stated, not audited) (E10); action items, then conversations, then the CRM "just to close a record" is a flow "there's no way that these guys would do" (E10).
 
-P&L angle (inferred from E6, E10, E16): lost gross on AI-engaged leads that nobody follows up, plus manager time spent cross-checking. He describes Spyne as a second CRM that the floor does not watch (E16). No figure for response time or lost deals is available.
+P&L angle (inferred from E6, E10, E16): lost gross on engaged leads nobody follows up, plus manager cross-checking time. No response-time or lost-deal figure is available.
 
-The dealer also said he does not need anything built for him: "I'm just telling you workflow" (E8). The CSM's description goes the other way: a full spec whose acceptance test is that a manager understands the opportunity "without opening Customers, Action Items or the CRM" (E35). The description adds two jobs the meetings did not show: route alerts only to the assigned rep (E33), and close the loop so VinSolutions shows the outcome with no duplicate appointment and the action item closes itself (E34). The one concrete defect he reported is an action item missing from the Customers record (E9).
+The dealer said "I'm just telling you workflow" (E8); the CSM's acceptance test is one screen "without opening Customers, Action Items or the CRM" (E35). The one concrete defect: an action item missing from the Customers record (E9).
 
 ## Customer context (30 days)
-- 2026-09-15 meeting: the 600-leads-a-month volume and the "no way these guys would do that" objection to moving between action items, conversations and the CRM (E10).
-- 2026-10-01 meeting: he screen-shared his workflow. He wants one screen (E5) and an "unanswered" view by person (E7). He is adding two salespeople (E6). He says no build is needed (E8). He found an action item missing on the Customers record (E9).
-- 2026-10-06 meeting: he asked for a "customers unanswered" line (E11). The CSM said the Customers section would be removed and everything would sit under Conversations (E12).
-- 2026-10-13 meeting, after the ticket: he says he lives in Conversations "because that's where the meat is". He still keeps Action Items open for its filtering, plus two CRM tabs and about three console tabs (E13). The CSM was onboarding new dealer users onto Conversations as the "go to place" (E14).
-- No connection: the Studio photo-sequence and feed tickets, invoice threads, and the 2026-09-15 sold-lead STL ticket. That last one is about closing records, but it is an STL defect, not this ask.
+- 2026-09-15: 600 leads a month; "no way these guys would do that" (E10).
+- 2026-10-01: screen-shared workflow; one screen (E5), per-person unanswered (E7), two new salespeople (E6), no build needed (E8), missing action item on Customers (E9).
+- 2026-10-06: asked for "customers unanswered" (E11); CSM said Customers would be removed (E12).
+- 2026-10-13: lives in Conversations but keeps Action Items, two CRM tabs and three console tabs open (E13); CSM onboarding new users there (E14). Earlier: E15, E16.
+- No connection: Studio photo and feed tickets, invoices, the 2026-09-15 sold-lead STL ticket.
 
 ## Who feels this
-- Used car manager, who runs internet-lead follow-up for this store and assigns leads (E5, E6, E13).
-- Salespeople being added as console members. The manager speaks for them; none have spoken directly (E6, E10).
+- Used car manager, who runs internet-lead follow-up and assigns leads (E5, E6, E13).
+- Salespeople being added as console members; the manager speaks for them (E6, E10).
+- Service advisors, service managers and service BDC agents who work service conversations and action items on the same pages (inferred from E37, E38, E39; no service-side dealer voice at this rooftop).
+
+## Agents affected
+The Conversations, Action Items and Customers pages and the Unread and Needs Attention filters are one console surface switched by department (E39), over one conversations list with a serviceType filter (E17) and one action-item queue filtered by serviceType and agentType (E38). Leads are typed sales or service at ingest (E40).
+- Sales inbound: yes. The requesting flow (E5, E17).
+- Sales outbound: yes. Same list, separated only by the flowType filter (E17, E41).
+- Sales STL: yes (inferred). Action items are one queue across agentType (E38); whether STL threads appear in the conversations list is unconfirmed.
+- Sales chat: unknown. The list has a channel filter (E17); chat as a value is unconfirmed.
+- Service inbound: yes. Same pages and endpoints with serviceType=service (E17, E38, E39, E40).
+- Service outbound: yes (inferred). Same serviceType split; no service outbound flow traced.
+- Per-assignee "unanswered" for service advisors: applies if service conversations carry an assignee. Action items do (assignedTo, E38); the conversations list has no assignee filter for either department (E41).
 
 ## How it works today
-- The team conversations list can be filtered by department, channel, unread and automated flow. It cannot be filtered by assigned salesperson (`conversational-ai-backend:src/customers/customers.controller.ts:16`, E17).
-- Unread is tracked per conversation and mirrored to the lead in crm-core. "Unread only" is a working list filter today (`conversational-ai-backend:src/customers/customers.service.ts:1101`, E19).
-- Opening a customer's conversations returns up to 5 open action items for that lead. The CSM's "action item on the right-hand side" claim is consistent with this (`conversational-ai-backend:src/customers/customers.service.ts:686`, E18).
-- A Needs Attention quick filter with a live count is live on the Conversations page (E22). The backend index behind it is keyed to human-transfer phase, which suggests it lists handoffs, not every unanswered customer reply (inferred, E20).
-- The Customers page is a separate surface. It did not show an action item that Conversations showed (E9). Moving the Customers tab is in the backlog (E24).
-- The console frontend for these screens was not found in Blue Brain. The card it has for the console frontend has low verification (E21).
+- Team conversations list: filters for department, channel, unread and flow; no assignee filter (`conversational-ai-backend:src/customers/customers.controller.ts:16`, E17, E41).
+- Unread is per conversation, mirrored to the crm-core lead; "Unread only" works (`conversational-ai-backend:src/customers/customers.service.ts:1101`, E19).
+- Opening a customer returns up to 5 open action items (`conversational-ai-backend:src/customers/customers.service.ts:686`, E18).
+- Action items: one team queue with assignedTo, serviceType, agentType, pastSla filters (`conversational-ai-backend:src/action-items/action-items.controller.ts:59`, E38).
+- Needs Attention quick filter with a live count is live (E22); its index is keyed to human-transfer phase, so it likely lists handoffs, not every unanswered reply (inferred, E20).
+- Customers is a separate page that missed an action item Conversations showed (E9); moving it is backlog (E24).
+- Console frontend: `spyne-console-microfrontends:apps/converse-ai`, with one department switch (E39). The earlier console card had low verification (E21).
 
 ## Gap
-- The dealer wants one queue: "my unanswered customers", with the action item and lead context on the same page (E7, E11). Today he can filter unread conversations, but not by assignee (E17). Needs Attention appears to cover handoffs, not all unanswered replies (E20). So salespeople still need Action Items for "what do I owe" and the CRM for record status (E13).
-- Two Spyne pages show overlapping customer data that does not agree. The Customers record lacked an action item that Conversations had (E9). The CSM's fix, retiring Customers (E12), is a backlog item, not shipped (E24).
-- The ticket frames this as a console overhaul (E1, E4), and the description confirms it is a CSM-authored two-board redesign (E28, E30). The dealer framed it as workflow feedback and said no build is needed (E8). The two sources contradict each other on scope; whether to treat it as an overhaul depends on which framing the dealer actually signs up to (see questions).
-- The description adds requirements the case had not tested against the code: missed calls in the unanswered count (E31), notifications routed by assignee (E33), and takeover pausing the AI, VinSolutions write-back without a duplicate appointment, and auto-closing action items (E34). Which of these already work is not established; per-assignee routing depends on the same assignee field as the unanswered view (E17).
-- A broader console redesign already exists as the Console v2 epic, still in backlog (E23).
+- The dealer wants one "my unanswered customers" queue with action item and lead context on one page (E7, E11). Unread can be filtered but not by assignee (E17, E41); Needs Attention appears to cover handoffs only (E20). So the floor still needs Action Items and the CRM (E13).
+- The change lands on a shared surface. The same pages, list and action-item queue serve service departments (E37, E38, E39, E40). A sales-only design (sales journey stages, VinSolutions status, salesperson routing, removing Customers) would break or confuse service advisors unless built department-aware (E30, E32, E34).
+- Customers and Conversations disagree on action items (E9); the Customers retirement is backlog (E12, E24).
+- Scope conflict: CSM-authored two-board overhaul (E1, E4, E28, E30) versus the dealer's "no build needed" (E8).
+- Untested spec items: missed calls in unanswered (E31), assignee-routed alerts (E33), takeover pause, CRM write-back, auto-closing action items (E34). Assignee routing needs the same field as the unanswered view (E17, E38).
+- Console v2 epic already covers a broader redesign, in backlog (E23).
 
 ## Candidate directions
-1. No build: set this rooftop up on Conversations with the Unread and Needs Attention filters and fix the missing-action-item defect (E9). Train the two salespeople on that one page. Removes manager cross-checking time and costs nothing to build.
-2. Small build: a "My unanswered" view on Conversations, meaning unread plus assigned salesperson, with a live count, as the landing page for members. Fewer days a customer reply sits unanswered and less lost gross on engaged leads. Needs the assigned salesperson on the lead (see questions); the same field would let text alerts go only to the assigned rep, as the description asks (E33).
-3. Decline the single-screen overhaul as a one-rooftop request and fold it into Console v2 (E23) and the Customers-tab retirement (E24). Consider pushing unanswered replies into the dealer's CRM as tasks so the floor never leaves it (E16). Avoids the cost of a one-off redesign and keeps Spyne above the CRM.
+1. No build: set this rooftop up on Conversations with Unread and Needs Attention, fix the missing-action-item defect (E9), train the two salespeople on one page. Removes manager cross-checking time at no build cost. Service: no change, so no risk; the defect fix also helps service teams on the same Customers page.
+2. **Full value:** a department-aware "My unanswered" queue on Conversations: unread customer replies and missed calls, routed by assignee, with a live count and the open action items inline, as the landing view for sales and service members. Fewer days a reply sits unanswered, less lost gross on sales leads and fewer unanswered service customers who never become an RO (absorption, inferred). Build: add an assignee filter to the team conversations list (action items already carry assignedTo, E38), source the assignee from the CRM for sales and the DMS or scheduler for service advisors, and drive alerts from the same field (E33). Reusable by every rooftop on either agent.
+3. Decline the single-screen overhaul as a one-rooftop request; fold it into Console v2 (E23) and the Customers-tab retirement (E24), with a brief that both departments use the surface. Consider pushing unanswered replies into the dealer's CRM as tasks (E16). Avoids one-off redesign cost. Service: Console v2 must then specify service stages and statuses too, or ship a sales-only board that service ignores.
 
 ## Frequency
-0 other rooftops raised the same single-screen ask on the dealer side in the last 90 days (E25, E26). 2 other companies raised the adjacent job: dealer staff want AI texts visible where they already work (E25). Spyne staff told at least 3 other rooftops in demos that Conversations is "the one place" (E25). That suggests the pain is common even if the ask is not.
+0 other rooftops raised the same single-screen ask on the dealer side in 90 days (E25, E26). 2 other companies raised the adjacent job of seeing AI texts where staff already work (E25); Spyne staff positioned Conversations as "the one place" to at least 3 others (E25). The pain looks common even if the ask is not.
 
 ## Slot status
 
@@ -76,8 +92,9 @@ The dealer also said he does not need anything built for him: "I'm just telling 
 | Job | SUPPORTED | at least 1 E-id behind the inferred job |
 | Customer context (30 days) | SUPPORTED | at least 1 dealer-side arali E-id dated within 30 days of fetched_arali |
 | Who feels this | SUPPORTED | at least 1 dealer-side E-id with a known role |
+| Agents affected | SUPPORTED | names the impact on both Sales and Service agents (yes, no or unknown for each), with an E-id or code reference |
 | How it works today | SUPPORTED | at least 1 bluebrain E-id or `repo:path:line` reference |
 | Gap | SUPPORTED | at least 1 E-id or code reference |
-| Candidate directions | SUPPORTED | 2 or more directions, with a P&L angle (days, cost, gross, absorption, hours per RO, retention, CSI) |
+| Candidate directions | SUPPORTED | 2 or more directions with a P&L angle, one of them labelled **Full value:** (the path that unlocks the dealer's full value, build scoped) |
 | Frequency | SUPPORTED | a count, backed by at least 1 E-id |
 

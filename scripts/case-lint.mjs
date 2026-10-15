@@ -20,9 +20,10 @@ export const SLOTS = [
   ["job", "Job", "at least 1 E-id behind the inferred job"],
   ["context_30d", "Customer context (30 days)", "at least 1 dealer-side arali E-id dated within 30 days of fetched_arali"],
   ["who_feels_this", "Who feels this", "at least 1 dealer-side E-id with a known role"],
+  ["agents_affected", "Agents affected", "names the impact on both Sales and Service agents (yes, no or unknown for each), with an E-id or code reference"],
   ["how_it_works_today", "How it works today", "at least 1 bluebrain E-id or `repo:path:line` reference"],
   ["gap", "Gap", "at least 1 E-id or code reference"],
-  ["directions", "Candidate directions", "2 or more directions, with a P&L angle (days, cost, gross, absorption, hours per RO, retention, CSI)"],
+  ["directions", "Candidate directions", "2 or more directions with a P&L angle, one of them labelled **Full value:** (the path that unlocks the dealer's full value, build scoped)"],
   ["frequency", "Frequency", "a count, backed by at least 1 E-id"],
 ];
 const CASE_FIELDS = ["id", "area", "stage"];
@@ -80,8 +81,9 @@ function judge(key, text, ev, meta) {
     case "gap": return ids.length || CODE_REF.test(text) ? "SUPPORTED" : "THIN";
     case "directions": {
       const items = text.split("\n").filter((l) => /^\s*(\d+[.)]|[-*])\s+\S/.test(l) && !/^\s{2,}/.test(l));
-      return items.length >= 2 && PNL.test(text) ? "SUPPORTED" : "THIN";
+      return items.length >= 2 && PNL.test(text) && /\*\*Full value:\*\*/i.test(text) ? "SUPPORTED" : "THIN";
     }
+    case "agents_affected": return /sales/i.test(text) && /service/i.test(text) && (ids.length || CODE_REF.test(text)) ? "SUPPORTED" : "THIN";
     case "frequency": return /\d/.test(text) && ids.length ? "SUPPORTED" : "THIN";
     default: return ids.length ? "SUPPORTED" : "THIN";
   }

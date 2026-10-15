@@ -15,6 +15,9 @@ rooftop_slug: <kebab-case rooftop name>
 rooftop_name: <rooftop name as in Freshdesk>
 freshdesk_company_id: <id>
 arali_company: <company name as matched in Arali>
+raised_by: <Spyne staff name from get_ticket requester; for a dealer contact write "dealer (<role>)", never their name>
+raised_by_role: csm | onboarding | support | sales | dealer | unknown
+csm: <custom_fields.cf_csm_name, a spyne.ai email, or blank>
 feature: <leave blank; the decide step fills it>
 outcome: <leave blank>
 prd: <leave blank>
@@ -39,6 +42,9 @@ What this rooftop said in the last 30 days that connects to the ask: calls, meet
 ## Who feels this
 The department role or roles who feel the problem (BDC manager, service manager, service advisor, general sales manager, GM), with the E-id that shows it.
 
+## Agents affected
+The ticket names one agent, but the surface or behaviour is often shared. For each of Sales (inbound, outbound, STL, chat) and Service (inbound, outbound), say yes, no or unknown, and why, with a code reference or E-id. Example: a Conversations console change asked for by a sales manager also changes what the service team sees. Shared impact is scope, not an afterthought: the decide step and the PRD must cover it.
+
 ## How it works today
 How the product behaves today for this exact situation, from the code graph. Every behaviour claim cites `repo:path:line` or a bluebrain E-id. If the code research found nothing, write "Not found" and nothing else.
 
@@ -46,7 +52,9 @@ How the product behaves today for this exact situation, from the code graph. Eve
 The difference between what the job needs and what the product does today, citing the E-ids and code references above.
 
 ## Candidate directions
-2 or 3 numbered directions, each one line, each with its dealer P&L angle (days removed, cost removed, gross, absorption). At least one direction must be a non-build option (configuration, enablement, a process change, or "decline because...").
+3 or 4 numbered directions, each with its dealer P&L angle (days removed, cost removed, gross, absorption). Include:
+- at least one non-build option (configuration, enablement, a process change, or "decline because...")
+- exactly one labelled **Full value:**, the path that unlocks the dealer's full value or full go-live, even when it needs a build. Scope the build in one or two lines: what has to change, which system it touches (CRM first, since the CRM is where the dealer's floor works), and whether other rooftops would use it. A cheap partial fix is fine as a first step, but leaving out the full-value path makes the resolution incomplete.
 
 ## Frequency
 How many other rooftops raised the same job in the last 90 days, with the E-id of the search that found them. Give the count, not names.

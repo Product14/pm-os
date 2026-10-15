@@ -216,3 +216,52 @@
 - side: spyne
 - role: unknown
 - text: "Team, is this done?" (last message; no product-side reply anywhere in the 17-message thread)
+
+### E32
+- source: pm:2026-10-15
+- date: 2026-10-15
+- side: pm
+- role: unknown
+- text: "There should be a direction that expands on the third point, prioritises the CRM, and scopes the changes needed to build the lead-type-aware first message for STL (speed to lead)."
+
+### E33
+- source: pm:2026-10-15
+- date: 2026-10-15
+- side: pm
+- role: unknown
+- text: "That unlocks the full value for this dealership and maybe others. If we do not plan for it now, the ticket resolution is incomplete and it will never unlock the full go-live for this dealership."
+
+### E34
+- source: bluebrain:spyne-console-backend:api/controllers/speed-to-lead/create-speed-to-lead.js:29
+- date: 2026-10-15
+- side: system
+- role: engineering
+- text: Console action speed-to-lead/create-speed-to-lead is the only symbol matching "speed-to-lead" outside conversational-ai-backend; the likely console surface for per-team STL settings.
+
+### E35
+- source: bluebrain:integrations-backend:src/email-parsing/email-parser.service.ts:14
+- date: 2026-10-15
+- side: system
+- role: engineering
+- text: interface ParsedEmailData is declared here. trace_handler on the file found no named helpers and no datastore writes, so which ADF fields it keeps (lead type, appointment time, credit-app flag) is not visible from the graph.
+
+### E36
+- source: bluebrain:conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:13
+- date: 2026-10-15
+- side: system
+- role: engineering
+- text: StlConfigDimension = 'source' | 'lead-type' (:13). The file holds gates only: upsertSpeedToLeadSettings :47, isFollowUpEnabled :123, normalizeLeadTypeKey :396, isAlwaysAllowStlLead :406, resolveStlGate :422. All keyed on enterpriseId and teamId; no department dimension and no opener or template symbol.
+
+### E37
+- source: bluebrain:conversational-ai-backend:src/api-wrapper/cdk-connect/cdk-connect-api.service.ts:41
+- date: 2026-10-15
+- side: system
+- role: engineering
+- text: who_calls: conversational-ai-backend calls integrations-backend /appointments here, and reads INTEGRATIONS_BASE_URL in the STL console-call spec (:1237). The appointment write path is shared integration plumbing, not STL-only.
+
+### E38
+- source: bluebrain:integrations-backend:src/webhook/services/internal-api-loader.service.ts:134
+- date: 2026-10-15
+- side: system
+- role: engineering
+- text: who_calls: integrations-backend posts leads to dealer-leads-backend /leads/dealer here and depends on crm-core-service. Parsed email leads land in the shared lead store other agents read.

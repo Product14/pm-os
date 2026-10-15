@@ -71,3 +71,19 @@
 - who: engineering
 - how: PM asks the 5165 assignee in Jira or the Vini engineering channel for status and a date, then the support specialist updates the CSM on the ticket.
 - status: open
+
+### Q10
+- slot: agents_affected
+- unknown: Does the SMS human-takeover path (handover route, lead flag, task skip) also run for Service agent SMS (inbound and appointment-reminder outbound), and does chat-service handover serve service conversations?
+- blocks: whether RETCONVAI-5165 and the full-value direction must cover service SMS and service web chat, and who the CRM note is written for
+- who: engineering
+- how: Ask the RETCONVAI-5165 owner to check `toggleHumanHandoverLocked` and the task-skip in the sequence orchestrator for any agentType or department condition, and whether chat-service sessions carry a service agent type.
+- status: open
+
+### Q11
+- slot: directions
+- unknown: Does the DriveCentric integration expose rep activity on a lead (outbound text, call, note) that Spyne may read, and how fresh is it?
+- blocks: the CRM activity-read half of the full-value direction (3); without it Vini cannot pause for reps who never use the Console
+- who: engineering
+- how: Integrations engineer checks the DriveCentric API scope Spyne holds today; if activity is not in scope, PM raises it with the DriveCentric partner contact.
+- status: open
