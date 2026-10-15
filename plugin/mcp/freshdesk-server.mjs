@@ -43,8 +43,8 @@ serve({
       run: async ({ ticket_id }) => {
         const t = await call("GET", `/tickets/${Number(ticket_id)}?include=conversations`);
         return {
-          id: t.id, subject: t.subject, status: t.status, priority: t.priority, type: t.type, tags: t.tags,
-          group_id: t.group_id, responder_id: t.responder_id, custom_fields: t.custom_fields,
+          id: t.id, subject: t.subject, description_text: t.description_text?.slice(0, 4000), status: t.status, priority: t.priority, type: t.type, tags: t.tags,
+          group_id: t.group_id, responder_id: t.responder_id, requester_id: t.requester_id, company_id: t.company_id, custom_fields: t.custom_fields,
           created_at: t.created_at, updated_at: t.updated_at,
           conversations: (t.conversations || []).map((c) => ({ private: c.private, incoming: c.incoming, created_at: c.created_at, body_text: c.body_text?.slice(0, 2000) })),
         };
