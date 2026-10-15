@@ -49,13 +49,26 @@
   "freshdesk": {
     "queue": {
       "status_label": "Waiting on Product",
-      "status_id": null,
-      "area_field": null,
+      "status_id": 7,
+      "group_label": "Vini",
+      "group_id": 1070000392102,
+      "query": "status:7 AND group_id:1070000392102",
+      "area_field": "cf_ticket_pod",
       "area_values": {
-        "vini-sales": null,
-        "vini-service": null
+        "vini-sales": [
+          "Vini - Sales Inbound",
+          "Vini - Sales Outbound",
+          "Vini - Platform",
+          "Vini - Smartview",
+          "Vini - Integration"
+        ],
+        "vini-service": [
+          "Vini - Service Inbound",
+          "Vini - Service Outbound"
+        ]
       },
-      "note": "Discovered by /pm-os:triage via list_ticket_fields on first run, confirmed by the PM."
+      "rooftop_field": "cf_enterprise_name",
+      "note": "Confirmed by the PM 2026-10-15. Freshdesk company_id is empty on these tickets; the rooftop comes from cf_enterprise_name (format '<name> - <enterprise id>') and cf_team_id. Area fields are filled inconsistently: when subject or cf_voc_l1 contradicts the pod, flag it at Gate 1."
     }
   },
   "jira": {
