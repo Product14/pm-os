@@ -38,15 +38,30 @@ serve({
     },
     {
       name: "get_ticket",
-      description: "Read one Freshdesk ticket with its fields (status, priority, tags, custom fields) and conversation, newest last.",
+      description: "Read one Freshdesk ticket: its fields (status, priority, tags, custom fields), its description, and every conversation entry (replies and private notes), oldest first. Long bodies are cut at 4,000 characters and flagged.",
       inputSchema: { type: "object", properties: { ticket_id: { type: "integer", description: "Numeric Freshdesk ticket id" } }, required: ["ticket_id"], additionalProperties: false },
       run: async ({ ticket_id }) => {
-        const t = await call("GET", `/tickets/${Number(ticket_id)}?include=conversations`);
+        const id = Number(ticket_id);
+        const t = await call("GET", `/tickets/${id}`);
+        // include=conversations caps at 10 entries, so page the conversations endpoint instead.
+        const convs = [];
+        for (let page = 1; page <= 10; page++) {
+          const batch = await call("GET", `/tickets/${id}/conversations?per_page=100&page=${page}`);
+          convs.push(...batch);
+          if (batch.length < 100) break;
+        }
+        const cut = (s) => (s && s.length > 4000 ? { text: s.slice(0, 4000), truncated: true } : { text: s || "", truncated: false });
+        const desc = cut(t.description_text);
         return {
-          id: t.id, subject: t.subject, description_text: t.description_text?.slice(0, 4000), status: t.status, priority: t.priority, type: t.type, tags: t.tags,
+          id: t.id, subject: t.subject, description_text: desc.text, description_truncated: desc.truncated,
+          status: t.status, priority: t.priority, type: t.type, tags: t.tags,
           group_id: t.group_id, responder_id: t.responder_id, requester_id: t.requester_id, company_id: t.company_id, custom_fields: t.custom_fields,
           created_at: t.created_at, updated_at: t.updated_at,
-          conversations: (t.conversations || []).map((c) => ({ private: c.private, incoming: c.incoming, created_at: c.created_at, body_text: c.body_text?.slice(0, 2000) })),
+          conversation_count: convs.length,
+          conversations: convs.map((c) => {
+            const b = cut(c.body_text);
+            return { private: c.private, incoming: c.incoming, source: c.source, created_at: c.created_at, body_text: b.text, truncated: b.truncated };
+          }),
         };
       },
     },
