@@ -15,13 +15,14 @@ Read `case-template.md` (path given to you) before writing anything. Follow it e
 ## 1. The ticket
 
 - `mcp__plugin_pm-os_freshdesk__get_ticket` with the id. Record `updated_at` as `ticket_updated_at`.
-- `mcp__plugin_pm-os_freshdesk__get_company` with its `company_id` for the rooftop name.
+- The rooftop: Freshdesk `company_id` is usually empty on these tickets. Use `custom_fields.cf_enterprise_name` (format `<name> - <enterprise id>`) and `cf_team_id`. Call `get_company` only when `company_id` is set.
+- Area check: the area comes from `cf_ticket_pod`. If the subject, `cf_voc_l1` or the thread contradicts it (for example a Service pod on an outbound sales call), keep the pod's area, set it in the summary line `ask:` as `(area conflict: <why>)`, and write a question with `slot: ask`, `who: pm`.
 - Separate the dealer's messages (incoming, from the requester) from Spyne's replies and private notes. Private notes are Spyne-side context, never the customer's words.
 - Write the ask in the customer's words. If the ticket was raised by a Spyne CSM on the dealer's behalf, say so and mark that evidence `side: spyne`.
 
 ## 2. The rooftop in Arali
 
-- Resolve the company: `get-companies` with `search` set to the Freshdesk company name. If there is no clean match, try the main word of the name, then the requester email domain. If still ambiguous, write the candidates into a question (`slot: context_30d`, `who: pm`) and continue without Arali.
+- Resolve the company: `get-companies` with `search` set to the rooftop name from `cf_enterprise_name` (drop the ` - <id>` suffix). If there is no clean match, try the main word of the name, then the requester email domain. If still ambiguous, write the candidates into a question (`slot: context_30d`, `who: pm`) and continue without Arali.
 - Last 30 days: `get-interaction-timeline` with `companyName` and `startDate` = today minus 30, paged with `nextCursor`. Note the kinds (meeting, call, thread, ticket) and dates.
 - Search, do not read everything: `search-transcripts` and `search-ticket-messages` with the ticket's topic as the query and the company filter. Read a full interaction with `get-interaction` only when an excerpt looks directly relevant.
 - Keep only what connects to this ticket. For each connecting item, write an evidence block with the speaker's side and role. Use the participant title or what they say about their job to set the role. When you cannot tell, `role: unknown`.

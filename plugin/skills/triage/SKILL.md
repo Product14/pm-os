@@ -30,7 +30,7 @@ You produce one **case file** per ticket. The case file is the only thing the PR
 
 ## Steps
 
-1. **Fetch the queue.** Call `mcp__plugin_pm-os_freshdesk__search_tickets` with `status:<status_id>` plus the area filter. Page until all results are in (at most 10 pages). Map each ticket to `vini-sales` or `vini-service`.
+1. **Fetch the queue.** Call `mcp__plugin_pm-os_freshdesk__search_tickets` with `freshdesk.queue.query`. Page until all results are in (at most 10 pages). Map each ticket to `vini-sales` or `vini-service` with `area_field` and `area_values`; a pod not in either list goes to the PM at Gate 1. Apply any skip list the PM gives for this run.
 2. **Skip what is current.** For each ticket, look for `product/work/<area>/fd<id>-*/case.md`. Skip it when its `ticket_updated_at` equals the ticket's `updated_at`. Say how many you skipped.
 3. **Research, one subagent per ticket, at most 4 at a time.** Use the Agent tool (general-purpose). Give each subagent:
    - the ticket id, area and the work folder path it must write to: `product/work/<area>/fd<id>-<topic-slug>/`. The slug describes the topic, never the rooftop.
