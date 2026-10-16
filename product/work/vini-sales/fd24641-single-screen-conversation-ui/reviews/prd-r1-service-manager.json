@@ -1,0 +1,131 @@
+{
+  "persona": "service-manager",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 3,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 3,
+    "Dependencies": 3,
+    "Rollout": 3,
+    "Every agent": 3,
+    "Dealer reality": 3,
+    "Capacity truth": 4,
+    "Appointment quality": 3,
+    "Fixed ops metric": 2,
+    "Promise control": 4,
+    "DMS write-back": 4
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "service-manager-r1-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "a booking or RO opened (service, where read)",
+      "concern": "In my drive this clear is wrong both ways. If Vini Service books the appointment itself, the episode clears even though the customer asked a question only an advisor can answer. And half my inbound is 'is my car ready?' on an RO that is already open, so 'RO opened' never fires and the episode sits until someone clicks. My advisors answer from the scheduler's texting tool or the desk phone, and none of that counts as a clear.",
+      "because": "missing; Q19 (no scheduler/DMS read today); persona 'What they protect': the scheduler as the single source of truth",
+      "ask": "For service, clear only on a booking or RO action taken by a person after `since`, or an advisor message or call logged in the scheduler/DMS after `since`. A Vini-made booking never clears. Add acceptance criteria for a Vini-booked appointment (stays open) and a status question on an open RO (stays open until an advisor replies or clicks)."
+    },
+    {
+      "id": "service-manager-r1-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Texts run only where we see replies: a live CRM activity read (sales) or scheduler/DMS read (service), or the attestation on.",
+      "concern": "A read of who the advisor is and whether an RO is open does not tell you my advisor already called the customer back. As written, the moment an advisor read goes live I start getting escalation texts about customers my people already handled by phone or in Xtime, and I turn the texts off.",
+      "because": "Section 9 Scheduler/DMS row lists only 'advisor on current appointment or open RO; booking and RO opened', no advisor-communication read; Q19",
+      "ask": "Gate service texts on a scheduler/DMS advisor-communication read (messages and calls), the service twin of 'CRM activity'. Add that read as its own row in section 9 with owner and status. Until it exists, service texts only where the attestation is on."
+    },
+    {
+      "id": "service-manager-r1-3",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Hours: team working days and timezone.",
+      "concern": "My drive opens at 7, closes around 6 and runs a half day Saturday; the showroom keeps different hours. Team working hours will escalate a 6:45am drop-off text before an advisor is on the drive, or stay silent through my busiest hour. Section 9 admits this is an assumption.",
+      "because": "Section 9 'department hours unknown [ASSUMPTION: team working hours stand in for department hours]'",
+      "ask": "Service episodes use the service department's own hours of operation (the hours Vini Service already runs on, if stored). If a department has no hours set, no escalation for that department, the same rule A19 applies to an empty timezone. Add an acceptance criterion with sales and service on different hours."
+    },
+    {
+      "id": "service-manager-r1-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "texts the department's recipients once per episode; the owner keeps it.",
+      "concern": "Once per episode is not once. At the 7:30 drop-off rush with three advisors on the counter, fifteen episodes cross N together and I get fifteen texts in ten minutes. That is the day I mute it. The per-recipient cap is parked in Open question 4 instead of the requirement.",
+      "because": "Open question 4 'per-recipient text cap'; A18 caps only per recipient per episode",
+      "ask": "Make a per-recipient cap or rolled summary part of R5, with a default (for example one text per recipient per window, giving open count and oldest wait) and an acceptance criterion for many episodes escalating together."
+    },
+    {
+      "id": "service-manager-r1-5",
+      "severity": "major",
+      "type": "scope",
+      "quote": "If median wait does not fall, service rollout and text expansion stop and the PM decides keep or flag off.",
+      "concern": "Service rollout is judged on a sales pilot at 1-2 sales rooftops. A sales result says nothing about whether my advisors will work the queue or click 'Handled elsewhere' all day. Service has no success check of its own.",
+      "because": "Open question 3 / Q10 (which roles work it, will they click); no service-side dealer voice in the case",
+      "ask": "Add a service pilot at one confirmed Vini Service rooftop with its own Phase 0 baseline. Measure median wait for service, click-clear share and bookings or ROs where read, and require a pass before the next service rooftop."
+    },
+    {
+      "id": "service-manager-r1-6",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "Service: booking or RO where read",
+      "concern": "No scheduler/DMS read exists today, so the service P&L link has no source at launch. No fixed-ops measure (hours per RO, customer-pay share, absorption) is named, not even as out of reach.",
+      "because": "Q19; persona Review lens 'Fixed ops metric'",
+      "ask": "If Vini Service bookings land in Mongo `meetings`, use them as the service proxy until the read exists, excluding `is_demo_meeting`. State plainly that the effect on customer-pay ROs is unmeasured."
+    },
+    {
+      "id": "service-manager-r1-7",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "the advisor on the current appointment or open RO (service)",
+      "concern": "In most drives the advisor is assigned at write-up, not at booking, so a customer texting before the visit usually has no advisor and lands in 'No owner'. A comeback text the week after the RO closes ('the noise is back') loses the advisor who wrote it.",
+      "because": "missing; A15 [ASSUMPTION: team view is an acceptable fallback for service]",
+      "ask": "Say that before the visit, service usually falls to 'No owner', and name who works that row (service BDC or the manager, per Q10). Add a setting, default off, that keeps the advisor on the last closed RO within N days as owner."
+    },
+    {
+      "id": "service-manager-r1-8",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "Action-item intents that open a wait: default all except lost-lead and no-meaningful-interaction.",
+      "concern": "One intent list covers both departments, and both exclusions are sales intents. Service outbound recall and maintenance campaigns produce replies like 'sold the car' or 'wrong number' that would fill my queue with customers nobody owes a reply.",
+      "because": "E38 (one action-item queue across serviceType and agentType)",
+      "ask": "Make the intent list per department, and state the service default after reading the intents service agents actually create."
+    },
+    {
+      "id": "service-manager-r1-9",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Sales outbound, STL, chat if listed, service inbound and outbound conversations",
+      "concern": "Both service agents are covered by one bundled criterion with no negative case. Nothing tests that a service inbound handoff to an advisor opens an episode, or that a recall-campaign reply Vini fully handles does not.",
+      "because": "case.md Agents affected: service inbound yes, service outbound yes (inferred)",
+      "ask": "Add one positive and one negative acceptance criterion each for service inbound and service outbound."
+    },
+    {
+      "id": "service-manager-r1-10",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Rows collapse to \"No owner\"; totals match the team view",
+      "concern": "This contradicts A16, where a failed owner sync keeps the last good owner until max age and then shows 'Stale owner'. My manager view would flip to all 'No owner' on a blip.",
+      "because": "A16 in the same document",
+      "ask": "Reconcile: when reads are down, keep the last good owner until max age, then 'Stale owner'. Use 'No owner' only where no owner was ever read."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Is a service department's hours of operation stored separately from team working days (for example the hours Vini Service uses to offer slots), and where?",
+      "blocks": "service-manager-r1-3",
+      "source": "Vini backend (central-config / user-management owner)"
+    },
+    {
+      "question": "Which schedulers or DMS service modules (Xtime, myKaarma, CDK, Reynolds, Tekion, PBS) expose advisor messages and calls to a customer, not only the appointment and RO?",
+      "blocks": "service-manager-r1-1, service-manager-r1-2",
+      "source": "Integrations PM with the Partnerships team; integrations-backend (Q19)"
+    },
+    {
+      "question": "Do Vini Service bookings land in Mongo `meetings` with a service marker?",
+      "blocks": "service-manager-r1-6",
+      "source": "Vini backend"
+    }
+  ]
+}

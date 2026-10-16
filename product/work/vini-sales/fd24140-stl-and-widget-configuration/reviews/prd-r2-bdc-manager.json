@@ -1,0 +1,128 @@
+{
+  "persona": "bdc-manager",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 3,
+    "CRM completeness": 3,
+    "Human reach": 3,
+    "Show discipline": 4,
+    "Workload effect": 3,
+    "Contact compliance": 3
+  },
+  "observations_loaded": [],
+  "previous_issues": [
+    {
+      "id": "bdc-manager-r1-1",
+      "fixed": true,
+      "note": "R12, A14 and go-live check Q35 added: an after-hours request for a person never rings an empty line and lands as 'callback requested' with the customer's words. Telling the customer when the BDC opens was declined as a reply-agent change outside approved scope; legitimate. How the 'callback requested' status is actually produced is raised as new issue bdc-manager-r2-1."
+    },
+    {
+      "id": "bdc-manager-r1-2",
+      "fixed": true,
+      "note": "R5 now carries name, phone, status (with callback requested and not texted with reason), appointment date and time, a one-line summary and a Console link; A15 checks R5's fields."
+    },
+    {
+      "id": "bdc-manager-r1-3",
+      "fixed": true,
+      "note": "Q32 moved to the step 0 row in section 11; the store owns reminders, the BDC calls each appointment-set lead the same morning (A16), and the BDC drops its own reminder if Vini also sends one."
+    },
+    {
+      "id": "bdc-manager-r1-4",
+      "fixed": true,
+      "note": "Q33 go-live check now requires the forward to skip customers with an open BDC-assigned lead or written dealer acceptance; edge-case row added; repeats per phone counted daily in A7."
+    },
+    {
+      "id": "bdc-manager-r1-5",
+      "fixed": true,
+      "note": "Mechanism named in R4 (ops sets optOut.sms the same morning, Q37) and A12 now has the re-forward stop case. The daily check that finds non-STOP opt-outs does not survive past week one in R10; raised as new issue bdc-manager-r2-3."
+    },
+    {
+      "id": "bdc-manager-r1-6",
+      "fixed": true,
+      "note": "R11 states the window in hours and timezone inside 8 am to 9 pm customer local time; A4 and A5 cover inside-window and 1 am forwards. What happens to the leads held to window start relative to BDC open is raised as new issue bdc-manager-r2-2."
+    },
+    {
+      "id": "bdc-manager-r1-7",
+      "fixed": true,
+      "note": "Goal row added for Ava-set appointments and shows, from handoff rows against the board, CSM-owned. Declining to state BDC-board credit as the store's pay plan is a legitimate scope call."
+    },
+    {
+      "id": "bdc-manager-r1-8",
+      "fixed": true,
+      "note": "R10 runs the non-inquiry check weekly with the CSM as owner for as long as step 0 runs; A2 takes the BDC manager's slip report as an input."
+    },
+    {
+      "id": "bdc-manager-r1-9",
+      "fixed": true,
+      "note": "A16 and the edge-case row now have the BDC manager cancel any prior duplicate and call to confirm before open."
+    }
+  ],
+  "issues": [
+    {
+      "id": "bdc-manager-r2-1",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| A17 | Email lacks R5's fields | Go-live review | Go only with the VP Marketing's written acceptance of Console; BDC manager then works the Console list | R5 fallback [E13] |",
+      "concern": "'Callback requested' and 'appointment set' are the two rows my agents must hit first, and nothing in v2 says what writes either status. The notification email is untraced (Q26), and if it falls back to Console my agents are reading transcripts one by one to find the customer who said 'call me' at 11 pm. A14's Then ('handoff shows callback requested') cannot pass on the Console fallback, so a P0 requirement (R12) quietly loses its outcome the moment A17 fires. That is the cleanup work this was supposed to take off my team, and it is how a hot callback sits until noon.",
+      "because": "Q26, Q35; E13; persona block 'outcomes stored only in a vendor console'",
+      "ask": "Make the Q26 go-live check name the source of each R5 status (which email field or task or transfer event sets 'callback requested', 'replied' and 'appointment set'). In A17, the Console fallback is acceptable only if Console lists callback-requested and appointment-set leads as a filterable list before open; otherwise the CSM flags them from transcripts and sends the list to the BDC manager before open each day, or no go-live. Add that to A14 as its fallback."
+    },
+    {
+      "id": "bdc-manager-r2-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| A5 | Inquiry forwarded at 1 am, outside the window | Lead created | No text before the window opens; sent at window start or shown \"not texted (outside window)\", per Q22 | R11 stop `conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:256` |",
+      "concern": "With the window inside 8 am to 9 pm, every lead submitted after 9 pm is held to 8 am, which is likely most of the overnight forward. If Ava texts at 8:00 and my agents open at 8:00 or 9:00, the customer gets Ava's text and my agent's call minutes apart, and the 'before open' handoff cannot show what happened to those texts. That is a double contact the store pays for, and on these leads it removes almost none of the overnight wait the PRD claims.",
+      "because": "Q22, Q15; E8, E15; persona 'will it double-contact a customer my agent is already working'",
+      "ask": "Pick one rule in R11 and A5, set at Q22: a held lead is texted at window start only if window start is at least a stated number of minutes before BDC open, and the handoff is produced after those sends; otherwise the held lead is 'not texted (outside window)' and the BDC calls it as today. Split the 'First contact before BDC open' metric into leads texted the same evening and leads held to window start, and count the held ones in the week-one daily query so the go-live review sees how much of the forward the window actually reaches."
+    },
+    {
+      "id": "bdc-manager-r2-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| R10 | The CSM reconciles forwarded leads against STL tasks (noTask apart) and checks non-inquiry texts daily in week one, then weekly while step 0 runs; follow-up rows are checked daily throughout | P0 | [PM] [E41] |",
+      "concern": "R4 says a non-STOP opt-out 'found in the daily check' gets optOut.sms the same morning, but R10 never lists an opt-out scan and drops to weekly after week one. From week two, a customer who texts 'stop texting me' waits up to a week for the flag, and if they are forwarded again after the 15-hour suppression window, Ava texts them again. The store carries that TCPA risk. Also, if Q37 shows ops cannot set optOut.sms without a build, R4 has no fallback.",
+      "because": "E42, E43; Q37",
+      "ask": "Name the daily detector for the life of step 0: the BDC manager already reads every replied row on the morning handoff, so they flag any non-STOP opt-out to the CSM the same morning, and R10 adds an opt-out scan that stays daily throughout. Add to R4: if Q37 shows no same-day write path for optOut.sms, step 0 does not go live."
+    },
+    {
+      "id": "bdc-manager-r2-4",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "- STL type entry (isEnabled, mode): inquiry on, window per Q22. Follow-up excludeSource: forwarding source, API path only. Silence nudge: off. Email recipient: BDC manager. Widget: call off.",
+      "concern": "One named recipient is a single point of failure. The morning I am out, nobody has the handoff, and the appointment-set and callback-requested leads are not worked. With BDC turnover, the person on that address changes too.",
+      "because": "R5, A15; persona seat (agent turnover, call-outs)",
+      "ask": "Recipient is the BDC manager plus a named backup or a BDC distribution address the store controls; A15 Given covers the morning the BDC manager is out."
+    },
+    {
+      "id": "bdc-manager-r2-5",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "- **Pause on:** a text to an appointment or credit-app lead, a second unsolicited message, an unhonoured opt-out, a text outside the window, or an untexted test lead.",
+      "concern": "The two failures my team would see first are not pause triggers: an after-hours 'call me' that fired a transfer to an empty line (R12), and a forwarded lead missing from the morning handoff (A19), which means a lead nobody called.",
+      "because": "R12, A14, A19; persona block 'transfers have no fallback'",
+      "ask": "Add to Pause on: an after-hours human request that fired a transfer, and a forwarded lead missing from the handoff."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Which field or event sets each R5 status on the STL notification email or in Console: 'callback requested', 'replied', 'appointment set'? Does Console offer a filterable lead list by those statuses?",
+      "blocks": "bdc-manager-r2-1; R12, A14, A17",
+      "source": "engineering: STL owner alongside Q26 and Q35 (one UAT test lead that books and one that asks for a person)"
+    },
+    {
+      "question": "What time does this rooftop's BDC open, and what share of after-hours website leads arrive between 9 pm and 8 am customer local time?",
+      "blocks": "bdc-manager-r2-2; R11, A5, first-contact goal",
+      "source": "CSM with the VP Marketing alongside Q15 and Q22"
+    }
+  ]
+}

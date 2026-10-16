@@ -1,0 +1,117 @@
+{
+  "persona": "ceo",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 5,
+    "Configuration, not branches": 5,
+    "Measurable": 4,
+    "Dependencies": 3,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Dealer economics": 2,
+    "Base leverage": 4,
+    "Dependency honesty": 3,
+    "Handoff clarity": 4,
+    "Decision readiness": 3
+  },
+  "previous_issues": [
+    {
+      "id": "ceo-r1-1",
+      "fixed": true,
+      "note": "Narrowed as resolved: success-check rooftops now have criteria (80% console-sent replies, 20 episodes a week) and are picked by the PM and CSM lead before day one. The no-qualifier fallback is with the PM (Open question 4); not re-raised."
+    },
+    {
+      "id": "ceo-r1-2",
+      "fixed": true,
+      "note": "Phase 0 now outputs wait-to-outcome per department, labelled Spyne data and correlational, with 'No link: the claim stays manager time removed.' The fallback claim itself has no measure; raised as ceo-r2-1."
+    },
+    {
+      "id": "ceo-r1-3",
+      "fixed": false,
+      "note": "Escalated to the PM in r1 resolution; v2 honestly marks VinSolutions read status 'not in evidence' and carries it in Open question 4. Not re-raised."
+    },
+    {
+      "id": "ceo-r1-4",
+      "fixed": true,
+      "note": "Out of scope now lists scheduler/DMS reads as per provider, separately sized; section 9 says 'None read [Q19]; not in this L.' R2 still lists service booking/RO clears unconditionally inside a P0; raised as ceo-r2-3."
+    },
+    {
+      "id": "ceo-r1-5",
+      "fixed": true,
+      "note": "Phase 0 reports console-reply share per rooftop and the CSM briefs each rooftop below threshold before day one; R3 moves aged episodes to 'Possibly answered in CRM' so the badge does not just grow."
+    },
+    {
+      "id": "ceo-r1-6",
+      "fixed": false,
+      "note": "Escalated to the PM (what the L displaces; VinSolutions write-back date); still open as Open question 4. Not re-raised."
+    },
+    {
+      "id": "ceo-r1-7",
+      "fixed": true,
+      "note": "R6: attestation set by the CSM at the department manager's request; attested rooftops below the weekly console-reply threshold revert to mark-only (A30)."
+    },
+    {
+      "id": "ceo-r1-8",
+      "fixed": true,
+      "note": "Phase 0 reports 'rooftops with median wait above N' per department."
+    }
+  ],
+  "issues": [
+    {
+      "id": "ceo-r2-1",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "No link: the claim stays manager time removed.",
+      "concern": "Good that the fallback is written down. But if the wait-to-outcome line shows nothing, the only thing left to tell a dealer is manager time removed, and nothing in the goals table measures manager time. 'Action Items page views per member' is a screen count, not hours. So in the fallback case the CSM has no number at all and the pitch slides back to 'faster replies'.",
+      "because": "missing; section 3 goals table has no manager-time metric; E10, E13 (dealer describes cross-checking four screens); persona Dealer economics",
+      "ask": "Either add a measured stand-in for manager time (for example console sessions or tab switches per manager per day before and after, with its event source and baseline 'unknown'), or state plainly that the fallback claim is qualitative and unmeasured so no one quotes it as a figure."
+    },
+    {
+      "id": "ceo-r2-2",
+      "severity": "major",
+      "type": "scope",
+      "quote": "If median wait does not fall, service rollout and text expansion stop.",
+      "concern": "The one-pager I approved says 'If median wait does not fall, rollout stops.' Sales is already on at every rooftop on day one, so this check can no longer stop sales. If the success rooftops show no drop, we have a queue live across the whole base with no decision attached to it. I need to know what we do with it, not only what we stop adding.",
+      "because": "one-pager/final.md 'If median wait does not fall, rollout stops.'; PRD section 10 'Day one, sales, every rooftop'",
+      "ask": "Add the sales outcome to the success check: if median wait does not fall at the success rooftops, say whether the sales view stays as is, goes back behind the flag, or goes to a named PM review by a date."
+    },
+    {
+      "id": "ceo-r2-3",
+      "severity": "major",
+      "type": "scope",
+      "quote": "service, a staff booking, RO action or advisor message after `since`, never a Vini booking",
+      "concern": "Section 4 and section 9 now say no scheduler or DMS read is in this L, which is what I asked for. But R2 is a P0 and still lists service clears from a staff booking, RO action or advisor message with no condition on it. An engineer reading R2 builds against a read we have not negotiated with any provider, or the requirement fails acceptance. That is the dependency hidden inside scope that fact four warns about.",
+      "because": "PRD section 9 row 'Scheduler/DMS ... None read [Q19]; not in this L'; Q19; org fact 4",
+      "ask": "Qualify the service clause in R2 as 'once that provider's read exists (not in this L)', and state that in this L service clears only by console reply, click or opt-out."
+    },
+    {
+      "id": "ceo-r2-4",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "moves front-end and F&I gross on engaged leads that go cold and fixed-ops gross on service customers who never become an RO, size unknown",
+      "concern": "The goals table says the P&L link is 'check, not the claim', and Phase 0 says the line is correlational. The problem section still says this moves front-end, F&I and fixed-ops gross. That sentence gets lifted into a deck. Until Phase 0 shows a link, we cannot say it moves gross at all, and the F&I part has no evidence behind it anywhere in the case.",
+      "because": "missing; PRD section 3 'Wait links to the P&L ... check, not the claim'; section 10 'Spyne data, correlational'",
+      "ask": "Change it to what we can stand behind: 'Removes: hours to first human reply per department. Whether it moves appointments shown or service bookings is checked in Phase 0 (Spyne data, correlational); no gross claim until then.'"
+    },
+    {
+      "id": "ceo-r2-5",
+      "severity": "minor",
+      "type": "feasibility",
+      "quote": "the CSM briefs each rooftop below the console-reply threshold and sets recipients, hours and unowned-queue owner with each department manager",
+      "concern": "Day one at every rooftop now depends on a CSM session with every department manager before day one, and the threshold is 80%, so that may be most of the base. The PRD does not say how many rooftops that is or what happens at a store the CSM has not reached. This is the cost on our side I would want to see before signing up to 'every rooftop'.",
+      "because": "missing; PRD R6 [ASSUMPTION: 80% console-reply share threshold]; A25 (unset recipients give 'not configured')",
+      "ask": "Give the live sales rooftop count and expected CSM hours, and state that a rooftop not yet briefed gets the view with escalation 'not configured' (already A25) rather than holding day one."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Count of live Vini Sales rooftops, and how many sent at least 80% of human replies to customers from the console in the last 30 days.",
+      "blocks": "ceo-r2-5; success-check rooftop selection",
+      "source": "conversational-ai-backend member-sent messages by channel (sendManualMessage), or ClickHouse equivalent"
+    }
+  ]
+}

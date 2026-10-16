@@ -137,3 +137,76 @@ Stage: onepager, round 2. 8 requests across 4 reviewer files, deduped to 7. One 
 - question: What on the current Vini Sales plan moves if the M-size opener is taken this quarter?
 - from: ceo
 - status: open -> Q14 (PM, escalated as ceo-r2-2)
+
+## PRD round 1
+
+Stage: prd, round 1. 12 requests across 4 reviewer files, deduped to 9. One answered from the local code clone; the rest map to open questions.
+
+### R13
+- question: Which caller creates the workflow for an email-parsed lead: the SQS queue or POST /sequence-workflows/trigger-follow-up, with which crmType and eventType?
+- from: backend-engineer
+- status: open -> Q34 (step 0 go/no-go)
+
+### R14
+- question: Is team-level STL off in Vini Config evaluated before isAlwaysAllowStlLead?
+- from: backend-engineer
+- status: answered: no. An always-allow lead bypasses the team-level check (`conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:760`, E40). Rollback for such a lead is removing the forward.
+
+### R15
+- question: What source string does the parser store for this forward, and does another feed or STL source at this team write it?
+- from: backend-engineer, gm
+- status: open -> Q36
+
+### R16
+- question: Does the reply agent transfer or offer a callback after hours for this team, and where does it route?
+- from: bdc-manager
+- status: open -> Q35
+
+### R17
+- question: Which clock does the STL window use, and what hours will the dealer accept in writing?
+- from: bdc-manager
+- status: open -> Q22, Q24
+
+### R18
+- question: What does today's STL notification email contain, who receives it, and when?
+- from: gm
+- status: open -> Q26
+
+### R19
+- question: After-hours forwarded leads per week by type, and BDC minutes per next-day callback.
+- from: gm
+- status: open -> Q15
+
+### R20
+- question: Can the dealer pause its own texts only for leads Spyne texts, and can the forward skip customers with an open BDC-assigned lead?
+- from: gm, bdc-manager
+- status: open -> Q25, Q33
+
+### R21
+- question: Certified write-back providers and no-API rooftop count; whether the 3 E22 companies share the job and would pilot.
+- from: ceo
+- status: open -> Q29, Q30
+
+## PRD round 2
+
+Stage: prd, round 2. 7 requests across 4 reviewer files, deduped to 4. Two answered from the local `conversational-ai-backend` clone at a2b8754c7; two become Q38 and Q39.
+
+### R22
+- question: What external_type does a production forwarded ADF lead store, what does normalizeLeadTypeKey make of it, and does this team have a DEFAULT entry enabled?
+- from: backend-engineer
+- status: answered in part from code: a blank type normalises to "empty", then falls back to DEFAULT; a source entry, where one exists, is a second gate that must also pass (`conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:131`, `:396`, `:470`, `:560`). Step 0 switches on a forwarding-source entry; the stored value and the DEFAULT state are read on the production Q34 test lead -> Q34
+
+### R23
+- question: Are the always-allow bypass env values and the email-parsing routing the same in UAT and production?
+- from: backend-engineer
+- status: closed by design: Q34 and Q19 now run in production on a controlled test lead, so parity does not need proving -> Q34, Q19
+
+### R24
+- question: Which field or event sets each R5 status on the email or in Console, and does Console filter leads by those statuses with appointment time and a callback flag?
+- from: bdc-manager, gm
+- status: open -> Q38
+
+### R25
+- question: BDC open and close times, closed days, day-off cover, and the share of after-hours inquiries arriving before versus after 9 pm local.
+- from: bdc-manager, ceo, gm
+- status: open -> Q39 (with Q15, Q22). Related code fact: outside its window STL skips the first text and schedules the next step; it does not hold it (`conversational-ai-backend:src/sequence-workflows/services/sequence-task-execution-orchestrator.service.ts:1922`)

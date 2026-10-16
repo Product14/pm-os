@@ -1,0 +1,90 @@
+{
+  "persona": "backend-engineer",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 4,
+    "Configuration, not branches": 3,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 3,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Code-cited baseline": 4,
+    "Integration reality": 4,
+    "Failure design": 4,
+    "Observability and rollback": 3,
+    "Scope discipline": 5
+  },
+  "previous_issues": [
+    { "id": "backend-engineer-r1-1", "fixed": true, "note": "Step 0 is now a go/no-go on the creation path with all three outcomes stated (section 4, A6). The queue path is an explicit no-go, the source is never excluded there, and the routing build is out of scope and escalated to the PM (E-1). Owner and size of that build stay with the PM decision, which is the right place. The PRD no longer promises config-only on a path where it cannot work." },
+    { "id": "backend-engineer-r1-2", "fixed": true, "note": "Exclusion criterion (now A8) is scoped to the API path; A6 bars excluding the source on the queue path." },
+    { "id": "backend-engineer-r1-3", "fixed": true, "note": "noTask metric added: dealer_leads_raw.leads argMax per _id LEFT JOIN sequenceTasks, target 0, reported apart from skipped. Matches trap stl-notask-vs-skipped." },
+    { "id": "backend-engineer-r1-4", "fixed": true, "note": "A18 plus R10 reconciliation shows no-task leads as 'not texted (no workflow)', and R5 adds the rule that a lead missing from the handoff is called as today, which covers the email's blind spot after week one." },
+    { "id": "backend-engineer-r1-5", "fixed": true, "note": "Q36 go-live check: source string stable across test forwards, other feeds writing it listed and accepted." },
+    { "id": "backend-engineer-r1-6", "fixed": true, "note": "Answered from code (:760): team-level off does not stop a bypass lead; the dealer removing the forward is the guaranteed rollback (R6, A21). Still no time bound on the dealer's removal, and the entry-off switch depends on which entry actually resolves (new issue backend-engineer-r2-1)." },
+    { "id": "backend-engineer-r1-7", "fixed": true, "note": "R3 names the nudge as the only guard on STL_FOLLOW_UP and the console writer that can reset it; R10 keeps follow-up rows daily throughout." },
+    { "id": "backend-engineer-r1-8", "fixed": true, "note": "R7 records submission time per test lead; forward lag under 6 hours is a go-live check." }
+  ],
+  "issues": [
+    {
+      "id": "backend-engineer-r2-1",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "- STL type entry (isEnabled, mode): inquiry on, window per Q22. Follow-up excludeSource: forwarding source, API path only. Silence nudge: off. Email recipient: BDC manager. Widget: call off.",
+      "concern": "Step 0 configures an 'inquiry' entry, but whether the forwarded lead's type reaches external_type at all is Q23, a step 1 question. If external_type is unset or normalises to some other key, resolveConfigFromMap falls back to DEFAULT. Then the inquiry entry governs nothing: turning it on does not enable the first text, and turning it off (A2, A20, R6) does not stop it. If ops instead turns DEFAULT on to make the test pass, every other untyped lead feed at this team starts getting STL, which is a team-wide change nobody listed.",
+      "because": "one-pager final.md 'unset types fall to DEFAULT' [E41]; `conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:131` (resolveConfigFromMap DEFAULT fallback), `:396` (normalizeLeadTypeKey); Q23 is listed under step 1, not step 0",
+      "ask": "Add to the Q34 go/no-go: record the test lead's stored external_type, its normalizeLeadTypeKey output, and which entry resolved (inquiry or DEFAULT). If DEFAULT, step 0 config and the R6 rollback name DEFAULT, and the other feeds at this team that resolve to DEFAULT are listed and accepted, or it is a no-go."
+    },
+    {
+      "id": "backend-engineer-r2-2",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "**Step 0 go/no-go, tested first (Q34).** One forwarded UAT test lead, nudge off, source not yet excluded. Its `sequenceTasks` rows name the path:",
+      "concern": "The go/no-go decides the creation path and the bypass from a UAT lead. Both are deployment facts, not code facts: the email-parsing to workflow-creation routing is wiring per environment, and the always-allow bypass types come from an env default. A UAT result can say API path and no bypass while production takes the queue or hits the bypass, and then the first real overnight lead is the real test.",
+      "because": "solution-context.md: isAlwaysAllowStlLead types are an env default (`conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:23`); routing caller unknown (r1 request, Q34)",
+      "ask": "Run the Q34 and Q19 checks in production: the dealer's real forward address, this team's production config, a test phone, STL on for that one lead. Or record that the UAT and production bypass env values and the email-parsing routing are the same, with the check named."
+    },
+    {
+      "id": "backend-engineer-r2-3",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| A10 | A console save resets the nudge or exclusion | Daily follow-up-row query | Row flagged; entry turned off | R3 fallback [E44] |",
+      "concern": "Two gaps. The goal row measures follow-ups 'with smsSentAt', so the daily query finds the reset after a customer already got the second message. And turning the entry off stops new first texts, while R3 says the nudge setting is the only guard on STL_FOLLOW_UP, so follow-ups already scheduled keep running.",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-task-execution-orchestrator.service.ts:1974`; PRD R3",
+      "ask": "Query STL_FOLLOW_UP and FOLLOW_UP rows in any status, scheduled included, for forwarded leads. On a hit: set the nudge back off, cancel the scheduled rows, then turn the entry off."
+    },
+    {
+      "id": "backend-engineer-r2-4",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "| A7 | Customer texted under 15 hours ago | Second forward | No second first text; repeats per phone counted daily | R2 stop `conversational-ai-backend:src/sequence-workflows/services/sequence-task-execution-orchestrator.service.ts:2178` |",
+      "concern": "15 hours is not in the code. The suppression window is this team's config, team.workflowConfig.followUp.suppressionWindow in minutes, copied onto the workflow, and resolved per sequence number. Inline STL does run through the orchestrator (executeFirstTaskInline), so the check applies, but with whatever value this team has.",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:1919`, `:1369`; `conversational-ai-backend:src/sequence-workflows/services/sequence-task-execution-orchestrator.service.ts:1880`",
+      "ask": "Replace 15 hours with 'this team's configured suppressionWindow', record its value at go-live, and test A7 with a second forward inside that value."
+    },
+    {
+      "id": "backend-engineer-r2-5",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| No silent skips | statusReason `sqs-stl-deferred-to-api`, `stl-outside-*`, `stl-external-created-at-stale` | `sequenceTasks.statusReason` | unknown | 0 |",
+      "concern": "Target 0 contradicts the PRD. A5 allows a 1 am forward to be 'not texted (outside window)', and the 6-hour edge case expects a stale skip. Those are designed outcomes, and the BDC calls those leads. Counting them as defects means the metric either never reaches 0 or gets ignored, and then the real defect (`sqs-stl-deferred-to-api`) gets ignored too.",
+      "because": "PRD A5; section 8 staleness row; `conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:82`",
+      "ask": "Split the row. Defects: `sqs-stl-deferred-to-api`, target 0. Designed skips: outside-window and stale, counted and shown on the handoff, with no 0 target."
+    }
+  ],
+  "requests": [
+    {
+      "question": "What external_type does a production forwarded ADF lead at this team store, what does normalizeLeadTypeKey make of it, and does this team have a DEFAULT entry enabled today?",
+      "blocks": "Step 0 config and the R6 rollback switch (backend-engineer-r2-1)",
+      "source": "dealer_leads_raw.leads for this team (argMax per _id); conversationNotifications.speedToLeadByLeadType for this team"
+    },
+    {
+      "question": "Are the always-allow STL bypass env values and the email-parsing to workflow-creation routing the same in UAT and production?",
+      "blocks": "Q34 and Q19 go/no-go validity (backend-engineer-r2-2)",
+      "source": "conversational-ai-backend and integrations-backend env config per environment"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "persona": "gm",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 3,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Statement impact": 4,
+    "System of record": 3,
+    "Adoption cost": 3,
+    "Failure visibility": 3,
+    "Handoff ownership": 4
+  },
+  "previous_issues": [
+    {
+      "id": "gm-r1-1",
+      "fixed": true,
+      "note": "R3 and A16 add the 'Possibly answered in CRM' bucket so the queue does not rot; Phase 0 reports clicks per rep per day. The held part (keep sales off at the requesting rooftop until its VinSolutions read is live or its manager accepts team view plus click) was escalated: for the PM at Gate 3, not re-raised. See gm-r2-1 for a gap the new bucket opens."
+    },
+    {
+      "id": "gm-r1-2",
+      "fixed": true,
+      "note": "R2 clears only on store-user outbound activity; Spyne integration user, automation, status changes and unknown actor never clear; Vini service bookings never clear. A10 covers each negative case."
+    },
+    {
+      "id": "gm-r1-3",
+      "fixed": true,
+      "note": "R5 adds one text per recipient per window with count, oldest wait and link; A23 tests ten escalations in five minutes giving one text. 30-minute default is with the PM as an assumption."
+    },
+    {
+      "id": "gm-r1-4",
+      "fixed": true,
+      "note": "Rollout 'Before day one' names the CSM setting recipients, hours and unowned-queue owner with each department manager; N defaults to 30 in-hours minutes; unconfigured rooftops go to the CSM lead on the weekly watch."
+    },
+    {
+      "id": "gm-r1-5",
+      "fixed": true,
+      "note": "Per-department unowned-queue owner added to configuration, R7 and A19; No, Unmapped and Stale rows sit under that person."
+    },
+    {
+      "id": "gm-r1-6",
+      "fixed": true,
+      "note": "R1 states the department rule (handoff or action item department, else the lead's); A5 tests a sales lead with an open service action item landing in the service view."
+    },
+    {
+      "id": "gm-r1-7",
+      "fixed": true,
+      "note": "Goals row now uses appointments shown where show status is read and labels meetings set as a stand-in."
+    },
+    {
+      "id": "gm-r1-8",
+      "fixed": true,
+      "note": "Line 19 names front-end and F&I gross on engaged leads that go cold and fixed-ops gross on service customers who never become an RO, size unknown."
+    },
+    {
+      "id": "gm-r1-9",
+      "fixed": true,
+      "note": "Weekly watch is owned by the PM and each signal names its action (CSM call over 50% click share, Vini backend for text failures, CSM lead for unconfigured rooftops and unmapped owners)."
+    }
+  ],
+  "issues": [
+    {
+      "id": "gm-r2-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Without an activity read or attestation, episodes past the aging cutoff move to \"Possibly answered in CRM\", off the badge, still counted.",
+      "concern": "This fixes the rot I raised, but it hides exactly the wrong customer. At a rooftop with no activity read and no attestation, R6 means no texts, so the badge is the only alarm. After 24 hours the customer who has waited longest, and may never have been called, leaves the badge. 'Still counted' does not say where. R7's manager view lists open counts, click clears and owner rows, but not this bucket. So the worst failure in the store, a customer ignored for a day, ends up somewhere no manager is shown it. It also does not say whether these episodes count as replied or unreplied in the wait median. If they drop out, the median improves just because the oldest waits leave.",
+      "because": "E10, E13; R6 (no texts without a read or attestation); R7 fields; A16 'still counted'",
+      "ask": "In R7, show 'Possibly answered in CRM' per owner with count and oldest wait, so the manager sees who let customers age out. State that these episodes count in the metrics as unreplied (censored at the cutoff), never as replies, and are kept out of the reply median the same way click clears are. Add the bucket's share per rooftop to the weekly watch. Extend A16 so the manager view shows the aged episode under its owner."
+    },
+    {
+      "id": "gm-r2-2",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "Attested rooftops below the weekly console-reply threshold revert to mark-only.",
+      "concern": "Console-reply share now decides four things: whether an attested store gets texts, which stores the CSM briefs before day one, which 1-2 stores make up the success check, and when texts switch off (A30). It is never defined and has no source in Goals. At the stores where it matters we cannot see replies sent from VinSolutions, so we cannot count the denominator. If the number is wrong, we switch texts off at a store that earned them, or we pick success-check stores where the reps actually answer from the CRM and the 30-day review measures nothing.",
+      "because": "E13 (reps work from two VinSolutions tabs); Section 3 Goals has no console-reply row; Section 9 'CRM activity ... Unknown [Q18]'",
+      "ask": "Define console-reply share in Section 3 with its source and baseline, for example episodes cleared by a console reply / episodes cleared by any means or reaching the aging cutoff, from Mongo `unanswered_episodes`. Label it a proxy where no activity read exists, and state that Phase 0 uses the same definition for success-check selection and the R6 threshold."
+    },
+    {
+      "id": "gm-r2-3",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "No link: the claim stays manager time removed.",
+      "concern": "If the wait-to-outcome link does not show, the fallback claim is manager time, but nothing in the PRD measures manager time. Expense is a line I review, so an unmeasured fallback is no claim.",
+      "because": "E10, E13; Goals 'Fewer screens' row (Action Items page views per member)",
+      "ask": "Tie the fallback to the 'Fewer screens' metric (Action Items page views per manager, before and after) or label manager time unmeasured."
+    },
+    {
+      "id": "gm-r2-4",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Unowned-queue owner: sales/BDC manager or service manager. Manager list: the escalation recipients.",
+      "concern": "Recipients default to 'none until set', and the manager list defaults to the recipients. At a store where setup slipped, nobody can open the manager view, and the 'escalation not configured' notice R7 shows is visible to nobody at the store. The weekly watch catches it for us, but the store's own manager is blind.",
+      "because": "Section 4 'Recipients: none until set'; Section 9 'No role guard in conv-ai; per-rooftop list'",
+      "ask": "Make the unowned-queue owner a manager-list member by default, so at least one store manager always sees the manager view. Add an acceptance criterion: recipients unset, the unowned-queue owner opens the manager view and sees 'escalation not configured'."
+    }
+  ],
+  "requests": [
+    {
+      "question": "At live Vini Sales rooftops, what share of handed-off episodes are cleared by a console reply versus never answered in the console within 24 hours?",
+      "blocks": "gm-r2-1 (size of the 'Possibly answered in CRM' bucket), gm-r2-2 (console-reply share definition and which rooftops qualify)",
+      "source": "Phase 0 backfill on Mongo human reply stamps"
+    }
+  ]
+}

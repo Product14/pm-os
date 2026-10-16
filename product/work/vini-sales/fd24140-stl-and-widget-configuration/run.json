@@ -32,9 +32,73 @@
         "accepted_partial": 11,
         "words_v3": 735
       }
+    },
+    "prd": {
+      "round": 2,
+      "raised": 57,
+      "accepted": 51,
+      "rejected": 0,
+      "escalated": 6,
+      "discarded": 0,
+      "r1": {
+        "raised": 36,
+        "accepted": 30,
+        "accepted_partial": 7,
+        "rejected": 0,
+        "rejected_parts": 6,
+        "escalated": 6,
+        "discarded": 0,
+        "merged": "13 issues into 6 rows",
+        "verdicts": {
+          "gm": "revise",
+          "bdc-manager": "revise",
+          "backend-engineer": "block",
+          "ceo": "revise"
+        },
+        "blocking": "backend-engineer-r1-1 accepted: step 0 is a go/no-go on the creation path (Q34); queue path no-go, PM decides",
+        "pm_escalations": [
+          "E-1 queue-path routing build or close step 0",
+          "E-2 step 1 date, Q10/Q17/Q21 answer-by and write-back start dates",
+          "E-3 conditional no-API channel (fixed intent)",
+          "carried: Q14 displacement"
+        ],
+        "words_v2": 3622,
+        "words_v1": 3377
+      },
+      "r2": {
+        "raised": 21,
+        "accepted": 21,
+        "accepted_partial": 3,
+        "rejected": 0,
+        "rejected_parts": 2,
+        "escalated": 0,
+        "escalated_carried": [
+          "E-1",
+          "E-2",
+          "E-3",
+          "Q14"
+        ],
+        "discarded": 0,
+        "merged": "10 issues into 5 rows",
+        "verdicts": {
+          "gm": "revise",
+          "bdc-manager": "revise",
+          "backend-engineer": "revise",
+          "ceo": "revise"
+        },
+        "blocking": "none",
+        "default_entry": "step 0 switches on a forwarding-source entry (carries the window; A2/A20/R6 rollback); the type entry the production Q34 lead resolves to must be on, and an off 'empty' or DEFAULT entry is turned on only with every other feed resolving to it listed and blocked by its own source entry or accepted",
+        "code_facts": [
+          "outside-window STL is skipped, not held (orchestrator :1922, :1946)",
+          "team silent hours do not stop STL SMS (orchestrator :1487); SILENT_HOURS mode default 9 pm-8 am (console-call :221); unset team timezone = UTC (:216)",
+          "source entry is an independent second gate (console-call :470, :560)"
+        ],
+        "requests": "7 deduped to 4 (R22-R25); new Q38, Q39",
+        "words_v3": 3123
+      }
     }
   },
-  "requests": 12,
+  "requests": 21,
   "gates": [
     {
       "gate": "onepager",

@@ -263,3 +263,51 @@
 - who: csm
 - how: CSM confirms the rule with the dealer's software development manager, then one appointment and one credit-app test lead go through the real forward and are shown not to arrive.
 - status: open
+
+### Q34
+- slot: request
+- unknown: (Gate 2) Do forwarded email leads reach workflow creation through the SQS queue path (handleEvent, which records the STL step as SKIPPED with reason sqs-stl-deferred-to-api and sends no first text, sequence-workflow-creation.service.ts:193, :264) or the trigger-follow-up API path (createLeadFollowUpFromLead :395), and does the API path then send the first text for them?
+- blocks: Step 0 go-live (a forwarded lead must receive its first text)
+- who: engineering
+- how: STL owner sends one forwarded test lead to this team's leads inbox on UAT, then reads its sequenceTasks rows (taskType STL, status, statusReason, smsSentAt) and the initial_sms activity event.
+- status: open
+
+### Q35
+- slot: request
+- unknown: (PRD r1, bdc-manager) Does the Sales Inbound SMS reply agent offer or execute a human transfer or callback for this team outside business hours, and where does it route?
+- blocks: Step 0 go-live (R12, A17)
+- who: engineering
+- how: Vini Sales backend owner reads the reply agent's tool list and this team's hours config (SMS human transfer at sequence-task-execution-orchestrator.service.ts:657), then sends "can someone call me" to an after-hours UAT test lead and records what fires.
+- status: open
+
+### Q36
+- slot: request
+- unknown: (PRD r1, backend-engineer and gm) What source string does the email parser store for this dealer's forward, is it stable across test forwards, and does any other lead feed or STL source at this team write it or rely on the team silence nudge?
+- blocks: Step 0 go-live (excludeSource blast radius, nudge off)
+- who: engineering
+- how: STL owner reads source on the Q34 test leads and on dealer_leads_raw.leads for this team (argMax per _id), grouped by source over 30 days.
+- status: open
+
+### Q37
+- slot: request
+- unknown: (PRD r1, bdc-manager and gm) Can ops set customer.optOut.sms for one customer today without a build (Console or admin tool), and how fast?
+- blocks: Step 0 R4 (non-STOP opt-out mechanism)
+- who: engineering
+- how: Vini Sales backend owner names the existing write path for optOut.sms outside the inbound STOP handler (sms.service.ts:2349) and who can use it.
+- status: open
+
+### Q38
+- slot: request
+- unknown: (PRD r2, bdc-manager and gm) Which field, task or event sets each handoff status (replied, callback requested, appointment set) on the STL notification email or in Console, and does Console list after-hours STL leads filterable by callback requested and appointment set, with the appointment time and the customer's words?
+- blocks: Step 0 go-live (R5, R12, A14, A17)
+- who: engineering
+- how: STL owner traces the notification email builder and the Console lead list, then runs the production Q34 test lead through one booking and one "can someone call me" reply and records what each surface shows.
+- status: open
+
+### Q39
+- slot: request
+- unknown: (PRD r2, bdc-manager, ceo and gm) What are this rooftop's BDC open and close times and closed days, who covers the BDC manager's days off (the backup handoff recipient), and what share of after-hours website inquiries arrive before versus after the STL window's end?
+- blocks: Step 0 recipients (R5, A15, A16); the Removes line and the week-4 review (same-evening first contact)
+- who: csm
+- how: CSM asks the VP Marketing alongside Q15 and Q22; once forwarding is live, count forwarded leads by arrival hour against the window from the daily reconciliation.
+- status: open

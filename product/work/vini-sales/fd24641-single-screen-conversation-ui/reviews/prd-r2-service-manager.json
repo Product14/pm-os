@@ -1,0 +1,92 @@
+{
+  "persona": "service-manager",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 4,
+    "Configuration, not branches": 3,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 3,
+    "Every agent": 4,
+    "Dealer reality": 3,
+    "Capacity truth": 4,
+    "Appointment quality": 3,
+    "Fixed ops metric": 3,
+    "Promise control": 4,
+    "DMS write-back": 4
+  },
+  "previous_issues": [
+    { "id": "service-manager-r1-1", "fixed": true, "note": "R2 now clears service only on a staff booking, RO action or advisor message after `since`, never a Vini booking; A10 keeps a Vini-booked visit and an RO status question open." },
+    { "id": "service-manager-r1-2", "fixed": true, "note": "R6 gates service texts on an advisor-communication read or the attestation. The read sits inside the Scheduler/DMS row in section 9 ('None read [Q19]; not in this L') rather than its own row with a named owner; the gate is what mattered." },
+    { "id": "service-manager-r1-3", "fixed": true, "note": "Config: service uses its own hours where stored, else no escalation; A26 tests a 07:00 service versus 09:00 sales open. A stale assumption tag remains on A26 (new issue r2-4)." },
+    { "id": "service-manager-r1-4", "fixed": true, "note": "R5 caps at one text per recipient per window with count, oldest wait and link; A23 tests ten episodes escalating together." },
+    { "id": "service-manager-r1-5", "fixed": false, "note": "Service now gets its own pilot and baseline, but v2 names no pass condition. 'The next waits for its 30-day review' says when the review happens, not what it has to show. The only stop rule is still tied to the sales success-check rooftops. Re-raised as r2-1." },
+    { "id": "service-manager-r1-6", "fixed": true, "note": "Goals table uses Vini Service bookings from `meetings` (no demo) as the service proxy and states customer-pay ROs are unmeasured." },
+    { "id": "service-manager-r1-7", "fixed": true, "note": "Edge case added: before the visit service is usually 'No owner' and the unowned-queue owner works it. The last-closed-RO owner setting was rejected as outside approved scope. Accepted." },
+    { "id": "service-manager-r1-8", "fixed": true, "note": "Intent allowlist is per department; service is set after reading service intents." },
+    { "id": "service-manager-r1-9", "fixed": true, "note": "A6 and A7 give a positive and negative case for service inbound and for a recall (outbound) reply." },
+    { "id": "service-manager-r1-10", "fixed": true, "note": "A21 keeps the last good owner until max age, then Stale; 'No owner' only if never read." }
+  ],
+  "issues": [
+    {
+      "id": "service-manager-r2-1",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "the first is a pilot with its own baseline, the next waits for its 30-day review.",
+      "concern": "A review with no bar is not a gate. In this L service clears only by a console reply or a click, because there is no scheduler read. My advisors answer from the scheduler's texting tool and the desk phone, so most service clears will be clicks. On top of that, the sales-tuned 'owner click share over 50% triggers a CSM call' will fire at every service rooftop every week. Nobody will be able to tell whether the pilot worked.",
+      "because": "previous issue service-manager-r1-5 (accepted in prd-r1-resolution.md, not carried into the text); section 9 Scheduler/DMS 'None read [Q19]; not in this L'; Open question 3 / Q10 (will advisors click)",
+      "ask": "State the service pilot's pass condition: median wait for service falls against its own Phase 0 baseline, with service click-clear share and Vini Service bookings reported alongside. If it fails, the next service rooftop does not turn on. Set the service click-share watch threshold from the pilot's own Phase 0 data, not the sales 50%."
+    },
+    {
+      "id": "service-manager-r2-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Attestation \"reps reply only in the console\": false.",
+      "concern": "My showroom and my drive reply in different places. Sales can be console-only while my advisors text from Xtime or myKaarma. If the attestation and the console-reply share are rooftop-wide, the CSM turns them on for the sales floor and I start getting escalation texts about service customers my advisors already handled. That is the r1-2 failure coming back in through the attestation. R6 says the department manager asks for it, but the config line, the Phase 0 'console-reply share per rooftop' and 'Attested rooftops below the weekly console-reply threshold revert' are all per rooftop.",
+      "because": "R6 and section 10 Phase 0 measure console-reply share per rooftop; persona 'What they protect': the scheduler as the single source of truth; previous issue service-manager-r1-2",
+      "ask": "Make the attestation, the console-reply share and the revert threshold per rooftop per department. Add an acceptance criterion: sales attested, service not, so a service episode past N is mark only."
+    },
+    {
+      "id": "service-manager-r2-3",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "episodes past the aging cutoff move to \"Possibly answered in CRM\", off the badge, still counted.",
+      "concern": "My advisors do not answer in a CRM, so the label is wrong for the drive. A 24-hour cutoff also fits a sales lead, not an 'is my car ready?' text that is stale by closing time. A 7:30am status question that the advisor answered by phone sits on my badge all day and into tomorrow's drop-off rush.",
+      "because": "R3; section 4 config 'Aging cutoff: 24 hours' (one value for both departments); persona 'How they judge' item 3 (status calls)",
+      "ask": "Make the aging label and cutoff per department. For service, use 'Possibly answered in scheduler or by phone' and default the cutoff to the end of that day's service hours [ASSUMPTION for the PM to confirm]."
+    },
+    {
+      "id": "service-manager-r2-4",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "[ASSUMPTION: team working hours stand in for department hours]",
+      "concern": "A26 still carries the old assumption, which contradicts the new config line 'service, its own hours where stored, else no escalation'. An engineer reading A26 will build team hours for service. If Open question 5 finds no stored service hours, service never escalates at the pilot rooftop, and nobody has said who adds the setting.",
+      "because": "section 4 config 'Hours: sales, team working hours; service, its own hours where stored, else no escalation'; Open question 5",
+      "ask": "Drop the tag from A26 and cite Open question 5. State that if service hours are not stored, a per-rooftop service hours setting is added before the service pilot, set by the CSM with the service manager."
+    },
+    {
+      "id": "service-manager-r2-5",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "or service with no advisor read",
+      "concern": "An advisor read (who owns the RO) is not the advisor-communication read that R6 requires. As written, A29 could pass at a store where we read the advisor but not whether they called the customer back, and texts would go out on handled customers.",
+      "because": "R6 'service, an advisor-communication read'; section 9 Scheduler/DMS row lists the advisor and advisor messages separately",
+      "ask": "Reword A29 to 'service with no advisor-communication read'. Add a case: advisor and RO read live, no advisor-communication read, no attestation, so the result is mark only."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Is a service department's hours of operation stored separately from team working days, and where? (carried from round 1, still Open question 5)",
+      "blocks": "service-manager-r2-4",
+      "source": "Vini backend (central-config / user-management owner)"
+    },
+    {
+      "question": "At live Vini Service rooftops, what share of advisor replies to customers go from the scheduler's texting tool (Xtime, myKaarma) or phone versus the Spyne console?",
+      "blocks": "service-manager-r2-1, service-manager-r2-2",
+      "source": "CSM lead for Vini Service rooftops; Arali transcripts"
+    }
+  ]
+}

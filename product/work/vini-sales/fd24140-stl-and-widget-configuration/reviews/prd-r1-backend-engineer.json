@@ -1,0 +1,113 @@
+{
+  "persona": "backend-engineer",
+  "round": 1,
+  "verdict": "block",
+  "scores": {
+    "Faithful to the one-pager": 3,
+    "Testable requirements": 3,
+    "Today vs after": 4,
+    "Configuration, not branches": 3,
+    "Measurable": 3,
+    "Dependencies": 3,
+    "Rollout": 3,
+    "Every agent": 4,
+    "Dealer reality": 3,
+    "Code-cited baseline": 4,
+    "Integration reality": 3,
+    "Failure design": 2,
+    "Observability and rollback": 2,
+    "Scope discipline": 4
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "backend-engineer-r1-1",
+      "severity": "blocking",
+      "type": "feasibility",
+      "quote": "**Step 0, configuration only.** STL on for after-hours website inquiries at this rooftop with today's opener. First text only, plus a morning handoff to the BDC manager.",
+      "concern": "Step 0 is only configuration if forwarded leads take the trigger-follow-up API path. On the queue path no configuration can give 'first text only'. If the forwarding source is excluded, handleEvent returns before any workflow or task exists (:197-208). If it is not excluded, the STL step is recorded SKIPPED with sqs-stl-deferred-to-api even when the gate allows it, and the cadence is scheduled (:257-275). So the queue path gives either nothing or follow-ups with no first text, the opposite of R2 plus R3. The step 0 that was approved (source excluded plus a first text) is achievable on one path only. The PRD defers this with 'step 0 waits for routing (Q34)', but moving email-parsed leads onto POST /sequence-workflows/trigger-follow-up is a build in someone else's service, with no owner, size or date. The dealer has a step 0 date [E10, E31].",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:193-208` (SQS path skips the whole workflow on exclusion), `:257-275` (STL step always SKIPPED with SQS_STL_STEP_SKIP_REASON); `conversational-ai-backend:src/sequence-workflows/follow-up-request-validation.ts:30`; Blue Brain search_routes shows no caller of POST /sequence-workflows/trigger-follow-up",
+      "ask": "Resolve Q34 before step 0 is committed, not at go-live: trace the creation path of an email-parsed lead (crmType, eventType, caller). In section 4, state both outcomes. API path: step 0 is config only. Queue path: step 0 is a routing build, with an owner (Integrations or dealer-leads), a size, and no dealer date until it ships. Add the queue-path outcome to the go-live checks as an explicit no-go."
+    },
+    {
+      "id": "backend-engineer-r1-2",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| A10 | Source in excludeSource | Inquiry arrives | First text still sent; only the cadence is removed |",
+      "concern": "This holds only on the API path, where the inline STL runs and only the both-excluded case returns early (:504). On the queue path the same configuration produces no workflow and no task, so no text goes out. As written, A10 passes in a test that happens to use the API and fails silently in production if real forwards arrive through SQS.",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:197`, `:504`",
+      "ask": "Scope A10 to the creation path that real forwarded leads take, as recorded in step 1 (A21). Add a negative: a lead created through the queue path with the excluded source equals no-go, and STL stays off."
+    },
+    {
+      "id": "backend-engineer-r1-3",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "| No silent skips | Tasks with statusReason `sqs-stl-deferred-to-api`, `stl-outside-*` or `stl-external-created-at-stale` | `sequenceTasks.statusReason` | unknown | 0 |",
+      "concern": "The silent skips this config is most likely to cause never create a sequenceTasks row. These are the queue-path exclusion (`followUpExclusion.reason`, :208) and `lead-excluded-from-stl-and-follow-up` on the API path (:510). Measuring 'no silent skips' from statusReason alone reports 0 while leads go untexted. This is the noTask vs skipped trap.",
+      "because": "context/traps/stl-notask-vs-skipped.md; `conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:208`, `:510`",
+      "ask": "Add a noTask measure: forwarded leads in `dealer_leads_raw.leads` (argMax per `_id`, filtered to this team and the forwarding source) with no `sequenceTasks` row of taskType STL. Target 0, reported apart from skipped."
+    },
+    {
+      "id": "backend-engineer-r1-4",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| A8 | Lead skipped (window, staleness, gate, queue) or SMS undelivered | Morning handoff | Shown \"not texted\" with reason; BDC calls as today |",
+      "concern": "A reason exists only where a task exists. A lead whose workflow creation was skipped (queue exclusion, both-excluded, invalid-first-step-config) has its reason only in a logger line, not a stored field. The handoff email contents are not traced (section 5, BDC handoff row). So nothing persisted can render 'not texted (reason)' for these leads. The BDC manager sees no row and assumes the lead was handled.",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:203-208` (reason returned and logged, no task written); PRD section 5 'not traced (Q26)'",
+      "ask": "Define the handoff's source as forwarded leads LEFT JOIN STL tasks, so leads with no task appear as 'not texted (no workflow)'. Or name where a creation-skip reason is persisted. If neither exists for step 0, the CSM's daily check (R10) must be P0 for week one and run from that join."
+    },
+    {
+      "id": "backend-engineer-r1-5",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "- Follow-up excludeSource and excludeType. Default none. Here: forwarding source excluded.",
+      "concern": "'Forwarding source' is not a value. The email parser derives source from the subject line (email-parser :415), so the exclusion matches only if every forwarded email produces the same string. The exclusion is per team: any other lead feed at this team that writes the same source (other website leads) also loses its cadence, which is a change nobody asked for. On the queue path it removes the whole workflow (issue 1).",
+      "because": "`integrations-backend:src/email-parsing/email-parser.service.ts:415` (solution-context, low confidence); `conversational-ai-backend:src/notifications/follow-up-exclusion.util.ts:48`",
+      "ask": "Name the exact source string the test forward stores (from A21). Confirm no other feed at this team writes it, and list what loses its cadence if one does. Make 'source string confirmed stable across test forwards' a go-live check."
+    },
+    {
+      "id": "backend-engineer-r1-6",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "- **Rollback:** switch the entry off, or turn STL off in Vini Config. It applies from the next lead, with no deploy.",
+      "concern": "The first rollback switch is the inquiry type entry. A lead with source SPEED_TO_LEAD and type website or spyne_console goes through isAlwaysAllowStlLead and skips the per-type config entirely, so turning the entry off does nothing for that lead. Q19 is a go-live check on one test lead, but nothing says the second switch (team STL off in Vini Config) is evaluated before the bypass. With no new flag, the rollback has to work for every lead shape that can arrive.",
+      "because": "`conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:23`, `:406`; used at `conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:764`",
+      "ask": "Cite the code showing that team-level STL off in Vini Config stops a bypass lead. Otherwise add 'remove the forwarding rule at the dealer' as the guaranteed rollback, with who executes it and how fast."
+    },
+    {
+      "id": "backend-engineer-r1-7",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| R3 | Nothing follows the first text unless the customer replies (nudge off, source excluded) | P0 | [E43, E44] |",
+      "concern": "At execution, getFollowUpExclusionSkip returns early for anything that is not taskType FOLLOW_UP, so excludeSource never stops STL_FOLLOW_UP. The nudge setting alone stops it, and A11 accepts that a console save can reset that setting. Watching runs daily only in week one, then weekly, so a reset after week one lets nudges run for up to a week.",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-task-execution-orchestrator.service.ts:1974` (taskType !== FOLLOW_UP returns null)",
+      "ask": "State in R3 that the nudge setting is the only guard for STL_FOLLOW_UP. Name the writer that can reset it (upsertStlFollowUpConfig :2408 vs upsertSpeedToLeadSettings :47). Keep the follow-up-row query daily for as long as step 0 runs, not only in week one."
+    },
+    {
+      "id": "backend-engineer-r1-8",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "| Forwarded more than 6 hours after submission | Staleness gate (`sequence-workflow-creation.service.ts:82`): not texted, BDC calls |",
+      "concern": "The 6-hour gate compares externalCreatedAt. For an email-parsed lead it is not traced whether that is the ADF requestdate, the email receipt time, or unset, or what an unset value does to isExternalCreatedAtStaleForStl. If the dealer forwards in a batch or the ADF carries the form time, a whole night of leads can go untexted.",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:82`, `:476`; missing",
+      "ask": "Add externalCreatedAt and its source to the fields step 1 records per test lead (A21). Add 'forward latency under 6 hours' to the go-live checks."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Which service calls POST /sequence-workflows/trigger-follow-up or publishes to the workflow-creation SQS queue for a lead created from integrations-backend email parsing, and with which crmType and eventType?",
+      "blocks": "Step 0 scope (config vs routing build), R2, A10, Q34",
+      "source": "integrations-backend email-parsing consumer and dealer-leads-backend /leads/dealer; Blue Brain search_routes found no caller"
+    },
+    {
+      "question": "Is team-level STL off in Vini Config evaluated before isAlwaysAllowStlLead on both creation paths and at execution?",
+      "blocks": "Rollback, R6",
+      "source": "`conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:406`"
+    },
+    {
+      "question": "What source string does the email parser store for this dealer's forward, and does any other lead feed at this team write the same value?",
+      "blocks": "excludeSource config, R3 blast radius",
+      "source": "`integrations-backend:src/email-parsing/email-parser.service.ts:415`; dealer_leads_raw.leads for this team"
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "persona": "bdc-manager",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 3,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 3,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 3,
+    "Dealer reality": 3,
+    "CRM completeness": 2,
+    "Human reach": 2,
+    "Show discipline": 2,
+    "Workload effect": 3,
+    "Contact compliance": 3
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "bdc-manager-r1-1",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| R4 | STOP ends all outbound messages. Replies go to today's Sales Inbound SMS agent, and no second first text is sent inside the suppression window | P0 | `conversational-ai-backend:src/sms/sms.service.ts:2349` [E42] |",
+      "concern": "At 11 pm the customer replies 'can someone call me?' or 'I want to talk to a person'. Today's Sales Inbound SMS agent can open an SMS human transfer (E43 lists an active SMS human transfer as a suppression signal). After hours nobody on my team is there to take it, so it either rings out, sits in Console, or loops back to Ava. Nothing in R4 or A12 to A14 says what happens to a request for a human on these leads, and R5's status list has no 'wants a call' bucket, so a hot lead lands in my morning list as just 'replied'.",
+      "because": "E43; obs: none loaded; persona block 'transfers have no fallback'",
+      "ask": "Add to R4: on forwarded after-hours leads, a request for a person or a callback never triggers a live transfer; Ava tells the customer when the BDC opens and the lead shows on the morning handoff as 'callback requested' with the customer's preferred time. Add an acceptance row (Given texted lead, When the customer asks for a person at 11 pm, Then no transfer fires and the handoff shows callback requested) and a step 0 go-live check that the transfer setting for this team is confirmed."
+    },
+    {
+      "id": "bdc-manager-r1-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| R5 | Before open, the BDC manager has every forwarded lead with one status: texted, replied, appointment set, opted out or not texted | P0 | [E8, E13] |",
+      "concern": "A status alone makes my agents open Console lead by lead to find out what was said and when the appointment is. That is the cleanup work I do not want, and it is how a booked customer gets called to 'set an appointment'. For 'appointment set' I need date and time to put it on my board and confirm it; for 'replied' I need the last thing the customer said.",
+      "because": "E8, E12, E13",
+      "ask": "R5 and A15: each row carries the customer name and phone, status, appointment date and time when set, a one-line summary or last customer message, and a Console link. Add 'callback requested' as a status. A15 Then checks those fields, not just that a status exists."
+    },
+    {
+      "id": "bdc-manager-r1-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Q7, Q11, Q14, Q15, Q20, Q27, Q28, Q31, Q32 | Appointment copy, blast radius, displacement, volume, writers, task tool, show rate and F&I owner, credit tools, reminders | PM, Engineering, CSM | Step 2 |",
+      "concern": "Ava can set an appointment on a step 0 inquiry the first night it is live ('appointment set' is a step 0 status in R5). Whether anyone confirms or reminds that customer (Q32) is parked behind step 2. If neither Vini nor the store sends a reminder, show rate on Ava-set appointments is left to chance, and those are the appointments my GM will judge this on.",
+      "because": "Q32; E6; persona block 'appointments booked with no confirmation and reminder path'",
+      "ask": "Move Q32 to the Step 0 row. Until it is answered, R5 names the fallback: every 'appointment set' row gets a BDC confirmation call the same morning, and A15 checks the appointment time is on the handoff."
+    },
+    {
+      "id": "bdc-manager-r1-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| A7 | Customer texted under 15 hours ago | Second forward arrives | No second first text | R2 stop `conversational-ai-backend:src/sequence-workflows/services/sequence-task-execution-orchestrator.service.ts:2178` |",
+      "concern": "The 15-hour window only sees Spyne's own sends (E43). A customer my agent called and worked yesterday afternoon who submits another form at 10 pm gets a fresh 'let's set an appointment' opener from Ava, on a lead my agent owns. Same for a customer who re-submits two nights running, past 15 hours. The dealer's pause (Q25) covers their automated texts, not my agents' calls.",
+      "because": "E43, E12, E15",
+      "ask": "Add a step 0 go-live check (Q33 owner): the dealer's forward skips customers with an open lead assigned to a BDC agent, or the dealer accepts in writing that these get a first text. Add an edge-case row 'customer already being worked by the BDC' with that handling, and count repeat forwards per phone in the week-one daily query."
+    },
+    {
+      "id": "bdc-manager-r1-5",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| A13 | Texted customer | Replies \"unsubscribe\" | At most one agent reply; handoff marks opted out; BDC manager sets do-not-contact | R4 negative [E42] (Q24) |",
+      "concern": "optOut.sms is set only on an exact STOP (E42), so nothing in our system records 'unsubscribe', 'stop texting me' or 'remove me'. Who marks the handoff 'opted out' if no flag is set? And if that customer is forwarded again after 15 hours, Ava texts them again. The store carries that TCPA risk, not us.",
+      "because": "E42, E43",
+      "ask": "Name the mechanism: the CSM or ops sets optOut.sms on the lead the same morning for any non-STOP opt-out found in the daily check, and the handoff shows it. Add an A13 stop case: the same phone forwarded again after an 'unsubscribe' gets no text."
+    },
+    {
+      "id": "bdc-manager-r1-6",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| A5 | Inquiry forwarded at 11 pm, inside the window | Lead created | One text before BDC open: STL task with smsSentAt, `initial_sms` | R2 happy [ASSUMPTION: STL silent hours allow a first text before the BDC opens] |",
+      "concern": "'Before BDC open' could mean a text at 11:01 pm or at 2 am. Federal TCPA rules restrict solicitation contact before 8 am or after 9 pm in the customer's local time, and some states are stricter. The PRD never says what clock the window runs on or what hours it allows, only that the dealer accepts 'the send window' in writing. My store carries that risk.",
+      "because": "E42; Q22, Q24; missing",
+      "ask": "State the send window in hours and the timezone it uses (store or customer). A5 Then checks smsSentAt falls inside that accepted window and before BDC open; add a case for a lead forwarded at 1 am that is held to the window start rather than sent."
+    },
+    {
+      "id": "bdc-manager-r1-7",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "| Kept appointments; BDC hours | Online-appointment show rate; callback and keying hours | dealer-reported, owned by the CSM (Q28, Q15) | unknown | set after baseline |",
+      "concern": "Step 0 only touches inquiries, and the appointments it creates are the ones Ava sets on those inquiries. There is no row for how many Ava sets and how many show. Online-appointment show rate is a step 2 measure, since those leads are excluded from the forward in step 0. My GM credits shows, and I need those appointments counted on my board.",
+      "because": "E8; persona 'shown is what the GSM and GM credit'",
+      "ask": "Add a goal row: appointments Ava sets on forwarded inquiries, and how many show, measured from the handoff's appointment rows against the dealer's board by the CSM in week one, baseline unknown. Say that these appointments are credited to the BDC board."
+    },
+    {
+      "id": "bdc-manager-r1-8",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| No AI contact on appointment or credit-app leads | Texts to leads whose forwarded ADF was one of those types | `sequenceTasks.smsSentAt` by leadId, compared with the forward log by the CSM in week one | unknown | 0 |",
+      "concern": "Tasks carry no lead type, so after week one nobody is checking. The weekly watch in Rollout lists 'texts to non-inquiries' but this row's source stops at week one. A slip after week one only shows up when my agent gets an angry call from a booked customer.",
+      "because": "E41, E39",
+      "ask": "Name who compares texts with the forward log after week one and how often (for example the CSM, weekly, until step 2), and add 'BDC manager reports a slip' as an input to A3."
+    },
+    {
+      "id": "bdc-manager-r1-9",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "| Inquiry plus an online booking | Ava may push a time; the BDC manager reconciles; step 2 fixes this |",
+      "concern": "Reconcile against what? The handoff in step 0 shows 'appointment set' but not that the customer already had a booking, so I end up with two appointments on the board and one no-show.",
+      "because": "E6, E43",
+      "ask": "Bring the step 2 line forward for step 0: the BDC manager checks every 'appointment set' row against the board before open and cancels the duplicate, and add it to A17."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does the Sales Inbound SMS reply agent offer or execute a human transfer (or callback) for this team outside business hours, and where does it route?",
+      "blocks": "bdc-manager-r1-1; R4 fallback",
+      "source": "engineering: Vini Sales backend owner, reply agent tool list and team hours config (SMS human transfer referenced in E43, orchestrator :657)"
+    },
+    {
+      "question": "Which clock does the STL window use (store timezone or customer area code), and what hours will the dealer accept in writing for first texts?",
+      "blocks": "bdc-manager-r1-6; A5",
+      "source": "engineering (STL owner) plus CSM with the dealer, alongside Q22 and Q24"
+    },
+    {
+      "question": "Can the dealer's forward skip customers who already have an open lead assigned to a BDC agent?",
+      "blocks": "bdc-manager-r1-4",
+      "source": "CSM with the dealer's software development manager, alongside Q33"
+    }
+  ]
+}

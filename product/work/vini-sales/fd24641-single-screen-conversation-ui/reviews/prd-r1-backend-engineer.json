@@ -1,0 +1,126 @@
+{
+  "persona": "backend-engineer",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 3,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 3,
+    "Dependencies": 4,
+    "Rollout": 3,
+    "Every agent": 3,
+    "Dealer reality": 4,
+    "Code-cited baseline": 4,
+    "Integration reality": 4,
+    "Failure design": 2,
+    "Observability and rollback": 3,
+    "Scope discipline": 3
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "backend-engineer-r1-1",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Escalation: an episode open N minutes inside department hours is marked Escalated and texts the department's recipients once per episode; the owner keeps it.",
+      "concern": "Nothing in the PRD says what fires at minute N. It could be a cron sweep, a Bull delayed job, or a check at read time. Without that, 'once per episode' has no guarantee when several pods run, and 'clock pauses out of hours' (A18) has no place to be computed. We already have Bull and @nestjs/schedule (sms-nudge, sms-wakeup, outbound-task-sweeper), so the pattern exists. The PRD just has to pick one.",
+      "because": "`conversational-ai-backend:src/bull/bull-producer.ts`; `conversational-ai-backend:src/outbound-tasks/outbound-task-sweeper.service.ts`; package.json bullmq ^5.16.0, @nestjs/schedule ^6.0.0",
+      "ask": "Name the mechanism, for example a 1-minute sweeper over an index on `unanswered.since` where `escalatedAt` is null. Claim each episode with an atomic findOneAndUpdate that sets `escalatedAt` before sending. Add `escalatedAt`, `textAttempts` and `lastTextError` to the data contract, and compute the in-hours age in one shared function."
+    },
+    {
+      "id": "backend-engineer-r1-2",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Mongo fields and queue still work; events retry; gaps logged",
+      "concern": "The producer cited as prior art does not retry. `_send` swallows the error, logs a warning and drops the event. Every goal in section 3 is measured from `UNANSWERED_EPISODE_EVENTS`. If we copy this producer, the baseline and the 30-day review get silent holes, and nobody can tell a gap from a quiet day. Duplicate sends are possible too, and the PRD gives no event schema or dedupe key.",
+      "because": "`conversational-ai-backend:src/sms/kafka/human-transfer-events.producer.ts:62-88` (\"Intentionally swallowed\")",
+      "ask": "Choose one: (a) an outbox, where the event is written in the same Mongo update as the field and a relay publishes it with retry; or (b) build the metrics from Mongo episode fields or CDC, and treat Kafka as best-effort. Specify the event schema (episodeId, type, ts, rooftop, department, channel, reason, clearedBy) and an idempotent ClickHouse key (episodeId + type)."
+    },
+    {
+      "id": "backend-engineer-r1-3",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "| Five texts in a row | One episode from the first |",
+      "concern": "R1 has 5+ writers (SMS, SMS v2, email, chat, chat mirror), and the code comment counts seven call sites on the activity path. Two inbound messages processed at the same time will both see 'no open episode' and open two, with two `opened` events, unless the open is atomic. The same race exists between a rep reply clearing the episode and a customer message reopening it.",
+      "because": "`conversational-ai-backend:src/leads/leads.service.ts:115` (updateCustomerActivity, \"the seven call sites\"); solution-context.md Who else calls it (10+ callers)",
+      "ask": "Make one shared `openEpisode` / `clearEpisode` service that every writer calls. Open with a conditional findOneAndUpdate (`unanswered.episodeId` absent), and emit `opened` only when the document was modified. Add an acceptance criterion for two concurrent inbound messages producing one episode and one event."
+    },
+    {
+      "id": "backend-engineer-r1-4",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "An episode clears on: a console member's reply on any channel;",
+      "concern": "The only member-send path I can find in conv-ai is SMS `sendManualMessage`. chat-v2 has no member reply route (turn, promote, identify, resolve-vehicles only), and the add-email route is commented out. R1 opens episodes on chat, chat mirror and customer email. Those episodes can then only clear by a click or by CRM activity. The click share and the median will look worse on those channels for reasons that have nothing to do with the rep.",
+      "because": "`conversational-ai-backend:src/sms/sms.controller.ts:208`; `conversational-ai-backend:src/sms/sms.service.ts:2582`; `conversational-ai-backend:src/chat-v2/chat-v2.controller.ts:35-94`; `conversational-ai-backend:src/conversation/conversation.controller.ts:101`",
+      "ask": "Add a per-channel table: opener, the member reply path that clears it (with a code reference or 'none'), and the fallback. Either drop channels with no reply path from R1, or report them separately in the median. Add one acceptance criterion per channel."
+    },
+    {
+      "id": "backend-engineer-r1-5",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "Action-item intents that open a wait: default all except lost-lead and no-meaningful-interaction.",
+      "concern": "Action items are polymorphic. About 25% are bare strings with no intent, and the intent vocabulary mixes SCREAMING_SNAKE and CamelCase generations. A runtime check for 'intent in the rooftop list' will either miss the bare strings or match only one naming generation. That silently decides whether a customer is queued. The config also excludes by name, so any new intent opens a wait by default.",
+      "because": "context/traps/dealer-action-items-polymorphic.md",
+      "ask": "Define a normalised intent enum mapping both generations. State the rule for bare-string items (open or not). Store the config as an allowlist of normalised values. Add acceptance criteria for a bare-string item and for a legacy-cased SALES_LOST_LEAD."
+    },
+    {
+      "id": "backend-engineer-r1-6",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "Sales: Spyne meeting within 7 days, by wait bucket. Service: booking or RO where read",
+      "concern": "The source excludes only `is_demo_meeting`. The stable SMS booking definition also requires the meeting to be created more than 30s after the conversation, with source='spyne' and is_active=1. Upsell and equity campaigns write a pre-existing appointment at the moment the conversation is created, which was about 1 in 5 'booked' SMS conversations in Jun-Aug. Those pre-booked customers would sit in the short-wait buckets and fake the P&L link.",
+      "because": "context/metrics/sms-booking-requires-meeting-after-30s.md; context/facts/exclude-demo-bookings-is-demo-meeting.md",
+      "ask": "Cite the metric definition and apply it: strict conversation_id match, source='spyne', is_active=1, created >30s after the conversation, and `is_demo_meeting: {$ne: true}`. Count meetings only if created after episode `since`."
+    },
+    {
+      "id": "backend-engineer-r1-7",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "**Phase 0, dark, 2 weeks:** R1, R2, R8 fields and events at every rooftop, flags off; backfill; baseline per department.",
+      "concern": "The flag hides the view, but nothing turns off the writer. Phase 0 adds work to every inbound message at every rooftop: a handoff check, an open action-item lookup, and an episode write. A bug there touches SMS, SMS v2, chat and the mirror everywhere, and A32 says 'fields keep writing' even when the config cannot be read. Rollback is then a redeploy, not a switch.",
+      "because": "`conversational-ai-backend:src/leads/leads.service.ts:115` (shared activity path); `conversational-ai-backend:src/sms/sms-v2.service.ts:3517`; `conversational-ai-backend:src/chat-v2/mirror/mirror.service.ts:508`",
+      "ask": "Add a global and per-rooftop writer kill switch, separate from the view flag. Writer errors must never fail the inbound path; catch, count and alert on them. Set a latency budget for the extra lookup. Add an acceptance criterion: writer switch off means no fields or events and inbound handling identical."
+    },
+    {
+      "id": "backend-engineer-r1-8",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Backfill 14 days before day one.",
+      "concern": "Nothing defines how 'human-owed' and 'human replied' are rebuilt historically. `lastHumanReplyAt` does not exist yet, CRM replies are not read, and `lastReadAt` keeps no history. Backfilled episodes will mostly be false opens. Every one is already past N, so the day a rooftop's flag or texts turn on, the queue floods and escalation texts can fire for 2-week-old threads.",
+      "because": "solution-context.md Where the outcome is logged (`lastReadAt` overwritten, no reply event); `conversational-ai-backend:src/conversation/conversation.schema.ts:183`",
+      "ask": "Write down the backfill rules: which signals and which time window. Mark backfilled episodes `backfilled: true`. Exclude them from escalation and texts, and either from the live queue or auto-close them past a cutoff. Add an acceptance criterion: flag turns on with backfilled episodes, and no texts are sent."
+    },
+    {
+      "id": "backend-engineer-r1-9",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "stored on the local lead as `externalOwner.{department, source, externalId, consoleUserId, syncedAt}` whether crm-core is on or off;",
+      "concern": "The data contract has no writer. The PRD never says which service writes `externalOwner` (integrations-backend, crm-core or conv-ai) or through what interface (API, event or poll), and integrations-backend is the one building the read. Acquisition leads (`acql_`) have no dealer-leads row at all, so they cannot carry this field. With crm-core on, how fresh the local row is remains Q21.",
+      "because": "`conversational-ai-backend:src/leads/leads.service.ts:117-131` (\"ACQUISITION HAS NO dealer-leads ROW\"); `conversational-ai-backend:src/leads/leads.service.ts:135`; Q21",
+      "ask": "Name the single writer and the interface, the idempotency key (lead id + department + syncedAt), and the conflict rule when two syncs race. State whether acquisition leads are in or out of scope."
+    },
+    {
+      "id": "backend-engineer-r1-10",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "| A25 | Member without manager rights | Opens the manager view | Denied; team view works | R7 [PM] |",
+      "concern": "conv-ai has no role guard (no RolesGuard or @Roles anywhere in src). 'Manager rights' has no source, so A25 cannot be built or tested as written.",
+      "because": "grep of `conversational-ai-backend:src` for RolesGuard|@Roles|isManager: 0 hits",
+      "ask": "Name where the role comes from (a user-management role or a per-rooftop list of manager members), with a default, or add it to Open questions."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Can a console member reply to a chat or email conversation today through any service other than conv-ai SMS sendManualMessage (frontend or another backend)?",
+      "blocks": "R2 clearing for chat, chat mirror and email episodes",
+      "source": "spyne-console-microfrontends:apps/converse-ai (not indexed in Blue Brain)"
+    },
+    {
+      "question": "Where is the console member role (manager vs rep) stored and read?",
+      "blocks": "R7, A25",
+      "source": "user-management"
+    }
+  ]
+}

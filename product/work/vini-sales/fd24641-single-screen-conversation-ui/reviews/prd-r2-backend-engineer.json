@@ -1,0 +1,96 @@
+{
+  "persona": "backend-engineer",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 3,
+    "Configuration, not branches": 4,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Code-cited baseline": 3,
+    "Integration reality": 4,
+    "Failure design": 3,
+    "Observability and rollback": 4,
+    "Scope discipline": 4
+  },
+  "previous_issues": [
+    { "id": "backend-engineer-r1-1", "fixed": true, "note": "R5 names a 1-minute sweeper, atomic `escalatedAt` claim, one shared in-hours function, `textAttempts`, `lastTextError`. The per-recipient window cap added in the same row has no state of its own; raised as new issue r2-3." },
+    { "id": "backend-engineer-r1-2", "fixed": true, "note": "Metrics now come from Mongo `unanswered_episodes`; Kafka is best-effort with a schema and key `episodeId + type`, reconciled daily; A34 covers Kafka down. The 'append-only' wording conflicts with the mutable fields; raised as r2-2." },
+    { "id": "backend-engineer-r1-3", "fixed": true, "note": "R12 makes one shared open/clear service with a conditional open and event only on write; A3 covers concurrency. Atomicity across a separate collection needs a unique index and an episode key; raised as r2-2." },
+    { "id": "backend-engineer-r1-4", "fixed": true, "note": "Per-channel table in section 5; email and chat reported apart; reply path is Open question 6." },
+    { "id": "backend-engineer-r1-5", "fixed": true, "note": "R1 uses normalised intents across both naming generations, bare strings never open, A2 covers bare string and either-casing SALES_LOST_LEAD. Residual: the config default is still written as a deny list; raised as minor r2-6." },
+    { "id": "backend-engineer-r1-6", "fixed": true, "note": "Section 3 P&L row applies strict conversation_id, source='spyne', is_active=1, SMS >30s, calls +-7 days, demo and reminder exclusions, after `since`." },
+    { "id": "backend-engineer-r1-7", "fixed": true, "note": "R8 adds a global and per-rooftop writer switch separate from the view flag, errors counted and never failing inbound, 50 ms p95 budget; A33 covers it." },
+    { "id": "backend-engineer-r1-8", "fixed": true, "note": "Backfill is baseline only, marked `backfilled: true`, never shown or texted (A17). The rebuild signals are still only 'message timestamps'; raised as minor r2-5." },
+    { "id": "backend-engineer-r1-9", "fixed": true, "note": "R4 names one writer (conv-ai internal endpoint fed by integrations-backend), idempotent on lead + department + `syncedAt`, newest wins; acquisition leads are 'No owner'." },
+    { "id": "backend-engineer-r1-10", "fixed": true, "note": "Manager list per rooftop, default the escalation recipients; section 9 records no role guard in conv-ai." }
+  ],
+  "issues": [
+    {
+      "id": "backend-engineer-r2-1",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "| Team list | serviceType, unreadOnly, flowType | Adds `unansweredOnly`, `ownerUserId` |",
+      "concern": "Two new filters on this endpoint cannot build R3. `getTeamConversations` first selects leads by the lead's own `service_type`, then lists conversations sorted by `createdAt` desc. R1 and A5 put a sales lead's episode in the service view when the action item is service, so that episode never reaches the service list through this query. 'Oldest wait first' needs the episode `since` on the sorted collection, and the owner filter needs `externalOwner` joined in before pagination, not after the `$skip`.",
+      "because": "`conversational-ai-backend:src/customers/customers.service.ts:2452` (lead pre-query by service_type); `conversational-ai-backend:src/customers/customers.service.ts:2512` (`$sort: { createdAt: -1 }` before `$facet` skip/limit)",
+      "ask": "Specify the query path: either query open episodes by enterprise, team and episode department, sorted by `since`, or denormalise `unanswered.{episodeId, department, since, ownerConsoleUserId}` onto the conversation. Name the index (for example teamId + department + since). Make the badge count the same query, and run A5 and A13 through the list endpoint."
+    },
+    {
+      "id": "backend-engineer-r2-2",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Each episode is an append-only row in Mongo `unanswered_episodes`, the metrics source.",
+      "concern": "The row is not append-only: R5 sets `escalatedAt`, `textAttempts` and `lastTextError` on it, and R2 sets the clear. Nothing defines the episode key either. A customer with an SMS and an email conversation: is that one episode or two, and does an SMS reply clear an email-opened episode? A13 'badge equals list total' depends on that answer. A conditional open across a separate collection is only atomic with a unique index. Without one, two pods both find 'no open episode' and both insert, which is the r1-3 race again.",
+      "because": "R12 and R5 of v2; A3; A13",
+      "ask": "Define the key (lead + department matches 'once per customer'), a unique partial index on that key where status is open, and treat a duplicate-key error as a no-op without an `opened` event. Split the mutable episode document from an append-only transitions log, and list each field with its type and writer."
+    },
+    {
+      "id": "backend-engineer-r2-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "One text per recipient per window (count, oldest wait, link).",
+      "concern": "The cap has no state. The sweeper claims episodes, but nothing claims the recipient's window, so two sweeper instances (A23) can each send a summary. Nothing says what happens to an episode that escalates after the window's text has gone out. If it waits for the next escalation to trigger a text, and none comes, the manager never hears about it. Retry and `text_failed` sit on the episode, but the text is now a summary that covers many episodes.",
+      "because": "R5; A23; A27",
+      "ask": "Add a window record keyed on recipient + department + window start, claimed with a unique upsert before sending. Episodes that escalate inside a sent window are sent at window end. Put retry and failure on the summary send, and link it to its episode ids. AC: an episode escalating mid-window is texted at window end, and two instances send once."
+    },
+    {
+      "id": "backend-engineer-r2-4",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "refreshed on episode open where the provider allows.",
+      "concern": "Episodes open on the inbound path, which R8 gives a 50 ms p95 budget. A synchronous VinSolutions read there adds third-party latency and rate limits to every inbound message and couples inbound handling to a provider outage. The CRM activity clear in R2 has the same gap: unlike R4, it names no writer, interface or schedule.",
+      "because": "R8 [ASSUMPTION: 50 ms p95 writer budget]; R4 names a writer, R2 names none; `conversational-ai-backend:src/bull/bull-producer.ts` (existing queue)",
+      "ask": "Make the refresh async: a queued job keyed lead + department, deduped, with the episode showing the last stored owner until it lands. Name the writer for CRM activity clears (the same conv-ai internal endpoint, calling the shared clear service with the activity timestamp and actor). AC: provider slow or down, inbound unchanged, owner from the stored value."
+    },
+    {
+      "id": "backend-engineer-r2-5",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Backfill 14 days from message timestamps, `backfilled: true`, baseline only.",
+      "concern": "The PRD still does not say which stored signal marks 'a member sent' versus Vini. On SMS the message row carries `authorType: HUMAN` and `authorUserId`. The chat-completion copy tags `human_assistant_id` only during an ACTIVE claim, so reading the wrong store misclassifies toggleAiMode manual sends. Email and chat have no member send. Handoff state at a past time has to come from claim and release history (Kafka/ClickHouse), not from the current `humanTransferDetails`.",
+      "because": "`conversational-ai-backend:src/sms/sms.service.ts:2655` (`authorType: SmsAuthorType.HUMAN`, `authorUserId`); `conversational-ai-backend:src/sms/sms.service.ts:2665` (human_assistant_id only when ACTIVE); `conversational-ai-backend:src/sms/kafka/human-transfer-events.producer.ts:69`",
+      "ask": "Name the signal per channel for R1's 'member sent the last outbound' and for backfill: SMS message `authorType`, handoff from claim and release events, action items by `createdAt` and completion. Backfill only channels where the reply is observable, or label the rest."
+    },
+    {
+      "id": "backend-engineer-r2-6",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Action-item intent allowlist per department: sales, all except lost-lead and no-meaningful-interaction; service, set after reading service intents.",
+      "concern": "This is still a deny list. If 'all except' is evaluated at runtime, any new intent opens waits by default, which is the opposite of the resolution ('new intents do not open until added') and of r1-5.",
+      "because": "context/traps/dealer-action-items-polymorphic.md; prd-r1-resolution.md row backend-engineer-r1-5",
+      "ask": "Write the sales default as an explicit list of normalised intent values, materialised at enablement. State that new intents do not open until added, and add that case to A2."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Is a second dark-mode deploy acceptable to add the unique index on `unanswered_episodes` before the writer switch goes on, or must the index ship with the writer?",
+      "blocks": "R12 open atomicity, Phase 0 start",
+      "source": "Vini backend"
+    }
+  ]
+}

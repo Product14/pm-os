@@ -1,0 +1,58 @@
+{
+  "persona": "service-manager",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 3,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Capacity truth": 4,
+    "Appointment quality": 3,
+    "Fixed ops metric": 3,
+    "Promise control": 4,
+    "DMS write-back": 4
+  },
+  "previous_issues": [
+    { "id": "service-manager-r2-1", "fixed": true, "note": "Section 10 Service now states a pass and a fail: median wait falls against the pilot's own Phase 0 baseline, click share and Vini Service bookings reported, fail means the next service rooftop does not turn on. Weekly watch takes the service click-share threshold from the pilot's first two live weeks, not the sales 50%. How strong the pass bar is gets raised as new issue r3-1." },
+    { "id": "service-manager-r2-2", "fixed": true, "note": "Config line 'Per department: attestation ...', R6 'per rooftop per department', the Goals console-reply share per rooftop, department and week, and A30 (sales attested, service not, mark only)." },
+    { "id": "service-manager-r2-3", "fixed": true, "note": "Aging label and cutoff are per department; service reads 'in scheduler or by phone' and defaults to close of that day. Out-of-hours behaviour of that default is raised as new issue r3-2." },
+    { "id": "service-manager-r2-4", "fixed": true, "note": "A27 drops the stale assumption and cites Open question 5; the config line and 'Before day one' make unstored service hours a setting the CSM fills before the pilot." },
+    { "id": "service-manager-r2-5", "fixed": true, "note": "R6 says 'an advisor or RO read is not one'; A30 covers 'service advisor and RO reads only' as mark only." }
+  ],
+  "issues": [
+    {
+      "id": "service-manager-r3-1",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Pass: service median wait falls against it, click share and Vini Service bookings reported; fail, the next does not turn on.",
+      "concern": "The median counts only console replies. Clicks and aged episodes sit outside it (Goals row 1, A11, A16). My advisors call back from the desk phone or text from the scheduler, so at most drives the median will rest on a handful of console replies. It can fall while more customers age out unreplied, and the pilot passes. Sales gets a volume floor (20 episodes a week, 80% console-reply share). The service pilot gets neither, so a pass on 6 replies looks the same as a pass on 60.",
+      "because": "Goals row 1 'click-cleared and aged count unreplied'; A11 'outside the median'; section 9 Scheduler/DMS 'None read [Q19]; not in this L'; Open question 3 (do advisors reply by scheduler or phone); persona Review lens 'Fixed ops metric'",
+      "ask": "Add two conditions to the service pass: (a) aged share does not rise against the pilot's Phase 0 baseline, and (b) the pilot has at least a minimum number of console-replied service episodes a week. If the floor is not met, the result is 'inconclusive', not a pass, and the next service rooftop does not turn on. For the PM at Gate 3: the floor value. Pick the pilot from Phase 0 service console-reply share the way sales picks its success-check rooftops."
+    },
+    {
+      "id": "service-manager-r3-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "aging cutoff, sales 24 in-hours hours, service close of that day",
+      "concern": "'That day' is undefined for an episode that opens after the drive closes or in its last minutes. The 7pm 'can I drop it off at 7:30 tomorrow?' text is the one my 7am advisor most needs on the badge. If 'that day' means the day it opened, the episode has passed close before it starts and goes straight to aged, off the badge, with no escalation. An episode that opens at 16:50 ages before the 30-minute N can fire. A17 covers this for sales only.",
+      "because": "R3 'aging cutoff on the R5 in-hours clock'; A17 (sales only); persona 'How they judge' item 3 (status calls) and the bad-day example (8am drop-off rush)",
+      "ask": "Define the service cutoff as the close of the first service day the episode is open in hours. An episode that opens out of hours or after closing waits for the next opening. Add a service version of A17: an episode opens Tuesday 19:00, is on the badge at Wednesday's service opening, and ages at Wednesday's close. For the PM at Gate 3: whether an episode opening within N of closing rolls to the next day."
+    },
+    {
+      "id": "service-manager-r3-3",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Hours: sales, team working hours; service, its own, else a setting the CSM fills before the pilot; unset, no escalation.",
+      "concern": "This covers escalation when service hours are unset, but not aging. Service aging runs on 'close of that day' on the in-hours clock. With no service hours, the episode either never ages and sits on the badge for good, or falls back to a clock nobody chose. A26 only says 'No escalation'. 'Before the pilot' covers the first rooftop, not the second.",
+      "because": "R3 and R5 'One in-hours function for escalation and aging'; A26; Open question 5",
+      "ask": "The service view flag cannot turn on at a rooftop until service hours are set. Add that to A26 or as its own case: service hours unset, the service flag cannot be enabled."
+    }
+  ],
+  "requests": []
+}

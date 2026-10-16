@@ -1,0 +1,47 @@
+{
+  "persona": "bdc-manager",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Faithful to the one-pager": 5,
+    "Testable requirements": 4,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 5,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "CRM completeness": 3,
+    "Human reach": 4,
+    "Show discipline": 4,
+    "Workload effect": 4,
+    "Contact compliance": 4
+  },
+  "observations_loaded": [],
+  "previous_issues": [
+    { "id": "bdc-manager-r2-1", "fixed": true, "note": "Q38 names the source of each R5 status; the go-live check shows the surface carrying R5's fields on the test lead; A17 accepts Console only as a list filterable by callback-requested and appointment-set with A14 and A16 passing there; A14 ends 'else no go-live'. The CSM hand-built transcript list was rejected as outside approved scope; I accept that, since no go-live is the stronger fallback." },
+    { "id": "bdc-manager-r2-2", "fixed": true, "note": "A5 now says no text after the window ends, the handoff shows 'not texted (outside window)' and the BDC calls it, so there is no 8 am text colliding with my agent's call. Same-evening contact is measured with outside-window leads apart; Q39 asks open times and the arrival split." },
+    { "id": "bdc-manager-r2-3", "fixed": true, "note": "R10 keeps the opt-out scan daily throughout; R4 makes a same-day optOut.sms path (Q37) a go-live condition; A12 covers week three and the re-forward." },
+    { "id": "bdc-manager-r2-4", "fixed": true, "note": "R5 goes to the BDC manager and a backup; A15 covers my day off; two recipients cover every showroom day (Q39)." },
+    { "id": "bdc-manager-r2-5", "fixed": true, "note": "Pause on now includes 'an after-hours transfer' and 'a lead missing from the handoff'." }
+  ],
+  "issues": [
+    {
+      "id": "bdc-manager-r3-1",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "If the production test shows a held text instead, the handoff shows \"text due at <time>\" and the BDC calls after it",
+      "concern": "The production test in section 4 is one test inquiry with no time stated, so it cannot show whether a lead forwarded after the window is skipped or held. If we only find out from a real customer, my agent calls at 9 am and Ava texts the same customer at window open, or the handoff says 'not texted' on a lead that is about to get a text. My agents need to know which status they will see before day one.",
+      "because": "A5; section 4 'Before go-live the dealer sends one test inquiry'; persona 'will it double-contact a customer my agent is already working'",
+      "ask": "Add a second production test inquiry sent after the window ends, and decide the A5 branch (skip or held) from it before go-live, so the handoff status is fixed before my team relies on it."
+    }
+  ],
+  "for_pm_at_gate_3": [
+    { "id": "E-1", "note": "Queue-path decision. If step 0 cannot go live, my team keeps working these leads as today; tell the dealer by a date." },
+    { "id": "E-2", "note": "Answer-by dates, including Q39 (BDC hours, backup, arrival split), which sets my recipients." },
+    { "id": "E-3", "note": "No-API write-back channel. Until then my backup or I key every Ava appointment (A16); that keying is the cleanup step 3 should remove." },
+    { "id": "Q14", "note": "What step 2 displaces; PM call." }
+  ],
+  "requests": []
+}

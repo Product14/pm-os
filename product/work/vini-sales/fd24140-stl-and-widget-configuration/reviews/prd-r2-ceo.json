@@ -1,0 +1,86 @@
+{
+  "persona": "ceo",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 5,
+    "Testable requirements": 4,
+    "Today vs after": 5,
+    "Configuration, not branches": 4,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 3,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Dealer economics": 3,
+    "Base leverage": 4,
+    "Dependency honesty": 4,
+    "Handoff clarity": 4,
+    "Decision readiness": 3
+  },
+  "previous_issues": [
+    { "id": "ceo-r1-1", "fixed": true, "note": "Removes line restated as asked: conditional on Q22, BDC still calls each lead, calls come off only with step 3. See ceo-r2-1: R11 added in v2 now narrows what 'overnight wait' can mean." },
+    { "id": "ceo-r1-2", "fixed": true, "note": "Measured from ADF submission time, baseline from the BDC's usual first call (Q15), target at go-live review, owner PM. Residual gap on the forward-lag row in ceo-r2-4." },
+    { "id": "ceo-r1-3", "fixed": true, "note": "Step 1 now has the CSM get weekly after-hours leads by type and BDC minutes per callback, and the PM answer Q14. Answer-by dates are E-2, not re-raised." },
+    { "id": "ceo-r1-4", "fixed": true, "note": "Q30 is in the step 2 gate and section 11; step 2 becomes priority only if an E22 company confirms the same job and agrees to pilot." },
+    { "id": "ceo-r1-5", "fixed": true, "note": "CSM owns the agreement and starts it during step 0; Integrations owner answers Q10, Q17, Q21. Naming by role accepted per drafter rule; dates are E-2." },
+    { "id": "ceo-r1-6", "fixed": true, "note": "R10 is P0: daily in week one, then weekly while step 0 runs, CSM owner, a query once Q23 confirms the type is stored." },
+    { "id": "ceo-r1-7", "fixed": true, "note": "Section 9 now says providers unknown (Q29). The conditional channel is E-3, not re-raised." },
+    { "id": "ceo-r1-8", "fixed": true, "note": "Dealer message in section 10 ties go-live to the checks, not a calendar date, and tells the dealer write-back is planned." },
+    { "id": "ceo-r1-9", "fixed": true, "note": "Step 1 sized S with STL engineering and Integrations owners; the date is E-2." }
+  ],
+  "issues": [
+    {
+      "id": "ceo-r2-1",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "**Removes:** the overnight wait for a first contact on inquiries, if Q22 clears.",
+      "concern": "v2 added R11: no first text outside 8 am to 9 pm customer local time. So a lead submitted at 11 pm still waits overnight. At best it gets a text at 8 am, and A5 allows it to be marked 'not texted (outside window)' instead. That leaves a gain of BDC open minus 8 am for those leads, which could be minutes. Step 0 only really removes the overnight wait for inquiries that arrive between BDC close and 9 pm. We do not know that share, and Q15 does not ask for it. This is the only days-removed claim on the page, and it now overstates what the page itself allows.",
+      "because": "R11 and A5 in v2; Q15 (counts by type, not by arrival hour); Q22; fact 3",
+      "ask": "Restate as: 'Removes: a same-evening first text for inquiries arriving between BDC close and 9 pm local; later leads get a text at window open, ahead of the BDC by (BDC open minus 8 am), if Q22 clears.' Add to Q15 the after-hours lead count split by arrival before or after 9 pm, plus the BDC open and close times. Also state in A5 which one happens at window start, the text or 'not texted', because that decides whether post-9 pm leads gain anything."
+    },
+    {
+      "id": "ceo-r2-2",
+      "severity": "major",
+      "type": "scope",
+      "quote": "| R10 | The CSM reconciles forwarded leads against STL tasks (noTask apart) and checks non-inquiry texts daily in week one, then weekly while step 0 runs; follow-up rows are checked daily throughout | P0 | [PM] [E41] |",
+      "concern": "Step 0 is a 'configuration only' pilot, but it runs on open-ended manual work. The CSM checks follow-up rows daily 'throughout', reconciles weekly, and reconfirms the dealer pause weekly. Ops sets opt-outs by hand each morning, and the BDC manager keys every Ava appointment. Nothing says when step 0 ends or what decides keep, widen or stop. Without an exit, a one-rooftop config pilot turns into a permanent hand-run service, and we cannot copy that to a second store.",
+      "because": "R4, R10, section 8 'CSM reconfirms the pause weekly in month one', section 10 Watch; base-versus-one-off lens",
+      "ask": "Add a step 0 review at week 4, owned by the PM, with keep, stop or widen criteria taken from the section 3 measures: 0 non-inquiry texts, 0 chase sends, noTask 0, and first contact ahead of the BDC. After N clean weeks, end the daily follow-up check or turn it into an alert. State the CSM and ops hours step 0 costs per week so it can be weighed against the BDC hours (Q15)."
+    },
+    {
+      "id": "ceo-r2-3",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| Q4, Q15, Q19, Q22, Q24 to Q26, Q32, Q33, Q35 to Q37 | Go-live checks (section 4) | Engineering, CSM | Step 0 |",
+      "concern": "This row lists Q15 as a step 0 go-live check. Section 4's go-live list does not include Q15, and the round 1 resolution says Q15 is not a blocker because week-one counts stand in. Q19 also shows up as a step 0 check and again in R7 as a step 1 output. A reader cannot tell whether a missing BDC baseline stops go-live.",
+      "because": "prd-r1-resolution gm-r1-3; section 4 go-live checks; R7",
+      "ask": "Move Q15 to its own line, 'asked before go-live, does not block; week-one counts stand in'. Keep Q19 in step 0 only, and drop it from R7."
+    },
+    {
+      "id": "ceo-r2-4",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| First contact before BDC open | smsSentAt minus ADF submission time; forward lag on its own line | submission time as step 1 finds it stored, else the dealer's forward log | BDC's usual first call on overnight leads (Q15) | set at go-live review from week one; owner PM |",
+      "concern": "The row says forward lag is reported 'on its own line', but the table has no such line. The dealer's forward is the part of the delay we do not control, so it is what we will need when the dealer asks why first contact was slow.",
+      "because": "ceo-r1-2; go-live check 'Forward lag under 6 hours'",
+      "ask": "Add a row: 'Forward lag | lead created time minus ADF submission time | same sources | unknown | under 6 hours (go-live check)'."
+    },
+    {
+      "id": "ceo-r2-5",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "- The queue path never sends the STL text inline: an excluded source skips the whole workflow; otherwise it records `sqs-stl-deferred-to-api` and schedules the cadence `conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:193`, `:257`.",
+      "concern": "Length: v2 is 3,622 words against a target of about 3,000, and it reads long because the queue-path go/no-go is told six times: here, in the next bullet, in section 4, in section 5 (Workflow creation and Bypass rows), in R2 and A6, and in the Jira description. The value line and the open PM decisions get lost among them.",
+      "because": "rubric target ~3,000 words; v2 sections 2, 4, 5, 12",
+      "ask": "Cut about 300 words. (1) Delete section 2 bullets 5 and 6 (queue path, team-level STL off), since section 4's go/no-go and the section 5 rows carry the same code refs. (2) Delete the section 8 rows that already sit in a go-live check or criterion: 'Inquiry plus an online booking' (A16), 'Customer already worked' (Q33 check), 'Forwarded more than 6 hours' (forward-lag check), 'Reply asks about credit' (Q31). (3) Cut the section 12 Description to two lines that point at section 4."
+    }
+  ],
+  "requests": [
+    {
+      "question": "What are the BDC's open and close times, and what share of this rooftop's after-hours website inquiries arrive before 9 pm local versus after?",
+      "blocks": "Whether step 0 removes the overnight wait for most leads or only a few (ceo-r2-1)",
+      "source": "CSM via the VP Marketing (extend Q15)"
+    }
+  ]
+}

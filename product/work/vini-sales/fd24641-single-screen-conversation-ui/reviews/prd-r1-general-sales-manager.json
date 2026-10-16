@@ -1,0 +1,122 @@
+{
+  "persona": "general-sales-manager",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 3,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 3,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 3,
+    "Desk control": 5,
+    "Rep handoff": 3,
+    "Inventory truth": 4,
+    "Attribution integrity": 3,
+    "Outcome metric": 2
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "general-sales-manager-r1-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| Wait links to the P&L | Sales: Spyne meeting within 7 days, by wait bucket. Service: booking or RO where read | Mongo `meetings` (exclude `is_demo_meeting`); scheduler/DMS read | unknown | check, not the claim |",
+      "concern": "An appointment set is not a deal. The approved one-pager said the check is 'appointments shown'; this row quietly became 'Spyne meeting within 7 days'. If faster replies just book more no-shows, this row calls it a win. I judge my BDC on show rate and my floor on sold units, and so should this.",
+      "because": "one-pager/final.md 'Checks: appointments shown'; persona block 'success is measured in appointments set with no view of shows'; E6",
+      "ask": "Make the sales P&L row appointments shown (and sold where the CRM read gives status), by wait bucket, with the source named or 'unknown' if show status is not read today. Keep meetings set only as a secondary column."
+    },
+    {
+      "id": "general-sales-manager-r1-2",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "CRM activity after `since` (sales, where read)",
+      "concern": "Any activity is not a reply. VinSolutions logs automated drip emails, lead-notification touches and status changes as activity. If those clear the episode, the customer drops off my rep's queue without a human ever talking to him, and the manager view shows clean numbers on leads that went cold. There is no acceptance criterion for this clear at all, only for the read being down (A8).",
+      "because": "E13 (reps work from VinSolutions); missing (no AC for the CRM-activity clear path)",
+      "ask": "Define the qualifying activity: an outbound call, text or email logged by a human user (owner or any store user), not automated or system-generated touches. Add ACs: human call logged in VinSolutions after since clears it with clearedBy = crm_activity; an automated drip email or status change does not clear it."
+    },
+    {
+      "id": "general-sales-manager-r1-3",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "No; push hardcodes \"AI SPYNE\".",
+      "concern": "If our push puts 'AI SPYNE' on the lead in VinSolutions, then reading the CRM salesperson back can return our own house account for every lead Vini created until a manager reassigns it. My rep's Mine is empty, the queue fills with an 'Unmapped owner' that is really us, and the salesperson field my commission and pipeline reports run on stays wrong. The PRD reads owner without saying what happens when the owner is Spyne.",
+      "because": "`conversational-ai-backend:src/external_crm_integrations/prepare_crm_data/vinsolutions.ts:191`; E43",
+      "ask": "Add an AC: CRM owner equal to the Spyne/house user is treated as 'No owner', never mapped to a member. State in Dependencies whether the push sets the salesperson field (and so whether stores must reassign before Mine works), and confirm the read never changes the CRM salesperson."
+    },
+    {
+      "id": "general-sales-manager-r1-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Backfill 14 days before day one.",
+      "concern": "Combined with 'oldest wait first' in R3, day one opens the queue with two weeks of stale episodes on top: customers who bought elsewhere or were sold by a rep from VinSolutions. Today's hot reply sits on page three. My guys look once, see a junk pile, and never open it again. Speed to a fresh reply is what moves close rate.",
+      "because": "E13 (replies sent from VinSolutions are not seen); E10 (about 600 leads a month, dealer-stated)",
+      "ask": "Use the backfill for the baseline only, not the live queue; or show backfilled episodes only if opened in the last 24 to 48 hours. Add an AC for what a member sees on the first day the flag turns on."
+    },
+    {
+      "id": "general-sales-manager-r1-5",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| R9 | Where \"Mine\" is connected, the owner gets one text per episode, by notification preference. | P1 | [E33] |",
+      "concern": "When does my rep get this text: the second the customer replies, or after N? Inside showroom hours only? And does it replace the handoff notification that goes to everyone today, or is the rep now getting two texts plus the manager's? The dealer asked for alerts tied to assignment, not sent to everyone; this line does not say the everyone-text stops. No AC covers R9.",
+      "because": "E33; `conversational-ai-backend:src/notifications/notifications.service.ts:156`",
+      "ask": "Specify trigger time, department hours, and whether existing all-recipient notifications for that conversation are suppressed when an owner is mapped. Add ACs for the happy path, owner unmapped (no owner text, team view only), and out of hours."
+    },
+    {
+      "id": "general-sales-manager-r1-6",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "texts the department's recipients once per episode",
+      "concern": "Once per episode is per customer, not per manager. On a Saturday with 30 replies waiting I get 30 texts while I am desking deals, and by Sunday I have muted the number. The per-recipient cap is parked in Open question 4 with no requirement or default.",
+      "because": "E10 (about 600 leads a month, dealer-stated); open question 4 in the PRD",
+      "ask": "Add a per-recipient cap or a batched digest (one text listing count and oldest wait) as a setting with a default, and an AC for it."
+    },
+    {
+      "id": "general-sales-manager-r1-7",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "a click \"Handled elsewhere\" / \"No reply needed\" with actor and time, which never stops the wait clock",
+      "concern": "A rep can empty his own Mine with 'No reply needed' in ten seconds. 'Never stops the wait clock' and A8 'excluded from the median' read differently: does the episode keep aging somewhere I can see, or does it just leave? I need to see who clicked what, not just a 7-day count.",
+      "because": "E6 (trouble with them following up); A8",
+      "ask": "State what the wait is for a click-cleared episode and let the manager view open the list of click-cleared episodes per owner."
+    },
+    {
+      "id": "general-sales-manager-r1-8",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "Owner max age: proposed 24 hours.",
+      "concern": "On a Saturday the desk TOs a customer to a closer. If the owner read refreshes daily, the customer's next text lands in the original rep's Mine for up to a day while the closer has the deal. That starts a fight on the floor.",
+      "because": "missing (sync cadence unknown, Q18)",
+      "ask": "State the owner read cadence, or refresh the owner when an episode opens, and add an AC for an owner change during an open episode."
+    },
+    {
+      "id": "general-sales-manager-r1-9",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| R7 | Manager view per department: per owner open count, oldest wait, clicks in 7 days; \"No owner\", \"Unmapped owner\", \"Stale owner\" rows; escalations and failed texts. | P0 | [E6] [PM] |",
+      "concern": "Oldest wait on wall clock blames my rep for a customer who texted at 11 pm. If I use this view to hold people accountable, it has to count my hours.",
+      "because": "Goals row 1 ('wall clock; in-hours secondary')",
+      "ask": "Show oldest wait in department hours in the manager view, wall clock secondary."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does the console have a manager role today, and who at a store holds it? A25 depends on 'manager rights'.",
+      "blocks": "R7, A25",
+      "source": "Vini backend / console team"
+    },
+    {
+      "question": "What does the VinSolutions push set in the salesperson field ('AI SPYNE'), and does the store reassign it before a rep works the lead?",
+      "blocks": "R4, issue general-sales-manager-r1-3",
+      "source": "integrations-backend; `vinsolutions.ts:191`"
+    },
+    {
+      "question": "Is appointment show status (shown, no-show) read from the CRM or recorded on Spyne meetings today?",
+      "blocks": "Goals row 4, issue general-sales-manager-r1-1",
+      "source": "Vini backend; Integrations PM"
+    }
+  ]
+}

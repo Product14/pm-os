@@ -1,0 +1,75 @@
+{
+  "persona": "general-sales-manager",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 5,
+    "Today vs after": 4,
+    "Configuration, not branches": 5,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Desk control": 5,
+    "Rep handoff": 3,
+    "Inventory truth": 4,
+    "Attribution integrity": 5,
+    "Outcome metric": 4
+  },
+  "previous_issues": [
+    {
+      "id": "general-sales-manager-r2-1",
+      "fixed": true,
+      "note": "R3 ages on 'the R5 in-hours clock'; R7 shows 'per owner open and aged counts'; aged count unreplied in metrics. A17 is exactly the Saturday 16:30 case, on the badge Monday opening. The 24-hour value is with the PM."
+    },
+    {
+      "id": "general-sales-manager-r2-2",
+      "fixed": true,
+      "note": "R2 sales clears add 'inbound call logged answered; visit or appointment marked shown, where the CRM tells them apart'; unanswered inbound never clears. A9 covers the clear, A10 the unanswered call; section 9 row 2 and Q18 say the type split is unknown."
+    },
+    {
+      "id": "general-sales-manager-r2-3",
+      "fixed": true,
+      "note": "R2 stores the replier, R7 shows 'replies per member', A8 is rep B on rep A's episode. The not-owner flag was rejected as outside the approved manager view; accepted, credit between reps stays in the CRM."
+    },
+    {
+      "id": "general-sales-manager-r2-4",
+      "fixed": true,
+      "note": "Phase 0 now reports 'expected clicks (episodes a day not console-cleared before the cutoff, per rooftop and last console replier)'."
+    }
+  ],
+  "issues": [
+    {
+      "id": "general-sales-manager-r3-1",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "sales owner click share over 50% triggers a CSM call",
+      "concern": "On day one nobody has a CRM owner, so every sales episode is a 'No owner' row under the unowned-queue owner. 'Owner click share' then measures one bucket, my BDC or internet manager's row, not the reps who are clicking. The number that tells me a rep is clearing customers without answering them is click share per clicking member, and that is what the CSM call should be about until Mine is live.",
+      "because": "R4 'Mine' not connected at any rooftop today [E43]; R7 'click clears with actor and time'; E6 ('trouble with them following up')",
+      "ask": "Define the weekly-watch click share per clicking member (actor) where no owner read is live, per owner once Mine is connected. One line in section 10; no new field, R7 already stores the actor."
+    },
+    {
+      "id": "general-sales-manager-r3-2",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "never the Spyne integration user, automation, status changes or an unanswered inbound call",
+      "concern": "Right that a status change never clears; that was my ask. The other side: a delivered customer texts 'thanks, love the truck' after my rep's last text, an episode opens, and if texts are allowed my managers get escalated on a sold unit 30 minutes later. Same for a lead the desk marked lost. That is noise on the badge and a click my rep has to make on every delivery.",
+      "because": "R1 opens on 'a member sent the last outbound'; E30 ('CRM status and human activity override the AI schedule', CSM-written); missing (no AC for a sold or lost lead)",
+      "ask": "For the PM at Gate 3: where CRM status is read, a sold or lost lead still opens and stays open but is excluded from escalation texts and labelled on the row. If status is not read in this L, say so in section 9 and leave it as is."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does the VinSolutions read in this L include lead status (sold, lost), and how fresh is it?",
+      "blocks": "general-sales-manager-r3-2",
+      "source": "Integrations PM; integrations-backend"
+    }
+  ],
+  "notes_for_pm_gate_3": [
+    "Still escalated, not re-raised: at the requesting rooftop day one is a team list with no owner and no texts until its VinSolutions owner and activity reads are live. From the desk that is the one thing the used car manager asked for ('[my] unanswered') arriving last; decide with that in mind.",
+    "Defaults for the PM: N 30 in-hours minutes, text window 30 minutes, sales aging cutoff 24 in-hours hours (two to three selling days at a typical store, long for an internet lead), 80% console-reply threshold, 50% click-share trigger.",
+    "Outcome metric holds only as long as show status is unread: Goals row 4 falls back to meetings set, labelled. I accept that for this L; the gross claim must wait for show status, as the doc already says."
+  ]
+}

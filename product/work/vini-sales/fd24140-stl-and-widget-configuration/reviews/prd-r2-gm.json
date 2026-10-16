@@ -1,0 +1,101 @@
+{
+  "persona": "gm",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 3,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 3,
+    "Statement impact": 3,
+    "System of record": 3,
+    "Adoption cost": 3,
+    "Failure visibility": 3,
+    "Handoff ownership": 3
+  },
+  "previous_issues": [
+    { "id": "gm-r1-1", "fixed": true, "note": "R5 carries status, appointment date and time, summary and Console link; A16 names the BDC manager as the person who keys it in and the CSM checks week one. Keeping Ava from booking at step 0 was rejected as outside approved scope; accepted. Who covers the handoff after week one and on the BDC manager's days off is raised new as gm-r2-1." },
+    { "id": "gm-r1-2", "fixed": true, "note": "Section 4 and A17 make the email carrying R5's fields a go-live check, else written acceptance of Console; A17 now uses E13 as the reason acceptance is needed. Whether Console can actually show R5's fields is raised new as gm-r2-2." },
+    { "id": "gm-r1-3", "fixed": true, "note": "Q15 baseline before go-live; A19 states the step 0 call rule (opted-out not called, booked not called to rebook). The hours-removed target was rejected citing the one-pager (calls come off only with step 3); not re-raised." },
+    { "id": "gm-r1-4", "fixed": true, "note": "Q25 now scopes the pause to leads Spyne texts, or written acceptance that skipped leads get no overnight touch. Skips are counted in the 'No silent skips' row, but its target is wrong (gm-r2-5) and A13 contradicts the alternative (gm-r2-6)." },
+    { "id": "gm-r1-5", "fixed": true, "note": "R10 is P0; A2 names the slip route (BDC manager to CSM, entry off the same day). The check is weekly after week one rather than daily until Q23 as asked. I accept that because the forward rule (R1, A1) is the first guard." },
+    { "id": "gm-r1-6", "fixed": true, "note": "R4 and A12 put do-not-contact in the dealer's own system, ops sets optOut.sms the same morning (Q37), and Q24 is signed by the GM or dealer principal. Widening the keyword list was rejected as step 2 scope; accepted. The 'daily check' R4 depends on stops being daily after week one: gm-r2-3." },
+    { "id": "gm-r1-7", "fixed": true, "note": "Q36 go-live check lists any other STL source at this team that loses the nudge, or none." },
+    { "id": "gm-r1-8", "fixed": true, "note": "Section 10 writes out the CSM's dealer message; step 2 pilot order stays internal. When the message is sent relative to Q34 is raised new as gm-r2-4." },
+    { "id": "gm-r1-9", "fixed": true, "note": "First contact is measured from the ADF submission time, with forward lag on its own line." },
+    { "id": "gm-r1-10", "fixed": false, "note": "Owners are named; the answer-by dates went to the PM as E-2. Escalated, so not re-raised here." }
+  ],
+  "issues": [
+    {
+      "id": "gm-r2-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| A16 | Ava sets an appointment | Before open | Time on the handoff; BDC manager keys it in, cancels any prior duplicate, calls to confirm; CSM checks week one | R5 happy [E6, E12] (Q32) |",
+      "concern": "The only way an Ava-set appointment reaches my board is one person keying it in before open, and after week one nobody checks that she did. My BDC manager has days off, and Saturday night leads land on a Sunday when the BDC may be closed. The email goes to her alone (\"Email recipient: BDC manager\"). On the day she is out, a customer Ava booked for 9 am walks in and nobody expects them. That is the empty-bay day in my own seat description, and the PRD has no detection for it after week one.",
+      "because": "E12, E13 (no API, keying is the only path); persona Blocks when: customer-facing failure with no detection or recovery path; persona Review lens: Adoption cost (works without manager enforcement)",
+      "ask": "Name a backup recipient for the handoff (desk manager or BDC lead) and send the email to both. State what happens to an Ava-set appointment for a day or hour the BDC is closed. Keep a weekly CSM check that every Ava-set appointment was on the board before its time for as long as step 0 runs, not just in week one. Add one acceptance row: on the BDC manager's day off, an Ava-set appointment still reaches the board before its time."
+    },
+    {
+      "id": "gm-r2-2",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| A17 | Email lacks R5's fields | Go-live review | Go only with the VP Marketing's written acceptance of Console; BDC manager then works the Console list | R5 fallback [E13] |",
+      "concern": "The fallback hands R5 to Console, but nothing shows that the Console list carries R5's fields either: appointment date and time, \"callback requested\" with the customer's words (R12), and not-texted with reason. Q35 asks where an after-hours transfer routes, not where the request shows up. If neither the email nor Console shows that a customer asked for a person at 11 pm, my BDC does not call that customer first and A14 cannot pass. The VP Marketing would be signing off a screen that does not do the job.",
+      "because": "Q26 (email untraced); Q35 (routing only); section 5 'BDC handoff ... not traced'; persona Blocks when: asks staff to check a separate dashboard to know what happened",
+      "ask": "Add to the Q26 go-live check: whichever surface is chosen (email or Console) is shown with a UAT lead to carry appointment date and time and a callback-requested flag with the customer's words, and A14 and A16 are run on that surface. If neither surface carries them, no go-live, the same as A3."
+    },
+    {
+      "id": "gm-r2-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| R10 | The CSM reconciles forwarded leads against STL tasks (noTask apart) and checks non-inquiry texts daily in week one, then weekly while step 0 runs; follow-up rows are checked daily throughout | P0 | [PM] [E41] |",
+      "concern": "R4 says a non-STOP opt-out is \"found in the daily check\" and optOut.sms is set the same morning. R10 never names an opt-out check, and the checks it does name go weekly after week one. So from week two, a customer who wrote \"unsubscribe\" can be re-forwarded after the 15-hour window and get a text from my store's number. That is the store's liability, and the GM or dealer principal is the one signing Q24.",
+      "because": "E42 (exact STOP only); A7 (15-hour suppression only); A12; Q37",
+      "ask": "Name the non-STOP opt-out scan in R10 and keep it daily for as long as step 0 runs, the same as the follow-up rows. Alternatively, make the handoff's 'opted out' status the trigger: the BDC manager sends each opted-out row to the CSM that morning and ops sets optOut.sms. Add the case to A12: an unsubscribe in week three is still set the next morning."
+    },
+    {
+      "id": "gm-r2-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "- **Dealer message (CSM):** \"Inquiries go live N business days after your after-hours texts are paused and the test leads pass. Whether appointment and credit-app texts can be built is answered by <step 1 date>. Write-back is planned, and we date it once the channel is agreed.\" Step 2 pilot order stays internal.",
+      "concern": "This store has already chased us with unanswered ETA requests (E10, E31). If the CSM sends this before the Q34 path test and the test shows the queue path, step 0 is a no-go with no date, and we have broken a second promise. The message also tells the dealer to pause their own after-hours texts, which leaves their leads untouched overnight if we then cannot go live.",
+      "because": "E10, E31; Q34; A6; decisions.md Gate 2 ('queue path may skip it'); persona What they protect: vendor trust",
+      "ask": "The CSM sends this message only after the Q34 test shows the API path, and the dealer pauses its texts only after that. Write the second message for the queue-path outcome: step 0 cannot go live on configuration, the BDC keeps working as today, and the next answer comes by the date the PM sets under E-1."
+    },
+    {
+      "id": "gm-r2-5",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| No silent skips | statusReason `sqs-stl-deferred-to-api`, `stl-outside-*`, `stl-external-created-at-stale` | `sequenceTasks.statusReason` | unknown | 0 |",
+      "concern": "A5 and the staleness edge case expect some leads to be skipped: outside the window, or forwarded more than 6 hours late. A target of 0 fails every week by design, so my BDC manager learns to ignore it. This was supposed to be the week-one skip count the VP Marketing needs to see what skipped leads cost (gm-r1-4).",
+      "because": "A5; section 8 staleness row (`sequence-workflow-creation.service.ts:82`); Q25",
+      "ask": "Split the row. `sqs-stl-deferred-to-api` stays at target 0, since it means a no-go. Outside-window and stale skips are counted weekly by reason and shown on the handoff, with no target, and the week-one count goes to the VP Marketing alongside the Q25 acceptance."
+    },
+    {
+      "id": "gm-r2-6",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| A13 | Dealer pause unconfirmed | Go-live review | No go-live | R4 fallback [E15, E43] |",
+      "concern": "Section 4 allows go-live with no pause if the VP Marketing accepts in writing that skipped leads get no overnight touch. A13 says no go-live without the pause, full stop. The dealer's system may not be able to pause only for leads Spyne texts, so the CSM will hit this conflict on the first go-live review.",
+      "because": "Section 4 go-live checks (Q25); E15, E43",
+      "ask": "Make A13 read: pause unconfirmed and no written acceptance from the VP Marketing, then no go-live."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does the Console lead list show an appointment date and time set by the reply agent, and a flag when a customer asked for a person, for an after-hours STL lead?",
+      "blocks": "gm-r2-2; R5 fallback (A17), R12 (A14)",
+      "source": "Engineering (extend Q26 test)"
+    },
+    {
+      "question": "Which days and hours is the BDC closed at this rooftop, and who covers the BDC manager's days off?",
+      "blocks": "gm-r2-1; A16",
+      "source": "CSM with VP Marketing"
+    }
+  ]
+}

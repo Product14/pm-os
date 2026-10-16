@@ -66,6 +66,83 @@
           "confirm 2-week target / 30-day review (Q25)"
         ]
       }
+    },
+    "prd": {
+      "rounds_run": 2,
+      "r1": {
+        "raised": 46,
+        "blocking": 0,
+        "major": 32,
+        "minor": 14,
+        "discarded_generic": 0,
+        "merged_rows": 26,
+        "accepted": 44,
+        "accepted_narrowed": 4,
+        "rejected": 0,
+        "rejected_parts": 1,
+        "escalated": 2,
+        "escalated_parts": 2,
+        "reviewer_requests_pending": 16,
+        "verdicts": {
+          "gm": "revise",
+          "general-sales-manager": "revise",
+          "service-manager": "revise",
+          "backend-engineer": "revise",
+          "ceo": "revise"
+        },
+        "resolution": "reviews/prd-r1-resolution.md",
+        "output": "prd/v2.md",
+        "words": 2673,
+        "words_wc_incl_table_pipes": 3206,
+        "new_assumption_questions": [
+          "Q27",
+          "Q28",
+          "Q29",
+          "Q30",
+          "Q31"
+        ],
+        "scope_changes_vs_onepager": "none",
+        "pm_escalations": [
+          "ceo-r1-6: what the L displaces this quarter; VinSolutions write-back date or none planned",
+          "ceo-r1-3: VinSolutions salesperson and activity read status; activity read inside the L; CSM date for the requesting rooftop",
+          "gm-r1-1 (part): hold sales at the requesting rooftop until its VinSolutions read is live or its manager accepts team-view-and-click (changes Gate 2 'sales day one')",
+          "ceo-r1-1 (part): success check if no rooftop meets the criteria",
+          "confirm defaults: N 30 in-hours min, text window 30 min, aging cutoff 24h, attestation 80%, bare-string items do not open, 20 episodes/week, 50% click-share trigger"
+        ]
+      },
+      "r2": {
+        "raised": 24,
+        "blocking": 0,
+        "major": 14,
+        "minor": 10,
+        "discarded_generic": 0,
+        "merged_rows": 13,
+        "accepted": 24,
+        "accepted_narrowed": 4,
+        "rejected": 0,
+        "rejected_parts": 1,
+        "escalated": 0,
+        "escalated_parts": 1,
+        "reviewer_requests_pending": 7,
+        "verdicts": {
+          "gm": "revise",
+          "general-sales-manager": "revise",
+          "service-manager": "revise",
+          "backend-engineer": "revise",
+          "ceo": "revise"
+        },
+        "resolution": "reviews/prd-r2-resolution.md",
+        "output": "prd/v3.md",
+        "words": 3093,
+        "words_wc_incl_table_pipes": 3638,
+        "new_assumption_questions": [],
+        "scope_changes_vs_onepager": "none",
+        "pm_escalations": [
+          "ceo-r2-2 (part): if the success check shows no fall, does the live sales view stay or go back behind the flag",
+          "defaults added: aging cutoff 24h now in department hours; service aging default close of that day's service hours; service click-share threshold from pilot's first two live weeks",
+          "carried from r1: ceo-r1-6, ceo-r1-3, gm-r1-1 (part), ceo-r1-1 (part)"
+        ]
+      }
     }
   },
   "requests": 0,

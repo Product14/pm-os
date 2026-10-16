@@ -1,0 +1,85 @@
+{
+  "persona": "ceo",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 5,
+    "Configuration, not branches": 5,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Dealer economics": 3,
+    "Base leverage": 3,
+    "Dependency honesty": 4,
+    "Handoff clarity": 4,
+    "Decision readiness": 4
+  },
+  "previous_issues": [
+    {
+      "id": "ceo-r2-1",
+      "fixed": true,
+      "note": "Goals row now reads 'manager time unmeasured' and Phase 0 says 'No link: the claim is screens removed (Action Items page views).' Nobody can quote manager hours as a figure. Whether that page-view event has a before number is raised as ceo-r3-2 (minor)."
+    },
+    {
+      "id": "ceo-r2-2",
+      "fixed": true,
+      "note": "Narrowed as resolved: 'the sales view goes to a PM decision within a week (Open question 4).' A decision is now attached to a failed check. Keep versus flag off is for the PM at Gate 3."
+    },
+    {
+      "id": "ceo-r2-3",
+      "fixed": true,
+      "note": "R2 now says service clears from staff booking, RO action or advisor message apply 'once that provider's read exists, not in this L, so in this L only reply, click or opt-out'. That matches section 9. No unnegotiated read is hidden inside a P0 now."
+    },
+    {
+      "id": "ceo-r2-4",
+      "fixed": true,
+      "note": "Removes line is now 'hours to first human reply per department ... no gross claim until then'. The F&I and gross claim is gone. This line is safe to put in a deck."
+    },
+    {
+      "id": "ceo-r2-5",
+      "fixed": true,
+      "note": "'unbriefed rooftops get the view unconfigured (A26), not a delay'. Day one no longer waits on the CSM. The live rooftop count and CSM hours are honestly left as Open question 7, not invented."
+    },
+    {
+      "id": "ceo-r1-3",
+      "fixed": false,
+      "note": "For the PM at Gate 3, not blocking the document. VinSolutions read status is still 'not in evidence' and '[ASSUMPTION: the VinSolutions read fits inside the L]'. The requester's own measurement and 'Mine' both wait on it. The PM should give a date or say plainly that the requester is measured only after the L."
+    },
+    {
+      "id": "ceo-r1-6",
+      "fixed": false,
+      "note": "For the PM at Gate 3: what this L displaces on the Vini roadmap and the write-back date (Open question 4). This is PM-only and the document cannot answer it. I approve on the condition that the Gate 3 record names what we are not doing."
+    }
+  ],
+  "issues": [
+    {
+      "id": "ceo-r3-1",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "If median wait does not fall, service rollout and text expansion stop",
+      "concern": "This is the only stop rule for a feature that is live at every sales rooftop on day one, but 'does not fall' has no size. At 1-2 rooftops with 20 episodes a week, the median will move on noise alone, so the check could pass on any drop. 'Text expansion' is also undefined, because R6 turns texts on automatically when a read or attestation qualifies. Nobody would know what to actually stop.",
+      "because": "PRD section 3 Goals 'Target: set after baseline'; section 10 '20 episodes a week' [ASSUMPTION]; R6",
+      "ask": "Tie the check to the Goals target set at the end of Phase 0 (for example, 'falls by at least the target set after Phase 0, before day one'). Define the text stop as 'no new rooftop attestations are accepted; read-qualified rooftops stay mark-only until the PM review'. If the PM wants to own the size, say so in Open question 4."
+    },
+    {
+      "id": "ceo-r3-2",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "Action Items page views per member and manager; manager time unmeasured",
+      "concern": "If Phase 0 shows no wait-to-outcome link, this is now the whole value claim. But the source is just 'Console analytics event' with baseline unknown, and the PRD does not say whether that event exists today. If it does not, there is no before number when the view turns on, and the fallback claim has nothing behind it.",
+      "because": "missing; PRD section 3 'Console analytics event' / 'unknown'; section 10 'No link: the claim is screens removed (Action Items page views)'",
+      "ask": "Name the event, or mark it as new instrumentation that must ship in Phase 0 so the baseline is captured while the view is dark."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does a console analytics event for Action Items page views per member exist today, and what is it called?",
+      "blocks": "ceo-r3-2; fallback value claim baseline",
+      "source": "console analytics (Amplitude project for spyne-console-microfrontends converse-ai)"
+    }
+  ]
+}

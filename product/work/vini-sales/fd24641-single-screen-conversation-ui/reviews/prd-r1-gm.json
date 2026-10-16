@@ -1,0 +1,127 @@
+{
+  "persona": "gm",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 3,
+    "Every agent": 4,
+    "Dealer reality": 3,
+    "Statement impact": 3,
+    "System of record": 3,
+    "Adoption cost": 2,
+    "Failure visibility": 3,
+    "Handoff ownership": 2
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "gm-r1-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| A8 | CRM activity read down or absent | Rep calls from VinSolutions, then clicks \"Handled elsewhere\" | Leaves the queue; click shown per owner; excluded from the median | R2 [E13] |",
+      "concern": "CRM activity is read nowhere today, and my people answer out of VinSolutions. So on day one at every rooftop like the requesting one, every customer a rep already called or texted from the CRM sits in Unanswered until someone comes back to the console and clicks. That is the exact cross-check on about 600 leads a month the used car manager said 'there's no way that these guys would do'. Nobody will click, the queue fills with answered customers, the badge stops meaning anything, and by week two my managers ignore it. At the requesting store it gets worse: no Mine and no texts on day one, so the first thing he gets is a longer list he has to clean by hand.",
+      "because": "E10, E13, E6; PRD line 147 \"Texts only where R6 passes, so none at the requesting rooftop on day one.\"; Q18",
+      "ask": "Add a P0 rule for rooftops with no CRM activity read and no attestation: an episode with no click after the owner max age leaves the badge and the default list into a 'Possibly answered in CRM' bucket (still counted in the manager view and the metrics), so the queue does not rot. In Rollout, turn sales on at the requesting rooftop only when the VinSolutions read is live or its manager agrees to the team-view-and-click version, confirmed by the CSM; and use Phase 0 to state the expected clicks per rep per day before day one."
+    },
+    {
+      "id": "gm-r1-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "CRM activity after `since` (sales, where read); a booking or RO opened (service, where read)",
+      "concern": "Not every CRM touch is a person answering my customer. Spyne itself pushes into VinSolutions as 'AI SPYNE', and the CRM fires its own auto-responders and drip emails. Count those and the episode clears the moment it opens, the customer drops out of the queue unanswered, and nobody finds out. Same on the drive: if Vini books the service appointment, that is not an advisor answering the question the customer was handed off with. A silent false clear is the worst failure here because it looks like the system worked.",
+      "because": "PRD line 137 (VinSolutions push hardcodes \"AI SPYNE\") `conversational-ai-backend:src/external_crm_integrations/prepare_crm_data/vinsolutions.ts:191`; E16; Q18",
+      "ask": "R2: CRM activity clears only when it is human-actor activity on the lead, excluding Spyne's own pushes and CRM automated campaigns or auto-responses; a booking or RO clears only when created by staff, not by Vini. Add acceptance criteria: Spyne's own CRM note after `since` does not clear; a CRM auto-response does not clear; a Vini-booked service appointment does not clear. Where the provider cannot tell actor apart, that source does not clear (click only)."
+    },
+    {
+      "id": "gm-r1-3",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| R5 | Escalation: an episode open N minutes inside department hours is marked Escalated and texts the department's recipients once per episode; the owner keeps it.",
+      "concern": "Once per episode is once per customer, not once per manager. At a store doing about 600 leads a month, a busy Saturday puts a stack of texts on my sales manager's phone. He mutes the number by Sunday and the one escalation that mattered goes with it. The PRD knows this: the per-recipient cap is in Open question 4, but it is not in the requirement or the criteria.",
+      "because": "E10, E6; PRD Open questions row 4 \"per-recipient text cap\"",
+      "ask": "Put a per-recipient cap in R5 as P0 with a proposed default: for example, at most one text per recipient per X minutes, summarising how many episodes escalated and the oldest wait, linking to the team view. Add an acceptance criterion for the cap: ten episodes escalate in five minutes, one recipient gets one text."
+    },
+    {
+      "id": "gm-r1-4",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "- Escalation N minutes and recipients per department: no default; no escalation until set.",
+      "concern": "Escalation is the only part of this that reaches a person who is not already staring at the console. With no default and no named owner for setting it, day one at every rooftop ships a list that nobody is told about. That works only if managers go and look, and my managers will not enforce a new screen. Rollout does not say who sets N and recipients, when, or how we notice the rooftops where nobody did.",
+      "because": "E6, E16; PRD A19 \"manager view shows 'escalation not configured'\"",
+      "ask": "In Rollout, name who sets N, recipients and department hours per rooftop (the CSM at enablement, with the sales manager or service manager) and a proposed starting N. Add 'rooftops with escalation not configured' to the weekly watch, with the person who chases them."
+    },
+    {
+      "id": "gm-r1-5",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| A14 | Owner has no console seat, or `syncedAt` past max age | Episode opens | Team view as \"Unmapped owner\" or \"Stale owner\"; no one's Mine | R4, R7 [PM] |",
+      "concern": "'No owner', 'Unmapped owner' and 'Stale owner' rows land in the team view and belong to nobody. On day one that is every episode at every rooftop, because no owner source is connected. The one-pager said owners without a console seat fall to the team view with a named owner, sales/BDC or service manager. The PRD dropped the name. A list everybody can see and nobody owns is the handoff gap this feature was meant to close.",
+      "because": "one-pager final.md \"Owners without a console seat fall to the team view (sales/BDC or service manager).\"; E6",
+      "ask": "Add a per-department setting 'owner of unowned episodes' (default: the department's escalation recipient, or the sales/BDC manager for sales and the service manager for service). Make it the owner shown on No, Unmapped and Stale rows and the person counted against them in the manager view, plus an acceptance criterion."
+    },
+    {
+      "id": "gm-r1-6",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| A9 | Both departments on | Member switches department | Each view lists only its department; badge equals list total | R3 `spyne-console-microfrontends:apps/converse-ai/contexts/mainContext.tsx:241` |",
+      "concern": "The handoffs that fail in my store are between departments. A sales lead's customer asks about a recall or an oil change, Vini hands off or opens a service action item, and the episode sits in the sales queue because the lead was typed sales at ingest. My salesperson does not work it, my advisors never see it. The PRD never says which department owns an episode.",
+      "because": "E38 (action items carry their own serviceType), E40 (lead typed at ingest); missing",
+      "ask": "State the rule: an episode belongs to the department of the handoff or action item that made the conversation human-owed, else the lead's serviceType. Add an acceptance criterion: a sales lead with an open service action item shows in the service view, not sales."
+    },
+    {
+      "id": "gm-r1-7",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "| Wait links to the P&L | Sales: Spyne meeting within 7 days, by wait bucket. Service: booking or RO where read | Mongo `meetings` (exclude `is_demo_meeting`); scheduler/DMS read | unknown | check, not the claim |",
+      "concern": "The one-pager check was 'appointments shown'. A booked Spyne meeting is not a show, and a show is where my gross starts. This quietly changes what we will look at.",
+      "because": "one-pager final.md \"Checks: appointments shown, service bookings or ROs where read\"",
+      "ask": "Say 'appointments shown' where the CRM show status is read. Elsewhere, say the booked meeting is a stand-in and label show rate unknown."
+    },
+    {
+      "id": "gm-r1-8",
+      "severity": "minor",
+      "type": "five-facts",
+      "quote": "**Flywheel stage:** lead to appointment; service customer to RO · **Removes:** hours to first human reply per department, sized after baseline [ASSUMPTION: 2-week target, 30-day review].",
+      "concern": "Hours to first reply is not a line on my statement. Name the line it should move, even if the size is unknown, so the 30-day review checks the right thing.",
+      "because": "decide.md rung 2 (front-end and F&I gross on engaged leads; fixed-ops gross and absorption on service, inferred); Q15",
+      "ask": "Add one clause: moves sales gross on engaged leads that go cold (front and back end) and fixed-ops gross on service customers who never become an RO. Size unknown [Q15]; checked through the 'Wait links to the P&L' row."
+    },
+    {
+      "id": "gm-r1-9",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "- **Watch weekly:** clears by type, click share per owner, text failures, Unmapped and Stale owners.",
+      "concern": "Watched by whom? If it is the dealer's manager, he will not open it. If it is us, say so, so somebody acts when click share climbs or texts fail at a rooftop.",
+      "because": "missing",
+      "ask": "Name the owner of the weekly watch (PM or CSM lead) and what each signal triggers, for example a CSM call to the rooftop when click share passes a set level."
+    }
+  ],
+  "requests": [
+    {
+      "question": "At live Vini Sales rooftops, what share of human replies to handed-off customers are sent from the CRM rather than the console?",
+      "blocks": "gm-r1-1 (click volume at CRM-reply rooftops; whether the day-one team view rots)",
+      "source": "Phase 0 data, or Vini backend Mongo human reply stamps against CRM activity where any is read"
+    },
+    {
+      "question": "Does the VinSolutions activity feed (and other CRMs) tell a person's call, text or email apart from automated campaigns, auto-responses and Spyne's own pushed notes?",
+      "blocks": "gm-r1-2 (CRM activity clears)",
+      "source": "Integrations PM with the Partnerships team; integrations-backend [Q18]"
+    },
+    {
+      "question": "How many episodes per department per day would cross escalation N at a rooftop of about 600 leads a month?",
+      "blocks": "gm-r1-3 (per-recipient cap default)",
+      "source": "Phase 0 baseline"
+    },
+    {
+      "question": "How often does a sales-typed lead carry a service action item or a service-department transfer, and the reverse?",
+      "blocks": "gm-r1-6 (episode department rule)",
+      "source": "Vini backend: action items serviceType against lead serviceType; transfer events department"
+    }
+  ]
+}

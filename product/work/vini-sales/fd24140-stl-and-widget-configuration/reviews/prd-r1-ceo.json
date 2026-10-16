@@ -1,0 +1,117 @@
+{
+  "persona": "ceo",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 5,
+    "Configuration, not branches": 4,
+    "Measurable": 3,
+    "Dependencies": 3,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Dealer economics": 3,
+    "Base leverage": 3,
+    "Dependency honesty": 3,
+    "Handoff clarity": 4,
+    "Decision readiness": 4
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "ceo-r1-1",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "**Removes:** next-day first-contact calls and the overnight wait on inquiries, hours unsized [E8] (Q15).",
+      "concern": "This is the value line someone will lift into a deck, and it says more than steps 0 and 1 deliver. The BDC still calls every forwarded lead in the morning. The call just stops being the first contact (A8, A15, A17). The approved one-pager says 'called with status in hand; step 3: unresolved only'. The overnight wait only goes away if Q22 clears: A5 still rests on an ASSUMPTION that silent hours allow a text before BDC open.",
+      "because": "E8; one-pager/final.md 'What it removes' row 'BDC next-day calls'; A5 [ASSUMPTION]; Q22",
+      "ask": "Restate as: 'Step 0 removes the overnight wait for a first contact on inquiries, if Q22 clears. The BDC still calls each lead, now with its status in hand. Calls on resolved leads come off only with step 3.' Keep 'hours unsized (Q15)'."
+    },
+    {
+      "id": "ceo-r1-2",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "| First contact before BDC open | smsSentAt minus lead created time | `sequenceTasks.smsSentAt`; `dealer_leads_raw.leads` | next business day [E8] | set after baseline |",
+      "concern": "This is the only days-removed number on the page, and it is measured from the wrong clock. 'Lead created time' is when the dealer's forward reaches our inbox, not when the shopper submitted, so any lag in the forward never shows up. The baseline 'next business day' has no hours attached, and the target is 'set after baseline' with no owner or date. As written, nobody can say how much time we removed for this dealer.",
+      "because": "E8, E9; staleness gate `stl-external-created-at-stale` (section 3) shows a submission time exists; fact 3",
+      "ask": "Measure from the ADF submission time the staleness gate already reads, not from when our lead was created. For the baseline, have the CSM get the BDC's usual first-call time for overnight leads (Q15). Set the target at the step 0 go-live review from week-one data, and name the owner."
+    },
+    {
+      "id": "ceo-r1-3",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "| R7 | Step 1 answers Q23, Q12, Q34 and Q19 with stored values from UAT test leads, records them in the case folder, and sizes step 2 | P0 | [PM] [E39, E40] |",
+      "concern": "Step 2 is gated on Q14 and Q15, but no requirement produces either answer. Q15's own plan is to count leads by type once forwarding is live. Step 0 deliberately keeps appointment and credit-app leads out of the forward, so live data will never show their volume. Step 2 then either stays 'direction' forever or gets prioritised with no number behind it. Q14 (what an M build displaces on the Vini Sales plan) was escalated at the one-pager stage and still has no owner or date here.",
+      "because": "Q14, Q15 (questions.md 'how' depends on live forwarding); one-pager escalation ceo-r2-2; R1/A2 exclude those types from the forward",
+      "ask": "Add to step 1: the CSM gets the dealer's after-hours website lead count for a typical week by type (inquiry, online appointment, credit app) and the BDC minutes spent on next-day callbacks (Q15). The PM states what step 2 displaces or that it fits current capacity (Q14). Each gets an answer-by date."
+    },
+    {
+      "id": "ceo-r1-4",
+      "severity": "major",
+      "type": "scope",
+      "quote": "**Step 2, per-type opener: direction** (M, judgment). Gate: Q12 and Q23 from step 1, plus Q11, Q14 and Q15.",
+      "concern": "The only thing making step 2 a base capability rather than a one-off is 3 companies mentioning an adjacent job on calls, with 0 tickets (E21, E22). Q30, which checks whether those 3 companies actually have this job, is not in this gate. It is also missing from the Open questions table. Section 10 still plans to pilot step 2 with those companies. We would be spending an M build on demand we have not confirmed.",
+      "because": "E21, E22; Q30 (open, owner PM, absent from section 11)",
+      "ask": "Add Q30 to the step 2 gate and to section 11. Before step 2 moves from direction to priority, require that at least one company from E22 has a lead source that carries a type and has agreed to pilot."
+    },
+    {
+      "id": "ceo-r1-5",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "| No-API write-back and CRM read | Write conversation, appointment, opt-out | **No. Dependency, not in scope.** Owners: Integrations owner (build), CSM (dealer agreement, commercial) (Q10, Q21) | [E12] |",
+      "concern": "Planning the full-value path now means its longest lead time starts now, and that is the commercial agreement, not the build. The dealer has told us they will not scale without an automated record (E13). This row names roles, not people, and the PRD gives no start date and no answer-by date for Q10 or Q21. We already said 'being worked on' to this dealer once with nothing behind it (E10, E31), and an undated step 3 repeats that.",
+      "because": "E12, E13, E10, E31; fixed intent (decisions.md); fact 4",
+      "ask": "Name the CSM and the integrations owner. Start the channel and commercial conversation with the dealer's software development manager during step 0, with an answer-by date for Q10 and Q21. Step 3 gets a date as soon as both are answered."
+    },
+    {
+      "id": "ceo-r1-6",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| No AI contact on appointment or credit-app leads | Texts to leads whose forwarded ADF was one of those types | `sequenceTasks.smsSentAt` by leadId, compared with the forward log by the CSM in week one | unknown | 0 |",
+      "concern": "An AI text to a credit applicant is the exposure the VP Marketing ruled out (E5), and it sits on the sales to F&I handoff. The pause trigger in section 10 depends on this check, but the check is a manual CSM comparison that stops after week one. The dealer first planned to forward applications too (E9), so their forward rule can drift. After week one, nothing would catch it.",
+      "because": "E5, E9; section 10 'Pause on'; fact 5",
+      "ask": "Put this check in the standing weekly watch with a named owner. If Q23 shows external_type is stored, make it a query on `dealer_leads_raw.leads`. Until then, the CSM compares against the forward log monthly after week one."
+    },
+    {
+      "id": "ceo-r1-7",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Read the CRM where we have access, and write back through the certified integration where one exists, otherwise one reusable no-API channel.",
+      "concern": "'Reusable' gets decided before Q29 tells us how many rooftops are on a no-API system. Write-back was asked here only (E21, E22). The page also does not list which CRM providers we are certified for today, so a reader cannot judge whether this is base leverage or a channel built for one store.",
+      "because": "E21, E22; Q29",
+      "ask": "List the certified CRM providers in section 9, or write 'unknown (Q29)'. Make the new channel conditional: build it only if Q29 shows more than this rooftop on no-API systems. Otherwise use an existing export."
+    },
+    {
+      "id": "ceo-r1-8",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "**Dealer dates:** the step 0 live date and the step 1 answer date only [E10, E31].",
+      "concern": "Carried from one-pager ceo-r3-1. A calendar go-live date is a promise we do not control. Step 0 waits on the dealer pausing its own texts (Q25), signing off on consent (Q24) and getting a forward rule that passes (Q33). The dealer also hears nothing about write-back, which is their condition for scaling (E13).",
+      "because": "E10, E13, E31; Q24, Q25, Q33",
+      "ask": "Reword to: 'Step 0 goes live N business days after your texts are paused and the test leads pass. The step 1 answer comes by <date>. Write-back is planned, and we date it once the channel is agreed.'"
+    },
+    {
+      "id": "ceo-r1-9",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "**Step 1, proof.** UAT test leads of each type show whether lead type, appointment details and credit-app status reach the lead and the reply turn, and which creation path forwarded leads take. Output: written answers and a step 2 size.",
+      "concern": "Carried from one-pager ceo-r3-3. I am asked to approve step 1, and it is the only step on the page with no size and no owner.",
+      "because": "Q12, Q23, Q34; one-pager ceo-r3-3",
+      "ask": "Add a size, an owner and an answer date, for example '(S, STL engineering owner, by <date>)'."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Which CRM providers have certified write-back for STL conversations and appointments today, and how many active Vini Sales rooftops are on a no-API system?",
+      "blocks": "Whether step 3's no-API channel is base leverage or a one-off (ceo-r1-7)",
+      "source": "Integrations owner (Q29)"
+    },
+    {
+      "question": "For each of the 3 companies in E22: is it the same per-type opener job, and would any of them pilot step 2?",
+      "blocks": "Step 2 moving from direction to priority (ceo-r1-4)",
+      "source": "Vini Sales PM (Q30)"
+    }
+  ]
+}

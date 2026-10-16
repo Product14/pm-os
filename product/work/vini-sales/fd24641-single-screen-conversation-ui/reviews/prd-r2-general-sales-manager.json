@@ -1,0 +1,122 @@
+{
+  "persona": "general-sales-manager",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 3,
+    "Desk control": 5,
+    "Rep handoff": 3,
+    "Inventory truth": 4,
+    "Attribution integrity": 4,
+    "Outcome metric": 4
+  },
+  "previous_issues": [
+    {
+      "id": "general-sales-manager-r1-1",
+      "fixed": true,
+      "note": "Goals row is now appointments shown by wait bucket where show status is read, meetings set only as a labelled stand-in; show status listed as unknown in section 9 with Open question 1. Sold units not mentioned, acceptable while show status itself is unread."
+    },
+    {
+      "id": "general-sales-manager-r1-2",
+      "fixed": true,
+      "note": "R2 now requires an outbound call, text or email logged by a store user; Spyne user, automation, status changes and unknown actor never clear. A9 and A10 cover the happy and negative paths."
+    },
+    {
+      "id": "general-sales-manager-r1-3",
+      "fixed": true,
+      "note": "R4 and A19: Spyne integration user is 'No owner', never mapped; read never written to the CRM. Whether the push sets the salesperson stays Open question 6, which is the right place for it."
+    },
+    {
+      "id": "general-sales-manager-r1-4",
+      "fixed": true,
+      "note": "R3 'Backfill never shows', R12 baseline only, A17 covers flag-on day."
+    },
+    {
+      "id": "general-sales-manager-r1-5",
+      "fixed": true,
+      "note": "R9 states trigger and hours, notes no handoff text exists to suppress, owner texts count in the window; A35 covers mapped, unmapped and out of hours."
+    },
+    {
+      "id": "general-sales-manager-r1-6",
+      "fixed": true,
+      "note": "R5 caps at one summary text per recipient per window; A23 covers a burst. The 30-minute default is for the PM at Gate 3."
+    },
+    {
+      "id": "general-sales-manager-r1-7",
+      "fixed": true,
+      "note": "Click clears are out of the reply median and listed in the manager view with actor and time (R7, A11). v2 no longer says what wait a click-cleared episode records; the resolution's 'recorded as unreplied' is not in the text, but the visibility ask is met."
+    },
+    {
+      "id": "general-sales-manager-r1-8",
+      "fixed": true,
+      "note": "R4 refreshes owner on episode open where the provider allows; A20 covers a TO to a closer. For an episode already open at the TO, the switch waits on sync cadence, still Open question 1."
+    },
+    {
+      "id": "general-sales-manager-r1-9",
+      "fixed": true,
+      "note": "R7 and A31 show in-hours oldest wait."
+    }
+  ],
+  "issues": [
+    {
+      "id": "general-sales-manager-r2-1",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Without an activity read or attestation, episodes past the aging cutoff move to \"Possibly answered in CRM\", off the badge, still counted.",
+      "concern": "Is the 24 hours wall clock or my hours? A customer who texts Saturday at 5 pm with us closed Sunday is 'possibly answered' before anyone opens the store Monday. Those are exactly the be-backs that go cold. And 'still counted' does not say where. If it is only in the metrics table and not in my per-owner count, the first rooftop on day one (no activity read) has a queue that empties itself every day and I never see who let them go.",
+      "because": "E6, E10, E13; A24 pauses the escalation clock out of hours but nothing says the aging cutoff does",
+      "ask": "State that the aging cutoff runs on the department's in-hours clock (same shared function as R5). Show 'Possibly answered in CRM' as its own count per owner row in the manager view (R7) and add an AC: an episode opened Saturday evening is still on the badge Monday morning. The 24-hour value itself is for the PM at Gate 3."
+    },
+    {
+      "id": "general-sales-manager-r2-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "sales, an outbound call, text or email a store user logs in the CRM after `since`",
+      "concern": "Half my human contact is not an outbound touch. The customer texts 'calling you now' and rings the showroom, or just walks in, and my rep logs an inbound call or a showroom visit in VinSolutions. Under this rule the episode stays open, the manager gets an escalation text about a customer sitting at the desk, and the rep has to click 'Handled elsewhere', which then counts against him in the click share the weekly watch polices at 50%.",
+      "because": "E30 ('CRM status and human activity override the AI schedule'); E13; A10 lists what does not clear but not inbound calls or visits",
+      "ask": "Add to the CRM-activity clear: an inbound call answered and logged by a store user, and a showroom visit or appointment marked shown, after `since`, same actor rule. Add an AC for each (visit logged clears with clearedBy = crm_activity; an unanswered inbound call does not). If the provider cannot tell these apart, say so in section 9."
+    },
+    {
+      "id": "general-sales-manager-r2-3",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| A8 | Episode open | Member replies in the console | Clears, `clearedBy = reply` | R2 [E7] |",
+      "concern": "On day one there is no 'Mine' anywhere, so every owner row is 'No owner'. The only accountability I get is who answered. The reply clear does not record which member answered or whether that was the owner. I cannot see which reps are following up, and I cannot see when one rep is answering another rep's customers off an oldest-first list, which is a commission fight waiting to happen.",
+      "because": "E6 ('trouble with them following up'); missing (no replying-member field on the clear)",
+      "ask": "Store the replying member on a reply clear and show replies per member, flagged where the replier is not the mapped owner, in the manager view. AC: rep B replies to rep A's episode; clears; manager view shows B, owner A."
+    },
+    {
+      "id": "general-sales-manager-r2-4",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "clicks per rep per day",
+      "concern": "Phase 0 is dark: no view, no click button, and no owner read live at any rooftop. There are no clicks and no reps to divide by. If this number comes back as zero or blank, nobody will know how much clicking my floor is about to be asked to do, and that is the number I need before I tell my guys to work this queue.",
+      "because": "Section 10 Phase 0 'view flags off'; R4 'Mine' not connected anywhere today [E43]",
+      "ask": "Report episodes per day not cleared by a console reply, per rooftop and per console member who last replied, labelled 'expected clicks', instead of clicks per rep."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Is appointment show status (shown, no-show) recorded on Spyne meetings or readable from VinSolutions today?",
+      "blocks": "Goals row 4 (P&L), Phase 0 wait-to-outcome, issue general-sales-manager-r2-2",
+      "source": "Vini backend; Integrations PM"
+    },
+    {
+      "question": "Does the VinSolutions activity feed distinguish inbound call answered, showroom visit and outbound call, each with the acting user?",
+      "blocks": "R2, issue general-sales-manager-r2-2",
+      "source": "integrations-backend; Integrations PM"
+    }
+  ],
+  "notes_for_pm_gate_3": [
+    "Escalated, not re-raised: day one at the requesting rooftop is team view, mark-only, no Mine and no texts until its VinSolutions reads are live (gm-r1-1 part; ceo-r1-3). From the desk this is a list with no owner on it; the PM should decide with the used car manager's expectations in mind.",
+    "Escalated defaults for the PM: N 30, text window 30 minutes, aging cutoff 24 hours, 80% attestation threshold."
+  ]
+}

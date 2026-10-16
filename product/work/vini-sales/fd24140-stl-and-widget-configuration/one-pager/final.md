@@ -23,7 +23,7 @@ Every after-hours website lead gets one opener, so booked customers are pushed t
 ## Recommendation
 - **Step 0, no build, inquiries only.** The dealer planned to forward applications too [E9]; the CSM confirms the forward excludes them and tests one of each (Q33).
 - **Follow-up off:** first text only; silence nudge off, forwarding source excluded from the cadence, both existing settings [E43, E44].
-- **Go-live checks:** test lead source and type (Q19), dealer texts paused (Q25), consent and STOP-only opt-out accepted in writing (Q24), first text before BDC open (Q22). Dealer dates: this one and the step 1 answer [E10, E31].
+- **Go-live checks:** test lead source and type (Q19), dealer texts paused (Q25), consent and STOP-only opt-out accepted in writing (Q24), first text before BDC open (Q22), a forwarded test lead receives its first text (the queue path can skip it, `conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:193`; Q34). Dealer dates: this one and the step 1 answer [E10, E31].
 - **Handoff:** today's STL email with each lead's status goes to the BDC manager (Q26), else Console until a step 2 morning list. The BDC manager calls any slipped appointment or credit-app lead; the CSM spot-checks week one.
 - **Step 1:** prove lead type and appointment reach external_type (Q23) and the reply turn (Q12).
 - **Step 2:** literal credit-app text; confirms carry date, time and store, or none. Both wait for Q12; then credit-app replies get a holding text and BDC task (Q31), reschedules a task or handoff line (Q27). Follow-up stays off; the BDC manager checks confirmed details before open; opt-out widens beyond STOP.
@@ -47,6 +47,6 @@ Not building: lead-type inference from free text, a Spyne appointment copy (Q7),
 ## Open questions
 | # | Who answers | Blocks |
 |---|---|---|
-| Q4, Q19, Q22, Q24 to Q26, Q33 | Engineering, CSM | Step 0 |
+| Q4, Q19, Q22, Q24 to Q26, Q33, Q34 | Engineering, CSM | Step 0 |
 | Q11, Q12, Q14, Q15, Q23, Q27, Q28, Q31 | Engineering, CSM, PM | Steps 1 and 2 |
 | Q10, Q17, Q21, Q29 | Engineering, CSM | Step 3 |

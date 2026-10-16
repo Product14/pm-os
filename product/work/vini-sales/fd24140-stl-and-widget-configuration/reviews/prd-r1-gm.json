@@ -1,0 +1,136 @@
+{
+  "persona": "gm",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 3,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 3,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 3,
+    "Statement impact": 2,
+    "System of record": 2,
+    "Adoption cost": 3,
+    "Failure visibility": 3,
+    "Handoff ownership": 3
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "gm-r1-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| R5 | Before open, the BDC manager has every forwarded lead with one status: texted, replied, appointment set, opted out or not texted | P0 | [E8, E13] |",
+      "concern": "\"Appointment set\" is a status, not an appointment. If Ava books an inquiry lead at midnight, nothing in this PRD gets the date, time and vehicle onto my board before that customer walks in. That is the vendor-booked appointment nobody knew about. No criterion checks that an Ava-set appointment reaches the store's own system. The dealer has no API, so today someone keys it in by hand, and nobody is named to do that.",
+      "because": "E12, E13; Q26; persona Blocks when: customer-facing failure with no detection or recovery path",
+      "ask": "For \"appointment set\", R5 must carry the date, time, vehicle and salesperson ask. Name the BDC manager as the person who keys it into the dealer's system before open. Add a criterion: every Ava-set appointment in week one is on the dealer's board before its time (CSM checks it against the daily query). If step 0 cannot carry appointment details, keep Ava from booking at step 0 and have her hand off for a BDC call."
+    },
+    {
+      "id": "gm-r1-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| A16 | Email lacks status or does not arrive | Before open | BDC manager works the Console list; CSM confirms day 1 | R5 fallback [E13] |",
+      "concern": "This carries over gm-r3-1 from the one-pager. The fallback is a separate screen my BDC manager has to check every morning. E13, which this row cites, is the dealer's software development manager turning down exactly that: Console and notification emails as the record. Q26 is still open, so step 0 can go live on a fallback this store already said no to.",
+      "because": "E13, E12; Q26; onepager gm-r3-1; persona Blocks when: asks staff to check a separate dashboard",
+      "ask": "Make the go-live check read: the STL email carries each lead's status and any appointment time (Q26). If it does not, the VP Marketing accepts the Console fallback in writing before go-live, as with Q24. Change A16's evidence tag, because E13 is a rejection of Console, not support for it."
+    },
+    {
+      "id": "gm-r1-3",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "| Kept appointments; BDC hours | Online-appointment show rate; callback and keying hours | dealer-reported, owned by the CSM (Q28, Q15) | unknown | set after baseline |",
+      "concern": "This is the only row that reaches my statement (BDC expense), and it has no baseline, no target and no date. A8 says the BDC still calls every skipped lead \"as today\". The PRD never says which leads the BDC stops calling at step 0, so I cannot tell what this saves me. Without a baseline taken before go-live, nobody can show a change in four weeks.",
+      "because": "E8; Q15; persona Review lens: Statement impact",
+      "ask": "Before step 0 goes live, the CSM gets Q15: after-hours lead count per week and the BDC minutes spent per callback. State the step 0 rule: replied, appointment-set and opted-out leads are not cold-called. Then set the target as BDC callback hours removed per week at this rooftop, measured from the handoff statuses."
+    },
+    {
+      "id": "gm-r1-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| A8 | Lead skipped (window, staleness, gate, queue) or SMS undelivered | Morning handoff | Shown \"not texted\" with reason; BDC calls as today | R2 fallback [E8] |",
+      "concern": "Step 0 has the dealer pause their own after-hours texts (Q25). Every lead STL skips overnight then gets nothing until morning: stale, no mobile, returning customer, queue path. Today those leads at least get the dealer's auto-text. We would be making the overnight experience worse for some customers, and only the morning list would show it.",
+      "because": "E15, E43; Q25; PRD section 8 edge cases (staleness, no mobile, RETCONVAI-5238)",
+      "ask": "Scope the dealer pause to leads Spyne actually texts, or have the VP Marketing accept in writing that skipped leads get no overnight touch. Add the week-one skip count to the go-live review so the dealer knows how many leads that is."
+    },
+    {
+      "id": "gm-r1-5",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| No AI contact on appointment or credit-app leads | Texts to leads whose forwarded ADF was one of those types | `sequenceTasks.smsSentAt` by leadId, compared with the forward log by the CSM in week one | unknown | 0 |",
+      "concern": "Ava texting a credit applicant is the one failure that puts my store's name in front of a compliance problem. It is detected only by a CSM's manual check in week one, and R10, the daily check, is only P1. Tasks carry no lead type, so after week one nothing can see a slip at all. Nobody finds out until a customer complains.",
+      "because": "E5, E41; R10; Q23",
+      "ask": "Make R10 P0, and keep the daily forward-log comparison going until step 1 shows the type survives parsing (Q23). Give the BDC manager's slip report a named route: who they tell, and who turns the entry off the same day."
+    },
+    {
+      "id": "gm-r1-6",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| A13 | Texted customer | Replies \"unsubscribe\" | At most one agent reply; handoff marks opted out; BDC manager sets do-not-contact | R4 negative [E42] (Q24) |",
+      "concern": "A customer who writes \"unsubscribe\" gets another text from my store's number, and then my BDC manager has to remember to set do-not-contact by hand. It is not clear in which system. That manual step will be missed. The legacy SMS handler already honours UNSUBSCRIBE, CANCEL and QUIT (E42).",
+      "because": "E42; Q24",
+      "ask": "Say whether the do-not-contact is set in the dealer's own system or in Console, and who checks it was done. Have the Q24 written acceptance signed by the GM or dealer principal, since it is the store's liability. Alternatively, show the cost of reusing the legacy keyword list at step 0 so the PM can decide."
+    },
+    {
+      "id": "gm-r1-7",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "- STL silence nudge per team. Here: off.",
+      "concern": "This carries over gm-r3-2. The nudge switch is per team (E44). If this team gets STL leads from anywhere other than the forward, those leads quietly lose their nudge, and nobody at the store agreed to that.",
+      "because": "E44; onepager gm-r3-2",
+      "ask": "State that this team carries only forwarded leads, or list the other STL sources that lose the nudge and add their acceptance to the go-live checks."
+    },
+    {
+      "id": "gm-r1-8",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "- **Dealer dates:** the step 0 live date and the step 1 answer date only [E10, E31]. Step 2 pilots here first, then with companies from E22 (Q30).",
+      "concern": "This carries over gm-r3-3. The store was told separate messaging is \"being worked on\" (E10), and \"Step 2 pilots here first\" reads like a new promise. The walk-back has to be in plain words, or the next escalation is about trust.",
+      "because": "E10, E28, E31; onepager gm-r3-3",
+      "ask": "Write the exact message the CSM sends: inquiries go live on <date> once the checks pass; whether appointment and credit-app texts can be built is answered by <date>; nothing beyond that is committed. Keep \"pilots here first\" internal."
+    },
+    {
+      "id": "gm-r1-9",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "| First contact before BDC open | smsSentAt minus lead created time | `sequenceTasks.smsSentAt`; `dealer_leads_raw.leads` | next business day [E8] | set after baseline |",
+      "concern": "The customer's wait starts when they submit the form, not when our lead record is created. If the dealer batches the forward, this metric looks fast while the customer still waited hours. The staleness gate shows a submission time already exists.",
+      "because": "PRD section 8 staleness row (`sequence-workflow-creation.service.ts:82`); E9",
+      "ask": "Measure from the ADF submission time (the external created-at the staleness gate uses), and report the forward lag on its own line."
+    },
+    {
+      "id": "gm-r1-10",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "| No-API write-back and CRM read | Write conversation, appointment, opt-out | **No. Dependency, not in scope.** Owners: Integrations owner (build), CSM (dealer agreement, commercial) (Q10, Q21) | [E12] |",
+      "concern": "The owners are named, but there is no answer-by date. This dealer's software development manager tied scaling STL to write-back (E12, E13), so an undated dependency becomes the next \"being worked on\". This is the gm-r2-8 request again, still unanswered.",
+      "because": "E12, E13; onepager gm-r2-8",
+      "ask": "Give Q10 and Q17 an internal answer-by date next to these owners. The step 3 date itself can stay open."
+    }
+  ],
+  "requests": [
+    {
+      "question": "What does today's STL notification email contain (status, appointment time), who receives it, and when is it sent relative to BDC open?",
+      "blocks": "gm-r1-1, gm-r1-2; step 0 handoff",
+      "source": "Engineering (Q26)"
+    },
+    {
+      "question": "After-hours forwarded leads per week by type, and BDC minutes per next-day callback at this rooftop.",
+      "blocks": "gm-r1-3; statement impact baseline",
+      "source": "CSM with VP Marketing (Q15)"
+    },
+    {
+      "question": "Does this team receive STL leads from any source other than the forwarding inbox (widget, console, CRM)?",
+      "blocks": "gm-r1-7",
+      "source": "Engineering, prod config for this team"
+    },
+    {
+      "question": "Does the dealer's own after-hours auto-text go to every website lead, or only to the ones it forwards? Can it be paused only for leads Spyne texts?",
+      "blocks": "gm-r1-4",
+      "source": "CSM with dealer software development manager (Q25)"
+    }
+  ]
+}

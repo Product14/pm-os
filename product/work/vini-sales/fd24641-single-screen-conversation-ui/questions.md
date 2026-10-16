@@ -199,3 +199,59 @@
 - who: pm
 - how: <confirm or replace with evidence>
 - status: open
+
+### Q26
+- slot: assumption
+- unknown: team working hours stand in for department hours
+- blocks: v1.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q27
+- slot: assumption
+- unknown: bare-string action items are not handoffs
+- blocks: v2.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q28
+- slot: assumption
+- unknown: 30-minute default N and text window
+- blocks: v2.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q29
+- slot: assumption
+- unknown: 80% console-reply share threshold
+- blocks: v2.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q30
+- slot: assumption
+- unknown: 50 ms p95 writer budget
+- blocks: v2.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q31
+- slot: assumption
+- unknown: 20 episodes a week and 50% click-share trigger
+- blocks: v2.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q32
+- slot: assumption
+- unknown: 20-episode weekly service floor
+- blocks: final.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open

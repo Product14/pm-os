@@ -1,0 +1,81 @@
+{
+  "persona": "backend-engineer",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Faithful to the one-pager": 5,
+    "Testable requirements": 4,
+    "Today vs after": 5,
+    "Configuration, not branches": 4,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Code-cited baseline": 4,
+    "Integration reality": 4,
+    "Failure design": 4,
+    "Observability and rollback": 4,
+    "Scope discipline": 5
+  },
+  "observations_loaded": [],
+  "code_checks": [
+    "conversational-ai-backend @ a2b8754c7, read-only, 3 reads.",
+    "Verified: sequence-task-execution-orchestrator.service.ts:1922-1946 getStlExecutionGateSkip calls resolveStlGate and on a block returns skipCurrentWorkflow with the gate's statusReason; the docstring says 'we skip the current task but still schedule the next one'. Skip, not hold, as v3 says.",
+    "Verified: :1487-1532 central silent hours skip calls and plain follow-ups but let STL and STL_FOLLOW_UP SMS through (only the call branches are skipped). v3's 'Team silent hours do not stop an STL text' is correct.",
+    "Verified: speed-to-lead-console-call.service.ts:216-258 SILENT_HOURS mode allows only inside silent hours (default 21:00 to 08:00) in the team timezone, UTC when unset.",
+    "New: WORKING_HOURS (:260-340) reads the dealer's working days and their own timezone (getDealerWrokingHoursandTimeZone, :278), returns false on a non-working day (:303) and when working hours or timezone are missing (:267); the type entry is gated by its own mode before the source entry (:446-470)."
+  ],
+  "previous_issues": [
+    { "id": "backend-engineer-r2-1", "fixed": true, "note": "The production test records stored external_type and the entry that resolved; a forwarding-source entry carries the window and is the switch; DEFAULT is turned on only with other feeds listed and blocked or accepted; rollback never touches DEFAULT." },
+    { "id": "backend-engineer-r2-2", "fixed": true, "note": "Go/no-go now runs in production ('Routing and bypass values differ per environment, so UAT cannot decide it'); UAT is step 1 only." },
+    { "id": "backend-engineer-r2-3", "fixed": true, "note": "Goal row and A10 query follow-up rows in any status, scheduled included; on a hit: nudge off, workflows cancelled via the existing cancel route, source entry off." },
+    { "id": "backend-engineer-r2-4", "fixed": true, "note": "A7 uses this team's suppressionWindow recorded at go-live, cites :1880." },
+    { "id": "backend-engineer-r2-5", "fixed": true, "note": "Defect skips (target 0) split from designed skips (no target)." }
+  ],
+  "issues": [
+    {
+      "id": "backend-engineer-r3-1",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "- Window: `CUSTOM_TIME` or `WORKING_HOURS`, never `SILENT_HOURS`, inside 8 am to 9 pm customer local time; team timezone set (unset means UTC) (Q22).",
+      "concern": "WORKING_HOURS does not fit an after-hours window. It allows a text only inside the dealer's configured working hours, uses the working-hours timezone rather than the team timezone, and returns false on any non-working day or when working hours are unset. If the dealer's working hours are store hours, a lead forwarded after BDC close is skipped as stl-outside-working-hours, and every Sunday lead is skipped. It fails safe (no text, BDC calls), but step 0 could deliver nothing, and the 'team timezone set' check would not catch it because WORKING_HOURS never reads the team timezone.",
+      "because": "`conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:278` (moment.tz(workingTz)), `:303` (non-working day returns OUTSIDE_WORKING_HOURS), `:267` (missing hours or timezone returns false); team timezone used only for SILENT_HOURS and CUSTOM_TIME (`:216`)",
+      "ask": "Make the window `CUSTOM_TIME` only, evaluated in the team timezone (set, not UTC), with a window per day including closed days. If WORKING_HOURS is ever used, record the dealer's working days, hours and timezone at go-live and show that the step 0 window is inside them on every day."
+    },
+    {
+      "id": "backend-engineer-r3-2",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "The type entry the test lead resolves to must be on.",
+      "concern": "On is not enough. resolveStlGate runs evaluateConfigGate on the type entry with the type entry's own mode before it checks the source entry. If the resolved type entry ('empty', DEFAULT or a named type) is on with WORKING_HOURS or a daytime CUSTOM_TIME window set up for another feed, every after-hours lead is skipped with an stl-outside-* reason. Section 3 files stl-outside-* under 'Designed skips visible' with no target, so this misconfiguration would show up as an expected skip, not a defect.",
+      "because": "`conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:446`-`:470` (type gate evaluated with its mode, then source gate); section 3 'Designed skips visible' row",
+      "ask": "State that the resolved type entry must be on with mode FULLDAY or a window covering the source entry's window, record its mode at the production test, and count any stl-outside-* skip on a lead created inside the source window as a defect skip (target 0)."
+    },
+    {
+      "id": "backend-engineer-r3-3",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Before go-live the dealer sends one test inquiry from a staff phone to the real inbox, production config, nudge off, source not excluded.",
+      "concern": "No send time is stated. With the source entry carrying an after-hours window, a test sent during the day is skipped as stl-outside-* and lands in 'Neither, both, or bypass hit', so the go/no-go stalls on a timing artefact. The code also already answers A5's skip-or-hold question (skip, :1922), but nothing in production confirms it.",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-task-execution-orchestrator.service.ts:1922` (skip and schedule next); A5",
+      "ask": "Send the test inquiry inside the step 0 window (after BDC close, before window end), and a second one after the window ends to confirm the A5 skip in production."
+    },
+    {
+      "id": "backend-engineer-r3-4",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "Calls on resolved leads end only with step 3 `conversational-ai-backend:src/sequence-workflows/services/sequence-task-execution-orchestrator.service.ts:1922` [E8].",
+      "concern": ":1922 is the STL execution gate's skip path. It supports the earlier clause in the same line ('STL skips, not holds, later leads'), not the claim that BDC calls on resolved leads end only with step 3, which rests on E8 and the write-back dependency.",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-task-execution-orchestrator.service.ts:1922`",
+      "ask": "Move the :1922 ref to the 'STL skips, not holds' clause and leave the calls claim on [E8]."
+    }
+  ],
+  "for_pm_at_gate_3": [
+    { "id": "E-1", "note": "If production shows the queue path, routing onto the trigger-follow-up API path is a build with its own size and owner; it is not configuration." },
+    { "id": "E-2", "note": "Step 1 date; Q10, Q17, Q21 answer-by dates." },
+    { "id": "E-3", "note": "No-API write-back channel scope; needs retry, idempotency and dead-letter design before it is sized." },
+    { "id": "Q14", "note": "What step 2 displaces; PM call." }
+  ],
+  "requests": []
+}

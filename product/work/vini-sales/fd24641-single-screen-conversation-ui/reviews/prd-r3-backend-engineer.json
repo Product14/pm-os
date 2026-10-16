@@ -1,0 +1,68 @@
+{
+  "persona": "backend-engineer",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Code-cited baseline": 4,
+    "Integration reality": 4,
+    "Failure design": 4,
+    "Observability and rollback": 4,
+    "Scope discipline": 4
+  },
+  "previous_issues": [
+    { "id": "backend-engineer-r2-1", "fixed": true, "note": "R13 queries open episodes by team, episode department, bucket and optional `ownerConsoleUserId`, sorts on `since`, paginates on episodes, then joins; two indexes named; the badge counts the same query; A5 and A13 cite R13. Residual: the episode field list in R12 has no team field for the R13 index to use (new r3-1)." },
+    { "id": "backend-engineer-r2-2", "fixed": true, "note": "Key is lead + department across channels; unique partial index where open; duplicate-key insert a silent no-op; mutable `unanswered_episodes` split from append-only `unanswered_episode_transitions`; writers named (shared service, sweeper, R4 endpoint). Field types are still not given; not blocking. How aging interacts with the 'where open' index is undefined (new r3-2)." },
+    { "id": "backend-engineer-r2-3", "fixed": true, "note": "R5 claims the summary with a unique upsert on recipient + department + window before sending; later escalations go at window end; retry, `text_failed`, `textAttempts`, `lastTextError` and episode ids sit on the summary; A24 and A28 test it. The summary record's collection is unnamed; minor, not raised." },
+    { "id": "backend-engineer-r2-4", "fixed": true, "note": "R4: open queues a deduped refresh (lead + department), inbound never waits, stored owner shows meanwhile; R2 routes CRM activity through the R4 endpoint; A22 covers slow, down or failing reads." },
+    { "id": "backend-engineer-r2-5", "fixed": true, "note": "R1 names SMS `authorType: HUMAN`, states email and chat have no member send; R12 backfills only where replies are observable (SMS `authorType`, claim and release events, action item creation and completion), the rest labelled." },
+    { "id": "backend-engineer-r2-6", "fixed": true, "note": "Allowlist is explicit normalised intents written at enablement; new ones open nothing until added; A2 adds the unlisted case." }
+  ],
+  "issues": [
+    {
+      "id": "backend-engineer-r3-1",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Indexes: team + department + status + `since`, and with `ownerConsoleUserId`.",
+      "concern": "The index leads on team, but the R12 field list for `unanswered_episodes` (`leadId`, `department`, `status`, `since`, `channel`, `reason`, `ownerConsoleUserId`, ...) has no team or enterprise field. Without it, R13 has to go back through `leads` to filter by team, which is the lead pre-query R13 exists to avoid, and the index cannot be built as written.",
+      "because": "R12 field list vs R13 index; `conversational-ai-backend:src/customers/customers.service.ts:2452` (team list scopes by enterprise and team through leads today)",
+      "ask": "Add `enterpriseId` and `teamId` to the episode document, set at open from the lead and never changed, and lead the R13 indexes with them. Ten minutes of spec work; fold it into the build ticket."
+    },
+    {
+      "id": "backend-engineer-r3-2",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "an episode past its aging cutoff on the R5 in-hours clock moves to the aged bucket: off the badge, in R7, unreplied in metrics.",
+      "concern": "The status that 'aged' sets is undefined, and the unique partial index is 'where open'. If aged stays `open`, a customer who texts again on Monday joins the aged episode and stays off the badge: the be-back nobody sees, which is the failure this feature exists to remove. If aged sets another status, the new text opens a second episode for the same lead + department, and the old one sits in R7 forever unless a reply clears both.",
+      "because": "R3, R12 (partial index where open), A16; E10, E13",
+      "ask": "Define `status` values (open, aged, cleared) and the index predicate. State that a new human-owed customer message on an aged episode moves it back to active with a new `since` (or closes it as aged and opens a fresh one), and that a reply clears every uncleared episode for lead + department. AC: episode aged Friday, customer texts Monday in hours, it is on the badge."
+    },
+    {
+      "id": "backend-engineer-r3-3",
+      "severity": "minor",
+      "type": "feasibility",
+      "quote": "A clear matches the `episodeId` it read.",
+      "concern": "Only the click clear reads an episode id. A console reply and a CRM activity clear arriving through the R4 endpoint carry a lead, a department and a time, not an episode id. Matching on an id they do not have either drops those clears or invents a lookup that races with a new open.",
+      "because": "R2 (reply and CRM activity clears), R4 endpoint",
+      "ask": "Say: click clears match `episodeId`; reply and CRM activity clears match lead + department with `since` before the activity time, so activity older than a newly opened episode never clears it."
+    },
+    {
+      "id": "backend-engineer-r3-4",
+      "severity": "minor",
+      "type": "feasibility",
+      "quote": "Ship the unique index before the writer switch?",
+      "concern": "This is not open. A unique index cannot be built over a collection that already holds duplicate open rows, and R12's atomic open depends on it. If the writer runs first, Phase 0 data can block the index.",
+      "because": "R12; A3",
+      "ask": "Close Open question 8: the indexes ship in the deploy before the writer switch turns on, and the writer stays off if the unique index is missing."
+    }
+  ],
+  "requests": []
+}

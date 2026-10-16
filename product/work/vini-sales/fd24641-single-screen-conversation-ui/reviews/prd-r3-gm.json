@@ -1,0 +1,73 @@
+{
+  "persona": "gm",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Statement impact": 4,
+    "System of record": 3,
+    "Adoption cost": 4,
+    "Failure visibility": 4,
+    "Handoff ownership": 4
+  },
+  "previous_issues": [
+    {
+      "id": "gm-r2-1",
+      "fixed": true,
+      "note": "R3 now ages on the R5 in-hours clock and sends aged episodes to R7; R7 shows open and aged counts with the oldest in-hours wait of each, per owner; Goals and R3 count aged as unreplied and keep them out of the median; aged share is on the weekly watch; A16 checks the aged episode under its owner. See gm-r3-1 for rooftops that have no manager-list member."
+    },
+    {
+      "id": "gm-r2-2",
+      "fixed": true,
+      "note": "Goals row 'Know where reps reply' defines console-reply share per rooftop, department and week, names its source, marks it a proxy without an activity read, and says the same definition drives R6 and the success check. See gm-r3-2 for a gap at attested rooftops."
+    },
+    {
+      "id": "gm-r2-3",
+      "fixed": true,
+      "note": "Phase 0 fallback is now 'the claim is screens removed (Action Items page views)'; Goals labels manager time unmeasured."
+    },
+    {
+      "id": "gm-r2-4",
+      "fixed": true,
+      "note": "Configuration says 'Manager list: that owner always, plus recipients'; A32 checks the unowned-queue owner opening the manager view with recipients unset and a non-manager being denied."
+    }
+  ],
+  "issues": [
+    {
+      "id": "gm-r3-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "unbriefed rooftops get the view unconfigured (A26), not a delay.",
+      "concern": "Sales goes live at every rooftop on day one. At a rooftop the CSM has not briefed, nobody has set an unowned-queue owner or recipients, so nobody is on the manager list. R6 also means no texts there, because there is no attestation. Aging still runs on team working hours. After 24 in-hours hours, the customer who has waited longest leaves the badge and moves into R7, a view no one at my store can open. This is the gm-r2-1 hole again, now at every unbriefed store. The weekly watch tells the CSM lead, but my own managers never see it.",
+      "because": "E6, E13; Section 4 'Recipients: none until set' and 'Manager list: that owner always, plus recipients'; Section 9 'No role guard in conv-ai; per-rooftop list'",
+      "ask": "Until a department has at least one manager-list member, do not age its episodes: they stay on the badge. Add an acceptance criterion: unbriefed sales rooftop, episode passes the aging cutoff, it stays on the badge and the rooftop shows on the weekly watch as unconfigured. For the PM at Gate 3: should an unbriefed rooftop get a default manager-list member, such as the rooftop's console admin, instead?"
+    },
+    {
+      "id": "gm-r3-2",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Console-reply share per rooftop, department, week: cleared by console reply / cleared any way or aged, opt-outs out.",
+      "concern": "R3 ages episodes only where there is no activity read and no attestation. So at an attested rooftop with no read, nothing ages. A rep who answers from VinSolutions and does not click leaves the episode open, and it never enters this ratio. The share stays near 100%, R6 never reverts, and my manager keeps getting texts about customers who were already answered. That is the false alarm that teaches him to ignore the texts. The revert in A31 cannot fire on the one failure it exists to catch.",
+      "because": "E13 (reps work from two VinSolutions tabs); R3 aging condition; R6 revert; A31",
+      "ask": "For R6 and A31, count episodes still open past the department's aging cutoff in the denominator, even where they do not move to the aged bucket. Add an acceptance criterion: attested sales rooftop, no activity read, reps leave episodes open past the cutoff for a week, share falls below threshold, mark only and the CSM is told."
+    },
+    {
+      "id": "gm-r3-3",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "View flag per department: sales on day one; service off until confirmed.",
+      "concern": "R1 puts an episode in the handoff's department. When a Vini Sales agent hands a caller to service at a store where the service view is off, R8 hides that episode, so nobody sees it. It is not worse than today. But my sales manager will take the single screen as complete when a customer is waiting on a department that has no queue. Nobody owns that handoff.",
+      "because": "E37, E38; R1 'Department: the handoff's or action item's, else the lead's'; R8 'View flag per rooftop per department hides view, count and texts'",
+      "ask": "State where a service-department episode goes while that rooftop's service view is off. Either it shows in the sales view labelled Service, or it shows as a row under the sales unowned-queue owner in R7. Add one acceptance criterion for it."
+    }
+  ],
+  "requests": []
+}

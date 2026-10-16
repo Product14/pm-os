@@ -1,0 +1,113 @@
+{
+  "persona": "ceo",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Faithful to the one-pager": 4,
+    "Testable requirements": 4,
+    "Today vs after": 5,
+    "Configuration, not branches": 4,
+    "Measurable": 4,
+    "Dependencies": 3,
+    "Rollout": 3,
+    "Every agent": 4,
+    "Dealer reality": 3,
+    "Dealer economics": 2,
+    "Base leverage": 3,
+    "Dependency honesty": 3,
+    "Handoff clarity": 4,
+    "Decision readiness": 3
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "ceo-r1-1",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "the 30-day wait review runs at 1-2 rooftops whose reps reply in the console; the requesting rooftop is measured once its VinSolutions activity read is live.",
+      "concern": "The whole go or no-go now rests on 1-2 rooftops whose reps reply in the console, and nobody has shown me those rooftops exist. Open question 6 still asks which ones. If we cannot name them, the L ships to every rooftop with no gating test, and the requesting rooftop cannot be measured until a read with no date goes live. This is the thing I am least sure of in the plan.",
+      "because": "E13; PRD Open question 6; Section 9 'CRM activity ... Unknown per provider [Q18]'",
+      "ask": "Before build starts, give the count of Vini rooftops where most human replies to customers are sent from the console (we already hold console send data), and name the 1-2 success-check rooftops. If none qualify, say what the success check is instead, before day one rather than after."
+    },
+    {
+      "id": "ceo-r1-2",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "hours to first human reply per department, sized after baseline [ASSUMPTION: 2-week target, 30-day review]",
+      "concern": "I still cannot tell a dealer group the value in 60 seconds. Hours to first reply is a response-time number, not a P&L line. The 'Wait links to the P&L' row is the right idea, but it is a 'check, not the claim', with no commitment that it produces the value statement. Without it, this gets pitched as 'faster replies', which comes down to 'more conversations'.",
+      "because": "missing; Q15; ceo-r3-3 (one-pager); persona Dealer economics",
+      "ask": "Make Phase 0 output the dealer value line: appointments kept within 7 days (sales) and bookings or ROs (service, where read) for customers answered inside versus outside N hours, per rooftop, labelled as Spyne data, not audited. Set the target and the CSM pitch from that number before day one. If no link shows up, say so and keep the claim to manager time removed."
+    },
+    {
+      "id": "ceo-r1-3",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "No; push hardcodes \"AI SPYNE\". Access: Integrations PM with the Partnerships team [PM]. Build: integrations-backend, inside this L [ASSUMPTION: the VinSolutions read fits inside the L]",
+      "concern": "Owners are named now, which is good. Status is not. The requesting rooftop's 'Mine', its texts and its success measure all wait on VinSolutions reads, the salesperson read and the activity read. I cannot tell whether either negotiation has started, whether we already hold read access under an existing VinSolutions agreement, or whether the activity read is inside this L. That is the dependency the dealer asked an ETA against.",
+      "because": "E2; E13; Section 9 rows 1 and 2; Q18",
+      "ask": "For each of the VinSolutions salesperson read and the VinSolutions activity read, add the status (not started, in progress, agreed), whether it is inside the L, and the date the CSM can give the requesting rooftop."
+    },
+    {
+      "id": "ceo-r1-4",
+      "severity": "major",
+      "type": "scope",
+      "quote": "None read [Q19]. Same owners. Gates service Mine, clears, texts",
+      "concern": "The scope lists the owner of record from the scheduler or DMS for service, and R4 is a P0 that names the advisor on the appointment or RO. But we read none of Xtime, myKaarma, CDK, Reynolds, Tekion or PBS for this, and the L assumption covers only VinSolutions. Each of these is a commercial negotiation per provider, not a build. The PRD does not say whether any service read is inside this L or which providers we are certified with today.",
+      "because": "Section 9 row 3; Q19; org fact 4",
+      "ask": "State plainly that no scheduler or DMS read is built inside this L. Service gets the team view, click clears and attestation texts only, and service 'Mine', RO clears and RO texts arrive per provider as separately sized work. List any scheduler or DMS provider where we already hold read access today, or say there are none."
+    },
+    {
+      "id": "ceo-r1-5",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Sales flag: default on at day one. Service flag: default off until Vini Service is confirmed.",
+      "concern": "I accept the day-one-everywhere decision. My worry is what that screen shows a dealer principal. At a store whose reps reply in the CRM, nothing clears the queue except a click, so the Unanswered count only grows. It looks like a backlog Vini made, and that call comes to our CSM in week one. Phase 0 will tell us which stores those are before they see it.",
+      "because": "E13; R2 (clears only by console reply, CRM read or click); Section 9 row 2 'Unknown per provider [Q18]'",
+      "ask": "Keep the default, and add one rollout line: use the Phase 0 data to list rooftops where most episodes would never see a console reply, and have the CSM brief those stores before the flag shows the view (or hold the flag there until briefed). The decision itself stays as approved."
+    },
+    {
+      "id": "ceo-r1-6",
+      "severity": "major",
+      "type": "scope",
+      "quote": "What the L displaces this quarter; write-back date",
+      "concern": "This was for Gate 2 and it is still open in the PRD. I accept that this is a strategic L. I still need to know what we are saying no to this quarter to fund it, and when the write-back path (the full-value, CRM-first version) is expected, so this queue is not mistaken for the end state.",
+      "because": "one-pager Open question 4; ceo-r2-3 and Gate 2 list (one-pager); persona 'every yes is a no'",
+      "ask": "Before the PRD is approved, name the roadmap item this L displaces and give a write-back date, or 'none planned', for VinSolutions."
+    },
+    {
+      "id": "ceo-r1-7",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "\"Reps reply only in the console\" attestation: default false.",
+      "concern": "This switch turns on manager texts. If it is set wrong, the GM gets escalation texts about customers his reps already answered in the CRM, and we lose credibility faster than any feature earns it. The PRD does not say who sets it or what happens if it turns out to be false.",
+      "because": "R6; A21; E13",
+      "ask": "Say who may turn it on (dealer manager, recorded by the CSM). Then check it weekly against console reply share and switch texts back to mark-only if the share falls below a threshold."
+    },
+    {
+      "id": "ceo-r1-8",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "1 rooftop asked, 0 others in 90 days, 2 companies with the adjacent job; built because the console is the product [E25, E26, E42].",
+      "concern": "I do not reopen the build call. But Phase 0 runs dark at every rooftop, and that is the cheapest base evidence we will ever get. The PRD should use it to show the handoff wait is a base problem, not a one-store one.",
+      "because": "E25, E26; Q14; persona Base leverage",
+      "ask": "Add to Phase 0 output: the number of rooftops, per department, with a median handoff wait above N hours. Report it with the baseline."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Count of Vini rooftops where most human replies to customers are sent from the console rather than the CRM, last 30 days, per department.",
+      "blocks": "ceo-r1-1, ceo-r1-5",
+      "source": "conversational-ai-backend outbound message records (member-sent, by channel), or ClickHouse equivalent"
+    },
+    {
+      "question": "Status of the VinSolutions salesperson and activity read negotiations, and whether an existing VinSolutions agreement already covers either read.",
+      "blocks": "ceo-r1-3",
+      "source": "Integrations PM (Ayush Gupta) with Partnerships (Sanu Chandra)"
+    },
+    {
+      "question": "Median hours from a customer reply to the first human reply, split by whether an appointment or RO followed (re-raised from one-pager r3; still not run).",
+      "blocks": "ceo-r1-2",
+      "source": "conversational-ai-backend message timestamps and Mongo meetings (exclude is_demo_meeting) (Q15)"
+    }
+  ]
+}

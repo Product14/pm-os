@@ -1,0 +1,48 @@
+{
+  "persona": "gm",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Faithful to the one-pager": 5,
+    "Testable requirements": 4,
+    "Today vs after": 4,
+    "Configuration, not branches": 4,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 5,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Statement impact": 3,
+    "System of record": 3,
+    "Adoption cost": 4,
+    "Failure visibility": 4,
+    "Handoff ownership": 4
+  },
+  "observations_loaded": [],
+  "previous_issues": [
+    { "id": "gm-r2-1", "fixed": true, "note": "R5 now goes to the BDC manager and a backup; A15 covers the manager's day off; A16 covers a BDC-closed day ('before it on a BDC-closed day'); R10 keeps the Ava-set-appointments-against-the-board check weekly for as long as step 0 runs; Q39 asks who covers which days." },
+    { "id": "gm-r2-2", "fixed": true, "note": "Go-live check 'Handoff surface carries R5's fields on the test lead, each status's source named (Q26, Q38)'; A17 lets Console stand in only if it filters callback-requested and appointment-set leads and A14 and A16 pass there; A14 ends 'else no go-live'." },
+    { "id": "gm-r2-3", "fixed": true, "note": "R10 'opt-out scan daily throughout'; R4 makes a same-day optOut.sms path (Q37) a go-live condition; A12 is the week-three unsubscribe case." },
+    { "id": "gm-r2-4", "fixed": true, "note": "Dealer message is 'sent only after the production test shows the API path; the dealer pauses its texts after it', and a separate queue-path message is written out with the E-1 date." },
+    { "id": "gm-r2-5", "fixed": true, "note": "Split into 'No defect skips' (target 0) and 'Designed skips visible' (no target, on the handoff and to the VP Marketing)." },
+    { "id": "gm-r2-6", "fixed": true, "note": "A13 now reads 'No dealer pause and no written acceptance'." }
+  ],
+  "issues": [
+    {
+      "id": "gm-r3-1",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "**Step 0 exit, week 4 (PM).** Keep on 0 non-inquiry texts, 0 chase sends, 0 missed opt-outs, noTask 0 and same-evening contact ahead of the BDC; else stop (source entry off, forward removed).",
+      "concern": "My worst day with this pilot is a customer Ava booked for 9 am walking in to nobody expecting them. R10 checks Ava-set appointments against the board weekly, but neither the week-4 keep rule nor the Pause on list counts an Ava-set appointment that never reached the board. The pilot could pass week 4 with a customer stood up.",
+      "because": "A16, R10 (weekly board check); persona Blocks when: customer-facing failure with no recovery path; persona bad day (customer shows up to an empty bay)",
+      "ask": "Add '0 Ava-set appointments missing from the board before their time' to the week-4 keep rule, and add 'an Ava-set appointment not on the board before its time' to Pause on."
+    }
+  ],
+  "for_pm_at_gate_3": [
+    { "id": "E-1", "note": "Queue-path decision: fund the routing change or close step 0. My only ask is that the dealer hears the answer by a date, since this store has already chased us (E10, E31)." },
+    { "id": "E-2", "note": "Carries gm-r1-10: answer-by dates for step 1, Q14, Q15, Q39, Q10, Q17, Q21 and the CSM write-back start. Owners are named; dates are still missing." },
+    { "id": "E-3", "note": "No-API write-back channel. Until write-back exists my BDC keys Ava's outcomes by hand (A16), so step 3 is what makes this stick past the pilot." },
+    { "id": "Q14", "note": "What step 2 displaces; PM call." }
+  ],
+  "requests": []
+}

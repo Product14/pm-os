@@ -1,0 +1,47 @@
+{
+  "persona": "ceo",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Faithful to the one-pager": 5,
+    "Testable requirements": 4,
+    "Today vs after": 5,
+    "Configuration, not branches": 4,
+    "Measurable": 4,
+    "Dependencies": 4,
+    "Rollout": 4,
+    "Every agent": 4,
+    "Dealer reality": 4,
+    "Dealer economics": 3,
+    "Base leverage": 4,
+    "Dependency honesty": 5,
+    "Handoff clarity": 4,
+    "Decision readiness": 4
+  },
+  "observations_loaded": [],
+  "previous_issues": [
+    { "id": "ceo-r2-1", "fixed": true, "note": "Removes now says what step 0 removes: the next-morning first call replaced by a same-evening text for inquiries forwarded between BDC close and the window's end; later leads are skipped and called as today; their share is Q39. A5 states skip, not hold." },
+    { "id": "ceo-r2-2", "fixed": true, "note": "Step 0 exit at week 4, PM-owned, with keep or stop criteria; CSM and ops hours logged weekly and weighed at week 4; follow-up check eases after 4 clean weeks. 'Widen' rejected as outside the approved one-pager; accepted." },
+    { "id": "ceo-r2-3", "fixed": true, "note": "Q15 on its own line ('Nothing; week-one counts stand in'); R7 no longer lists Q19." },
+    { "id": "ceo-r2-4", "fixed": true, "note": "Forward lag row added with the 6-hour target." },
+    { "id": "ceo-r2-5", "fixed": true, "note": "Cuts applied; v3 is 3,123 words." }
+  ],
+  "issues": [
+    {
+      "id": "ceo-r3-1",
+      "severity": "minor",
+      "type": "five-facts",
+      "quote": "**Step 0 exit, week 4 (PM).** Keep on 0 non-inquiry texts, 0 chase sends, 0 missed opt-outs, noTask 0 and same-evening contact ahead of the BDC; else stop (source entry off, forward removed).",
+      "concern": "Every keep criterion is a safety floor, and 'same-evening contact ahead of the BDC' is true for any lead that gets texted at all. Nothing here can fail on value. If BDC close to the window's end is one hour and covers a handful of leads a week (Q39 unknown), this passes week 4 while the CSM and ops hours in section 3 cost more than the callbacks removed. The Hours row says 'weighed at week 4', but the exit rule never uses it.",
+      "because": "section 3 Hours row; Q39 (share of after-hours leads inside the window unknown); fact 3 (justify in cost and days removed)",
+      "ask": "Add a value line to the keep rule: the share of forwarded inquiries texted same evening, and BDC callback hours removed against CSM and ops hours spent; the PM sets the floor once Q39 is answered, and below it step 0 stops."
+    }
+  ],
+  "for_pm_at_gate_3": [
+    { "id": "E-1", "note": "Queue path: fund the routing build or close step 0. A routing build for one rooftop needs Q29 or an E22 company to show the same path elsewhere before it is a base capability." },
+    { "id": "E-2", "note": "Dates: step 1, Q14, Q15, Q39, Q10, Q17, Q21 and the CSM write-back start. The dealer was already told 'being worked on' (E10, E31); the next promise needs a date." },
+    { "id": "E-3", "note": "Build the no-API channel only if Q29 shows more no-API rooftops; touches the fixed intent, so it is yours." },
+    { "id": "Q14", "note": "What step 2 displaces on the Vini Sales plan; this is the trade-off I need on top when step 2 asks for priority." }
+  ],
+  "requests": []
+}
