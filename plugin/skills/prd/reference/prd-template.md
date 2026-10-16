@@ -1,6 +1,6 @@
 # PRD template
 
-Adapted from the team's concise PRD template. Budget about 3,000 words. Headings exactly as below. Sections whose names contain Problem, Evidence, Requirements or Acceptance are lint-checked: every line tagged.
+Adapted from the team's concise PRD template. Budget about 3,000 words. Headings exactly as below. Write for a human skimming: short sentences, one idea per bullet, tables only for short cells (under ~20 words each). Sections whose names contain Problem, Evidence, Requirements or Acceptance are lint-checked: every line tagged.
 
 ```markdown
 # PRD: <feature name>
@@ -46,14 +46,24 @@ Metric definitions must match `context/metrics` entries where one exists. Check 
 | <step in the dealer's flow> | <current behaviour> | <new behaviour> | `repo:path:line` |
 
 ## 6. Requirements
-| # | Requirement | Priority | Tag |
-|---|---|---|---|
-| R1 | <testable statement> | P0/P1/P2 | [E..] / `ref` / [PM] |
+One block per requirement. No table: requirement text never sits in a table cell.
+
+### R1. <short plain title> (P0) [E..] / `ref` / [PM]
+- <one idea per bullet, under ~25 words>
+- <sub-cases as nested bullets>
+  - Sales: <...>
+  - Service: <...>
+- Never: <what must not trigger or happen>
+- Depends on: <R# or system, at the end>
 
 ## 7. Acceptance criteria
-| # | Given | When | Then | Covers |
-|---|---|---|---|---|
-| A1 | <state> | <event> | <observable result> | R1 [E..] |
+Grouped by requirement. One criterion per bullet.
+
+### For R1
+- A1. Given <state>, when <event>, then <observable result>. [E..]
+- A2. Stop condition: given ..., when ..., then ...
+- A3. Negative case: ...
+- A4. Fallback: ...
 Include, for each P0 requirement: the happy path, the stop condition, the negative case, and the fallback when an integration or data source is unavailable.
 
 ## 8. Edge cases

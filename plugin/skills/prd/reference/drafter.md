@@ -33,6 +33,14 @@ A line with none of these fails `case-lint doc`. Do not hide assumptions inside 
 - **Short.** One-pager about 600 words. PRD about 3,000. Cut before you add.
 - No em dashes. No "AI-powered". No PII: people are named by role.
 
+## Readability (a person reads this, not a parser)
+
+- One idea per bullet. If a sentence needs a semicolon or a colon list, split it into nested bullets.
+- Sentences under about 25 words. Spell out a term the first time ("episode: one customer waiting on a human reply").
+- Tables only when every cell is under about 20 words. Requirement and acceptance text never goes in a table cell.
+- Put the tag on the heading or bullet it supports; a tagged heading covers the bullets nested under it.
+- Cross-references ("via R4") go at the end of a bullet, not mid-sentence.
+
 ## Acceptance criteria (PRD)
 
 Write them as behaviour someone can observe in a test call, a console screen or a table:

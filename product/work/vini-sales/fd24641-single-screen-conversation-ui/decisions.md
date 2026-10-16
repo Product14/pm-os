@@ -6,6 +6,7 @@
 - Any console change is designed for every department that uses the surface (sales and service), not only the requesting one [PM] [E37].
 
 ## Log
+- 2026-10-16 Gate 3 feedback (via Confluence review): content fine, no gaps; requirement and criteria text are dense blobs; restructure into headings and bullets for human reading. Rating deferred until after the edit.
 - 2026-10-16 Gate 3: approved with changes (4 majors fixed; ship everywhere day one incl. requester; failure keeps view, stops text expansion; no VinSolutions write-back this quarter).
 - 2026-10-16 Gate 2: approved with changes. Success check: 30-day wait review runs at 1-2 rooftops whose reps reply in the console; the requester is measured once its VinSolutions activity read is live. Decision line: sales day one, service after confirmation.
 - 2026-10-16 Gate 2 (in progress): PM named provider-access owners; asked what the 30-day review is before deciding.

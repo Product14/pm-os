@@ -165,17 +165,29 @@ export function lintDoc(file, { fix = false, questions } = {}) {
   const assumptions = [];
   let inClaims = false;
   let inFence = false;
+  // Readable layout: a tagged "### R1 ..." heading or a tagged top-level bullet
+  // covers the indented bullets under it, so one claim can be split into lines.
+  let blockTagged = false;
+  let parentTagged = false;
   md.split("\n").forEach((line, i) => {
     if (/^```/.test(line)) inFence = !inFence;
     if (inFence) return;
-    const h = line.match(/^#{1,4}\s+(.+)/);
-    if (h) { inClaims = CLAIM_SECTIONS.test(h[1]); return; }
     for (const m of line.matchAll(/\[ASSUMPTION:?\s*([^\]]*)\]/g)) assumptions.push(m[1].trim() || line.trim());
+    const h = line.match(/^(#{1,4})\s+(.+)/);
+    if (h) {
+      if (h[1].length <= 2) { inClaims = CLAIM_SECTIONS.test(h[2]); blockTagged = false; }
+      else blockTagged = TAGGED.test(h[2]);
+      parentTagged = blockTagged;
+      return;
+    }
     if (!inClaims) return;
     const t = line.trim();
     if (!t || /^\|?\s*:?-{3,}/.test(t) || /^>/.test(t) || /^\*\*[^*]+:\*\*\s*$/.test(t)) return;
     if (/^\|/.test(t) && i > 0 && /^\|?\s*:?-{3,}/.test(md.split("\n")[i + 1] || "")) return; // table header
-    if (meaningful(t).length && !TAGGED.test(t)) untagged.push({ line: i + 1, text: t.slice(0, 120) });
+    const nested = /^\s{2,}([-*]|\d+[.)])\s/.test(line);
+    const tagged = TAGGED.test(t) || (nested ? parentTagged : blockTagged);
+    if (!nested) parentTagged = tagged;
+    if (meaningful(t).length && !tagged) untagged.push({ line: i + 1, text: t.slice(0, 120) });
   });
   const qPath = questions || join(dirname(dirname(file)), "questions.md");
   const qs = existsSync(qPath) ? parseBlocks(readFileSync(qPath, "utf8"), "Q") : {};
