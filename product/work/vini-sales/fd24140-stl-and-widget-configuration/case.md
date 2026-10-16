@@ -15,6 +15,7 @@ feature: lead-type-aware-stl-first-message
 outcome: build-generalised
 prd:
 jira:
+confluence: https://spyne.atlassian.net/wiki/spaces/SA/pages/1201471491/PRD+Lead-type-aware+STL+first+message+for+after-hours+website+leads
 ledger_match:
 fetched_freshdesk: 2026-10-15
 fetched_arali: 2026-10-15

@@ -15,6 +15,7 @@ feature: my-unanswered-queue
 outcome: build-generalised
 prd:
 jira:
+confluence: https://spyne.atlassian.net/wiki/spaces/SA/pages/1201143809/PRD+Unanswered+queue+on+Conversations+sales+and+service
 ledger_match:
 fetched_freshdesk: 2026-10-15
 fetched_arali: 2026-10-15
