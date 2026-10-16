@@ -1,0 +1,141 @@
+{
+  "persona": "gm",
+  "round": 1,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 3,
+    "P&L": 2,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 3,
+    "Full value": 3,
+    "Brevity": 4,
+    "Statement impact": 2,
+    "System of record": 2,
+    "Adoption cost": 2,
+    "Failure visibility": 2,
+    "Handoff ownership": 2
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "gm-r1-1",
+      "severity": "blocking",
+      "type": "wrong-for-dealers",
+      "quote": "**Step 0, this week, no build:** STL on for after-hours inquiries, appointment and credit-app types off; dated plan to the CSM.",
+      "concern": "Step 0 goes live this week relying on the lead-type switch to keep booked customers and credit applicants out of STL, but the same page says we do not know whether lead type survives the forward and the parser, or whether the always-allow bypass skips the per-type config entirely. If either is true, every customer who booked online gets pushed to book again and every credit applicant gets a sales pitch, under my store's name, starting this week. That is the exact failure the dealer asked us to avoid, and nothing here would tell me it is happening.",
+      "because": "E6, E5, E35, E19; Q18, Q19 (isAlwaysAllowStlLead :406, per Evidence line in the doc)",
+      "ask": "Make Step 0 safe without depending on Step 1: either the dealer's forward sends inquiries only (they control the forward, E9) until the gate is proven, or Step 0 is gated on test leads per type on this team showing appointment and credit-app leads are actually blocked. State which, and who checks it before go-live."
+    },
+    {
+      "id": "gm-r1-2",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "It removes next-morning BDC callbacks and hand-keyed outcomes, and keeps the AI out of credit.",
+      "concern": "My BDC enters the lead in our system and calls it the next morning. Until Ava's outcome is in that system, they will still call every one of those leads, because they cannot see what Ava said. So Steps 0 to 2 do not remove a callback; they add a text in front of it. And 'hand-keyed outcomes' goes up in Steps 0 to 2, not down, because there are more conversations to key. The removal only happens at Step 3, which has no date.",
+      "because": "E8, E12, E13; Q16",
+      "ask": "Say per step what the BDC does differently on Monday. Before Step 3, either name the rule (for example, BDC skips leads Ava already engaged, and how they know) or state that callbacks are not removed until write-back lands. Put the hours removed per week on the line once Q15 is answered."
+    },
+    {
+      "id": "gm-r1-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Outcomes reach the dealer only through Console and email, so their software development manager keys them in by hand [E12, E13].",
+      "concern": "Between Step 0 and Step 3 the record of what Ava said, and any appointment she books overnight, lives in a Spyne console and an email. That is the second system of record I will not run. Their software development manager already said Console and emails were not enough. If an inquiry books overnight and nobody keys it before the customer walks in, the store is caught flat. Nobody is named as owning that handoff in the interim, and Step 3 has no date.",
+      "because": "E12, E13; Q16, Q10",
+      "ask": "Name the interim handoff for overnight bookings (who receives it, in what form, before the store opens) and its owner at the rooftop. Give Step 3 a target quarter or a dated decision point so the dealer is not told 'being worked on' a second time (E10)."
+    },
+    {
+      "id": "gm-r1-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Per rooftop: lead-type mapping, on/off and opener per type, credit-app held out or acknowledged, write-back channel.",
+      "concern": "If the credit-app option is 'acknowledged', Ava tells the customer the team will follow up. That is a promise from the store on the sales to F&I handoff. Who follows up, the BDC or the F&I office, how they learn Ava acknowledged it, and by when? If nobody calls, the customer who applied for credit hears nothing after we told them someone would. Nobody is paid on that handoff, so it needs a named owner.",
+      "because": "E1, E5; missing (no owner or follow-up path for credit-app leads in the evidence)",
+      "ask": "For the acknowledged option, name the store role that owns credit-app follow-up and how it is notified, and keep the template from promising a time the store has not committed to. Default to held out until the dealer names that owner."
+    },
+    {
+      "id": "gm-r1-5",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "**Step 2:** opener template per lead-type entry; no template keeps today's opener. No-PII on credit-app is platform logic.",
+      "concern": "The confirm opener will read appointment date, time and store out of a parsed email. If the parse is wrong, Ava confirms the wrong time or the wrong store to the customer, and the customer shows up to nobody. There is no detection or recovery here: how does the store find out Ava confirmed something that is not on our board, and who fixes it with the customer?",
+      "because": "E6, E35, E19; Q18",
+      "ask": "Specify what the confirm opener says when date, time or store is missing or unparsed (a confirmation without specifics, or no confirm). Name how a mismatch is surfaced to the BDC manager and who contacts the customer."
+    },
+    {
+      "id": "gm-r1-6",
+      "severity": "major",
+      "type": "scope",
+      "quote": "Reply and follow-up share the generic prompt; without the type they confirm, then push a new appointment (Q12).",
+      "concern": "This is listed as a risk, but Step 2 only builds the opener. The customer does not care that the first text was right if the second one pushes them to book again. Step 1 proves whether reply turns see the type, but nothing says what Step 2 does if they do not.",
+      "because": "Q12; E6; case.md Agents affected (Sales inbound, Sales outbound unknown)",
+      "ask": "Put carrying the lead type into the reply and follow-up turns in Step 2 scope, or state that Step 2 does not ship until Q12 shows the type reaches them."
+    },
+    {
+      "id": "gm-r1-7",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "The BDC calls website leads the next business day; Ava is meant to reach the after-hours ones first [E8, E9].",
+      "concern": "The dealer asked whether to pause their own after-hours automated texts so the customer is not double-texted. The page never answers it. If both run, a customer gets two texts from my store overnight, and that is my store looking disorganised, not the vendor.",
+      "because": "E15",
+      "ask": "Add to Step 0: the CSM confirms with the dealer which after-hours automated messages pause when STL starts, before go-live."
+    },
+    {
+      "id": "gm-r1-8",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "| Time to first contact | next business day | before the BDC opens | [ASSUMPTION: STL silent hours allow a first text before the BDC opens] |",
+      "concern": "This is the main thing Step 0 delivers, and it rests on an assumption. If silent hours hold the first text until the BDC opens, Step 0 removes no time at all.",
+      "because": "Q22",
+      "ask": "Answer Q22 before Step 0 goes live and state the actual earliest first-text time for this rooftop."
+    },
+    {
+      "id": "gm-r1-9",
+      "severity": "minor",
+      "type": "five-facts",
+      "quote": "| Booked online appointments pushed to rebook | every one, if STL were on | 0 | [E6] |",
+      "concern": "This is a hypothetical baseline, not a line on my statement. What I care about is whether online appointments show, and whether confirming them changes that. That is the measure to put here, at this rooftop.",
+      "because": "E6; missing (no show-rate baseline in the evidence)",
+      "ask": "Replace with show rate on online appointments at this rooftop, before and after, marked unknown with who measures it."
+    },
+    {
+      "id": "gm-r1-10",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "The config has no department key and the parser feeds the shared lead store (Q9, Q11).",
+      "concern": "I need to be able to turn this off for one department without breaking the others. If service teams run STL, an opener built for sales reaches them too.",
+      "because": "E36, E38; Q9, Q11",
+      "ask": "State that Step 2 does not ship until Q9 and Q11 are answered, and that templates are scoped so service is unaffected and can be switched separately."
+    }
+  ],
+  "requests": [
+    {
+      "question": "How many after-hours website leads a week does this rooftop forward, split by inquiry, online appointment and credit application, and how many BDC hours go to next-day callbacks and confirmations?",
+      "blocks": "gm-r1-2 (hours removed on the statement)",
+      "source": "CSM with VP Marketing (Q15)"
+    },
+    {
+      "question": "Does the dealer run its own after-hours automated texts today, and will they pause them when STL starts?",
+      "blocks": "gm-r1-7",
+      "source": "CSM on the dealer email thread (E15)"
+    },
+    {
+      "question": "Who at the rooftop follows up on credit applications today (BDC or F&I), and what response time do they commit to?",
+      "blocks": "gm-r1-4",
+      "source": "CSM with VP Marketing"
+    },
+    {
+      "question": "What is this team's STL silent-hours setting, and when would a lead forwarded at 11 pm get its first text?",
+      "blocks": "gm-r1-8",
+      "source": "Engineering (Q22)"
+    },
+    {
+      "question": "Do this rooftop's forwarded test leads for appointment and credit-app types actually stop at the STL gate, or hit the always-allow bypass?",
+      "blocks": "gm-r1-1",
+      "source": "Engineering (Q18, Q19)"
+    }
+  ]
+}

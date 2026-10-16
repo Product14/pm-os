@@ -265,3 +265,38 @@
 - side: system
 - role: engineering
 - text: who_calls: integrations-backend posts leads to dealer-leads-backend /leads/dealer here and depends on crm-core-service. Parsed email leads land in the shared lead store other agents read.
+
+### E39
+- source: bluebrain:integrations-backend:src/email-parsing/email-parsing-consumer.service.ts:409
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: (R1) Forwarded ADF emails become leads in EmailParsingConsumerService: createLeadFromAdfEmail :376, buildAdfLeadInput :409, afterAdfLeadCreated :470, with source taken from the subject line (extractLeadSourceFromSubject :192). trace_handler finds no named helpers or field writes in this file or in email-parser.service.ts, and ParsedEmailData (:14) shows no field list, so whether the ADF lead type or appointment time reaches external_type is not visible. The lead model keeps lead_type and external_type as separate fields (dealer-leads-backend services/Lead.js setLeadType :840, setExternalType :279); the STL gate reads only external_type. Unanswerable from the graph; integrations-backend has no local clone.
+
+### E40
+- source: conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:406
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: (R2) The bypass needs both source === STL_ALWAYS_ALLOW_SOURCE (env, default 'SPEED_TO_LEAD', :20) and external_type in STL_ALWAYS_ALLOW_LEAD_TYPES (env, default 'spyne_console,website', :23). The only writer of source 'SPEED_TO_LEAD' in this repo is createCustomerData (:615), which posts the console or widget STL form to integrations-backend /internal/conversational-ai/create-lead. Forwarded email leads come in on a different path, with source taken from the subject line (E39). On code defaults they do not hit the bypass. Where a lead does hit it, it skips all three gates: creation allowlist (:525), execution and new-SMS (resolveStlGate :429), and the team-inactive check (sequence-workflow-creation.service.ts:764). The repo does not show the prod env values, so the stored source/external_type on one forwarded test lead is still the confirmation (Q19).
+
+### E41
+- source: conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:518
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: (R3) A lead-type entry with isEnabled false stops STL for that type at all three gates: workflow creation (resolveStlAllowlistGate :518, called at sequence-workflow-creation.service.ts:490, reason stl-disabled-for-lead-type), task execution (resolveStlGate via sequence-task-execution-orchestrator.service.ts:1937) and new SMS conversation (sms-v2.service.ts:1955, fails as speed_to_lead_not_enabled). Three limits: (1) the key is the lead's external_type, case-insensitive; a type with no entry falls back to DEFAULT (resolveConfigFromMap :131), so a type the email path does not set distinctly cannot be turned off alone (E39); (2) the always-allow pair bypasses it (E40); (3) STL config does not govern the plain FOLLOW_UP cadence, which has its own opt-out list (excludeType / excludeSource, orchestrator :1956). A type switched off for STL still gets the follow-up cadence unless it is also excluded there. The workflow is skipped entirely only when both exclude it (sequence-workflow-creation.service.ts:507).
+
+### E42
+- source: conversational-ai-backend:src/sms/sms-v2.service.ts:1970
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: (R4) The only contactability check on the STL SMS path is customer.optOut.sms: before a new STL conversation (sms-v2.service.ts:1970) and before each sequence task (sequence-task-execution-orchestrator.service.ts:683, :2250). No prior-express-consent check runs for SMS. OutboundConsentService.evaluateCallConsent is used only for call tasks (sequence-workflows/outbound/followup-outbound.handler.ts:308). On the main inbound path (sms.service.ts handleInboundSmsV2, :2349), optOut.sms is set only on an exact "STOP". The legacy handleInboundSms (:1957, Vincue numbers) also accepts STOPALL, UNSUBSCRIBE, CANCEL, END and QUIT. Whether the dealer's forms or the ADF carry consent is not visible (Q24).
+
+### E43
+- source: conversational-ai-backend:src/sequence-workflows/services/sequence-task-execution-orchestrator.service.ts:2178
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: (R5) STL duplicate suppression sees only Spyne-side signals: last_contacted_at, written by Spyne's own sends, inbound replies and chat mirror (leads.service.ts:114, callers sms.service.ts:753, :1924, chat-v2/mirror/mirror.service.ts:508), with a 15-hour default window when no window is configured (getSuppressionPayload :2261); a scheduled meeting for the lead or an appointmentBooked flag (:2186 to :2310); an active SMS human transfer (:657); and a terminal lead stage. None of these sees the dealer's own after-hours texts or BDC calls at a rooftop with no CRM integration (E12). The same appointment check means an online-appointment lead is suppressed only if the email path creates a meeting or sets appointmentBooked, which is not visible (E39).

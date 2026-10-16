@@ -1,0 +1,127 @@
+{
+  "persona": "backend-engineer",
+  "round": 1,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 3,
+    "Full value": 3,
+    "Brevity": 4,
+    "Code-cited baseline": 4,
+    "Integration reality": 3,
+    "Failure design": 2,
+    "Observability and rollback": 2,
+    "Scope discipline": 4
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "backend-engineer-r1-1",
+      "severity": "blocking",
+      "type": "feasibility",
+      "quote": "**Step 0, this week, no build:** STL on for after-hours inquiries, appointment and credit-app types off; dated plan to the CSM.",
+      "concern": "Step 0 only works if forwarded leads reach resolveStlGate with a per-type external_type. The doc's own Evidence line says SPEED_TO_LEAD website leads can skip per-type config (isAlwaysAllowStlLead :406, Q19), and nobody has found any code that writes external_type from parseAdf (Q18, search_columns 0 hits). If either holds, 'credit-app types off' is a no-op: every forwarded lead, credit apps included, lands on DEFAULT or the bypass and gets the standard sales opener. That is exactly the credit and PII exposure the dealer ruled out (E5), shipped 'this week'.",
+      "because": "`conversational-ai-backend:src/speed-to-lead/services/speed-to-lead-console-call.service.ts:406` (isAlwaysAllowStlLead, confirmed via find_symbol), `:422` resolveStlGate; solution-context.md 'What a change would touch' (no writer of external_type); Q18, Q19; E5",
+      "ask": "Gate Step 0 on two checks before STL goes on: (a) the prod values of STL_ALWAYS_ALLOW_SOURCE / STL_ALWAYS_ALLOW_LEAD_TYPES and the source/external_type of a test forwarded lead on this team, (b) one sample forwarded email per type through POST /email-parsing/test-parse. Until both pass, make the control deterministic on the dealer side: the dealer forwards inquiries only (they already choose what to forward, E9), and say so in Step 0."
+    },
+    {
+      "id": "backend-engineer-r1-2",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "**Step 2:** opener template per lead-type entry; no template keeps today's opener. No-PII on credit-app is platform logic.",
+      "concern": "'Template' has no data contract. The opener today is LLM output from one global prompt (generate :159, renderPrompt :441), so a 'template' could mean literal text sent verbatim or an instruction fed into the prompt. Those are very different builds and very different compliance postures. For credit-app the acknowledgment should be fixed text that bypasses the LLM, not a prompt hint the model may paraphrase. Also unstated: field name and type on speedToLeadByLeadType, which merge variables are allowed (appointment date, time, store), and what happens when a variable is missing (an appointment lead with no parsed time must not send 'see you at undefined'). The field must also survive both config writers and the DTO whitelist (Q20).",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-task-message-generation.service.ts:159`, `:441` (confirmed via find_symbol); `conversational-ai-backend:src/notifications/conversation-notifications.schema.ts:466`; `conversational-ai-backend:src/main.ts:128` whitelist; Q20",
+      "ask": "One line in Step 2 fixing the contract: literal vs LLM-guided per type (credit-app literal, no LLM), allowed variables, fallback to today's opener (or no send) when a required variable is missing, and that the field is optional and round-trips both upsertSpeedToLeadSettings and upsertStlFollowUpConfig."
+    },
+    {
+      "id": "backend-engineer-r1-3",
+      "severity": "major",
+      "type": "scope",
+      "quote": "Reply and follow-up share the generic prompt; without the type they confirm, then push a new appointment (Q12).",
+      "concern": "This is listed as a risk, but it is a scope item. STL_FOLLOW_UP goes through the same generate and decideTopic (:389), and the SMS reply path calls resolveStlGate from sms-v2 (:1955) with no evidence it carries lead type into the agent context. If Step 2 ships only the opener, the appointment lead gets 'confirming your 3pm' then a generic follow-up asking them to book. Step 2 as written would visibly fail the dealer's core ask (E5, E6).",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-task-message-generation.service.ts:389`; `conversational-ai-backend:src/sms/sms-v2.service.ts:1955` (solution-context.md 'Who else calls it'); Q12",
+      "ask": "Move it into Step 2 scope: lead type and appointment context are passed to follow-up generation and the reply agent, or the appointment and credit-app types keep follow-up off until they are. State which one."
+    },
+    {
+      "id": "backend-engineer-r1-4",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "**Step 3, full value:** CRM-first read, plus write-back of conversation and confirmed appointment through a channel agreed with the dealer.",
+      "concern": "Not challenging the full-value intent, only its design. Two problems. First, 'CRM-first read' has no meaning for this dealer: they have no API (E12), so the read source is the forwarded ADF, and the doc should say so rather than imply a CRM integration. Second, write-back into a dealer system with no failure design: no idempotency key (a conversation updated three times must not create three records), no retry or dead letter, no alert when a write fails at 11pm, no rule for a partial write (conversation sent, appointment not). The graph shows no existing outbound ADF-email or generic-webhook writer, so this is a new integration we would own and get paged for.",
+      "because": "`crm-core-service:src/crm-sync/external-crm-sync.service.ts:149` (write-back only via configured CRM); find_prior_art for outbound ADF/webhook write-back returned no existing writer; E12; Q10, Q21",
+      "ask": "Reword Step 3 to name the read source per dealer type (CRM API where certified, forwarded ADF otherwise) and add one line that the PRD must specify idempotency key, retry and dead-letter, failure alert, and partial-write handling for the write-back channel before it is sized."
+    },
+    {
+      "id": "backend-engineer-r1-5",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Per rooftop: lead-type mapping, on/off and opener per type, credit-app held out or acknowledged, write-back channel.",
+      "concern": "Lists configuration but not how we know it works or how we turn it off. sequenceTasks carry no lead type and no template key, so today nobody can query 'which opener went to which lead type'; checking it means a join on leadId to the lead's external_type, which may not even be populated (Q18). Rollback is implied (remove the template, fall back) but not stated, and there is no kill switch for write-back per rooftop.",
+      "because": "`conversational-ai-backend:src/sequence-workflows/schemas/sequence-task.schema.ts:94` to `:152` (no lead type on task, solution-context.md 'Where the outcome is logged'); persona Blocks when: no per-rooftop flag or rollback for live agent behaviour",
+      "ask": "Add: the task records lead type and template key used (e.g. on metaData, following the appointmentId precedent at sequence-task.schema.ts:47); the production check query; rollback = clearing the template reverts to today's opener per team; write-back has its own per-rooftop off switch."
+    },
+    {
+      "id": "backend-engineer-r1-6",
+      "severity": "major",
+      "type": "scope",
+      "quote": "The config has no department key and the parser feeds the shared lead store (Q9, Q11).",
+      "concern": "Blast radius is named but downstream callers are not. resolveStlGate has four callers (workflow creation :258, execution :1937, SMS v2 :1955, check endpoint :73) and parseAdf feeds /leads/dealer, which other agents read. A one-pager touching a shared gate and a shared parser should list who is affected and commit that new fields are additive and optional, so a lead without them behaves exactly as today.",
+      "because": "solution-context.md 'Who else calls it'; E38 `integrations-backend:src/webhook/services/internal-api-loader.service.ts:134`; persona Blocks when: shared config or service change with no listed downstream callers",
+      "ask": "Replace with the caller list in one line, plus: new ParsedEmailData and config fields are optional; absent means today's behaviour for every team; Q9 answered before Step 2 ships."
+    },
+    {
+      "id": "backend-engineer-r1-7",
+      "severity": "minor",
+      "type": "feasibility",
+      "quote": "If the parser drops lead type or appointment, step 2 waits on a parser change; the CRM webhook ADF client already extracts appointments (Q18).",
+      "concern": "The prior art is extractAdfAppointments in lambdas (JS, crm-integrations/webhook-processor), not in integrations-backend (TS). The email parser does not call it. Reuse means porting or extracting a shared module, not wiring a call, and the appointment-type mapping (mapAppointmentTypeToIntent) carries its own semantics. Reads cheaper than it is.",
+      "because": "`lambdas:crm-integrations/webhook-processor/crm-clients/adf.js:156`, `:160`, `:182`; trace_handler on integrations-backend email-parser.service.ts shows no named helper calls",
+      "ask": "Say 'port or extract into a shared module' and keep it in the Q17 sizing."
+    },
+    {
+      "id": "backend-engineer-r1-8",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "| Booked online appointments pushed to rebook | every one, if STL were on | 0 | [E6] |",
+      "concern": "E6 says the dealer gets 'a lot of online appointments', not that every one would be pushed; and the '0' target only holds if parsing and reply/follow-up context both work (r1-1, r1-3). It is also not measurable today because tasks carry no lead type (r1-5).",
+      "because": "E6; Q12, Q18",
+      "ask": "Today: 'all online-appointment leads forwarded with STL on' (or unknown, Q15). After: '0, measured by template key on the task', conditional on Step 1 passing."
+    },
+    {
+      "id": "backend-engineer-r1-9",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "SMS-only widget: existing switch, already set, awaiting the dealer's go-ahead [E4, E11].",
+      "concern": "E3 says disabling calling did not push the smartview-config update until engineering stepped in. Whether that was fixed in code or patched for this team is open (Q4), and Q4 is missing from the Open questions table. If it was a one-off patch, the next rooftop that asks hits the same bug, and so does this one if config is re-saved.",
+      "because": "E3; `conversational-ai-backend:src/call/call-web-call.controller.ts:65` (E17); Q4",
+      "ask": "Add Q4 to Open questions, owner Engineering, blocks 'widget is no-build'."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Prod values of STL_ALWAYS_ALLOW_SOURCE and STL_ALWAYS_ALLOW_LEAD_TYPES, and the source/external_type on a test lead sent to this team's forwarding inbox.",
+      "blocks": "Step 0 safety (r1-1); Step 2 template lookup placement",
+      "source": "STL owner, conversational-ai-backend env config"
+    },
+    {
+      "question": "One sample forwarded email per type (inquiry, online appointment, credit application) run through POST /email-parsing/test-parse, with the resulting ParsedEmailData and lead record fields.",
+      "blocks": "Step 0, Step 1, Step 2",
+      "source": "CSM for samples (Q2); integrations owner for the parse"
+    },
+    {
+      "question": "On the SMS reply path (sms-v2.service.ts around :1955) and STL_FOLLOW_UP generation, which lead fields reach the agent or prompt context today?",
+      "blocks": "Step 2 scope (r1-3)",
+      "source": "Vini Sales backend owner; UAT reply test per Q12"
+    },
+    {
+      "question": "Does any team with department=service have STL enabled (speedToLeadByLeadType populated)?",
+      "blocks": "Blast radius of the config change (r1-6), Q9",
+      "source": "Mongo conversationNotifications query by engineering"
+    }
+  ]
+}

@@ -8,3 +8,4 @@
 - 2026-10-15 Gate 1: confirm, cross-area. Kept in vini-service by pod; scope is both agents. Area question (Q1) answered: both.
 - 2026-10-15 refresh: folded in ticket description and full thread (Tekion lead webhooks released then likely rolled back with no ETA, polling agreed as workaround on 2026-10-14; callback half never re-tested, Q4 stays open).
 - 2026-10-15 contract update: agents-affected slot and full-value direction added.
+- 2026-10-16 decide gate: PM accepted bug path (re-test both agents first, then pre-dial Tekion vehicle fetch for Sales and Service; last-outreach-context held with reopen triggers).

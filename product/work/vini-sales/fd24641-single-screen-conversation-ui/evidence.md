@@ -286,3 +286,17 @@
 - side: system
 - role: engineering
 - text: "Blue Brain get_endpoint card for GET /customers/conversations/team lists enterprise_id, team_id, unreadOnly, flowType, page, limit. No assignee parameter. The card omits serviceType, which E17 read in source; trace_handler resolved no helpers."
+
+### E42
+- source: pm:2026-10-16
+- date: 2026-10-16
+- side: pm
+- role: unknown
+- text: PM reason for overriding the judge's already-possible: strategic, the console is the product; the floor must work in it, so a per-person unanswered queue is core regardless of ticket count.
+
+### E43
+- source: pm:2026-10-16
+- date: 2026-10-16
+- side: pm
+- role: unknown
+- text: PM: "mine" is the person assigned to the lead or customer in the dealer's CRM (sales) or Service Scheduler or DMS (service). Not Spyne's round-robin pick.

@@ -11,8 +11,8 @@ arali_company: Superior Auto, INC
 raised_by: Deepanshu Agarwal
 raised_by_role: csm
 csm: abhijeet.mitra@spyne.ai
-feature:
-outcome:
+feature: lead-type-aware-stl-first-message
+outcome: build-generalised
 prd:
 jira:
 ledger_match:

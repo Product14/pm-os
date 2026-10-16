@@ -11,8 +11,8 @@ arali_company: Bob Johnson Automotive Group
 raised_by: Tushar Srivastava
 raised_by_role: csm
 csm: tushar.srivastava@spyne.ai
-feature:
-outcome:
+feature: my-unanswered-queue
+outcome: build-generalised
 prd:
 jira:
 ledger_match:

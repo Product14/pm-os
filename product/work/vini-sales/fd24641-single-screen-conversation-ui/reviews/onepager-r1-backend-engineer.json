@@ -1,0 +1,136 @@
+{
+  "persona": "backend-engineer",
+  "round": 1,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 3,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 3,
+    "Brevity": 4,
+    "Code-cited baseline": 4,
+    "Integration reality": 3,
+    "Failure design": 1,
+    "Observability and rollback": 1,
+    "Scope discipline": 2
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "backend-engineer-r1-1",
+      "severity": "blocking",
+      "type": "feasibility",
+      "quote": "Vini action items inherit that owner, not SYSTEM.",
+      "concern": "This changes who owns every Vini-created action item at every rooftop, on a shared write path, and the one-pager lists no downstream callers. SYSTEM is written in at least three places (CRM integration twice, the receptionist follow-up tool). Anything that reads assigned_to today (the Action Items assignedTo filter, ASSIGN logs, crm-core's action-item lifecycle, which may trigger notifications on status change, and the lead update path, which can push to the external CRM) changes behaviour. And when the lead has no assignee (Q17), what do we write? Empty, SYSTEM, or the round-robin pick? That is a live behaviour change with no who-calls and no fallback rule.",
+      "because": "`conversational-ai-backend:src/crm_integration/crm_integration.service.ts:693`, `:782`; `conversational-ai-backend:src/tools/definitions/communication/receptionist-create-follow-up.tool.ts:242`; `crm-core-service:src/action-items/action-items.controller.ts:62` (Blue Brain card: action-item lifecycle 'Notifications may be triggered on status change'); `crm-core-service:src/leads/user-leads.controller.ts:171` (lead update triggers external CRM sync)",
+      "ask": "Either drop the reassignment from v1 and derive 'mine' for action items at read time by joining to the lead owner (no write), or list every reader of assigned_to == 'SYSTEM' in conversational-ai-backend and crm-core, state the fallback when the lead has no owner, and confirm that no CRM push or notification fires on the change. Put it behind the same per-rooftop flag as the rest of the feature."
+    },
+    {
+      "id": "backend-engineer-r1-2",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "**Unanswered state:** stamp last customer message and last human reply on the inbound path, cleared by a reply, not a view",
+      "concern": "The data contract is not defined, and the cited path cannot carry it. A human reply is written on the outbound path, not the inbound one (the manual reply goes through sms.service.ts:2691). Customer messages also arrive through SMS v2, calls, email, chat and the chat mirror, which are separate writers. The cited line covers SMS v1 only. Nor does it say what an AI reply does. In a Vini thread the AI answers almost every customer message, so 'no human reply since the last customer message' would make most live conversations 'unanswered'. And without a backfill, existing conversations launch with no stamps, so the queue starts empty or wrong.",
+      "because": "`conversational-ai-backend:src/sms/sms.service.ts:1924`, `:2691`; `conversational-ai-backend:src/sms/sms-v2.service.ts:3517`; `conversational-ai-backend:src/conversation/chat.service.ts:553`; `conversational-ai-backend:src/chat-v2/mirror/mirror.service.ts:508`; solution-context 'Who else calls it'",
+      "ask": "Name the fields, their types and the writer per channel (SMS v1, SMS v2, call, email, chat). Define 'unanswered' precisely: customer message after the last human reply, and whether an AI reply, a takeover claim or the AI handing back counts. Name the source of truth (conversation document vs crm-core lead), and say how existing conversations are backfilled before launch."
+    },
+    {
+      "id": "backend-engineer-r1-3",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "any open clears it | only a reply clears it",
+      "concern": "The dealer closes records in VinSolutions and keeps two CRM tabs open. Reps also answer by phone. A reply sent from the CRM or a cell phone never reaches our reply path, so under 'only a reply clears it' those conversations stay unanswered for good. The queue fills with false positives and reps stop trusting it, which is worse than today's Unread. Nothing in the one-pager or solution-context shows that we ingest CRM-originated outbound messages.",
+      "because": "E10, E13; missing (no read of CRM outbound messages found in solution-context Integration limits)",
+      "ask": "Add a manual 'mark handled' clear with actor and timestamp logged, and state whether CRM-sent replies are read for any provider. If none are, say so and make the manual clear part of v1."
+    },
+    {
+      "id": "backend-engineer-r1-4",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "**Owner filter** on the team list from the lead assignee",
+      "concern": "This is load-bearing on a field we have not shown is filled. The team list pre-queries local `leads`, but on crm-core rooftops the round-robin assignee lives in crm-core, and local `has_unread` is already known to go stale there (Q21). Whether local `assigned_to` is populated and matches crm-core is Open question 2, yet the Recommendation treats it as settled design. The settings line also offers 'takeover claimant', which is a conversation-level field (humanTransferDetails.claimedByUserId), not a lead-level one, so the filter would have two owners at different grains with no precedence rule.",
+      "because": "`conversational-ai-backend:src/customers/customers.service.ts:2452`; `conversational-ai-backend:src/leads/schemas/lead.schema.ts:42`; `conversational-ai-backend:src/leads/leads.service.ts:135`; `conversational-ai-backend:src/conversation/conversation.schema.ts:253`; `crm-core-service:src/assignment/assignment.service.ts:90`; Q17, Q21",
+      "ask": "Make Q17 a gate before sizing: run the fill-rate query on local leads.assigned_to vs crm-core per rooftop. State the source of truth for owner on crm-core-on and crm-core-off rooftops, and the precedence when the lead assignee and the takeover claimant differ."
+    },
+    {
+      "id": "backend-engineer-r1-5",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Per-rooftop settings: owner source (Spyne assignee, takeover claimant, later CRM salesperson or DMS advisor), missed calls [E31], alert recipients [E33].",
+      "concern": "There are three settings and no off switch. Owner reassignment, new alerts and a new landing view change what every rooftop's staff see and receive. If the owner field is wrong at one store, the only rollback is a deploy.",
+      "because": "missing (no flag or rollback named anywhere in the one-pager)",
+      "ask": "Add a per-rooftop feature flag, default off, that gates the unanswered view, the owner filter and the alerts independently. Turning it off must leave isUnread, Needs Attention and action-item assignment exactly as they are today."
+    },
+    {
+      "id": "backend-engineer-r1-6",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "**Alerts** to the owner through existing notification preferences",
+      "concern": "'Existing' oversells it. getUserEmailsAndContacts filters by department, not by a user or an owner. No trigger exists today, and the handover alert is still a TODO. This is a new trigger on a hot inbound path at about 600 leads a month per rooftop (dealer-stated). No dedupe, throttle, quiet hours, retry or delivery log is specified. A customer sending three texts must not page a rep three times, and a failed SMS to a rep must not fail silently.",
+      "because": "`conversational-ai-backend:src/notifications/notifications.service.ts:156`; `conversational-ai-backend:src/tools/human-transfer.service.ts:149`; E10",
+      "ask": "Either cut alerts from v1 and plan them, or specify the trigger event, dedupe key (conversation plus unanswered episode), rate limit, retry policy and the log or metric that shows alerts sent vs failed per rooftop."
+    },
+    {
+      "id": "backend-engineer-r1-7",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Hours a reply waits for a human | unknown, not logged | measured per department | [Q15, Q20] |",
+      "concern": "Nothing in the Recommendation produces this measure. No event records the first human reply. lastReadAt is overwritten on every read, and the new stamps would be overwritten too. Without an event stream there is no wait-time history and no baseline, so we cannot show the feature worked. The conversation-level warehouse fields have already proven unreliable for appointment counts, so this cannot be backfilled from the warehouse.",
+      "because": "`conversational-ai-backend:src/conversation/conversation.schema.ts:183`; solution-context 'Where the outcome is logged' (no time-to-first-human-reply event); `conversational-ai-backend:src/sms/kafka/human-transfer-events.producer.ts:69` (pattern to copy)",
+      "ask": "Add events for customer-message-received and human-reply-sent (conversation, lead, department, channel, actor, timestamp) on the existing Kafka to ClickHouse path. Name the query that computes the wait per department, and ship the events at least 2 weeks before the UI so a baseline exists."
+    },
+    {
+      "id": "backend-engineer-r1-8",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "**Size:** sales-only on the round-robin assignee is M; both departments is L [PM].",
+      "concern": "This is a PM estimate made while the four questions that decide the design (Q2, Q3, Q4, Q5) are still open. Nothing is listed as out of scope for v1 beyond the CSM board. The smallest thing that proves the outcome for both departments, inside the fixed intent, is the reply-cleared unanswered state plus a team Unanswered view and count. 'Mine', the action-item reassignment and alerts all wait on owner-field answers.",
+      "because": "Q17, Q20; fixed intent (both departments)",
+      "ask": "Phase it. v1: unanswered state plus team view and count for sales and service, behind a flag. v1.1: owner filter once Q2 is answered. v1.2: alerts. Replace the size with an engineering estimate after Q2 and Q5."
+    },
+    {
+      "id": "backend-engineer-r1-9",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "service has no advisor field [Q18, Q19]",
+      "concern": "Not proven. The crm-core card describes service lead management 'with status tracking and user assignment', and meetings carry an assigned_to from an unknown writer. The source may be Spyne-side rather than DMS-side, but 'no field' should not drive the service fallback design until someone has read the schema.",
+      "because": "`crm-core-service:src/service/service.controller.ts:81` (Blue Brain card, verification 0.72); `crm-core-service:src/service/schemas/service-lead.schema.ts:25`; `conversational-ai-backend:src/meetings/appointment-alert.service.ts:160`",
+      "ask": "Read the crm-core ServiceLead schema and the service appointment assigned_to writer. Then restate this as either 'Spyne-side service assignee exists, unpopulated or populated' or 'none'."
+    },
+    {
+      "id": "backend-engineer-r1-10",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "**Live count** and a per-member landing view, on the Needs Attention pattern [E22].",
+      "concern": "The Needs Attention backend is inferred, not traced (Q4). A per-member landing view has no backend home today, because the department switch is URL and context state only. And a count per member per department on every page load is a new query on the team list.",
+      "because": "`conversational-ai-backend:src/leads/leads.controller.ts:103` (inferred); `spyne-console-microfrontends:apps/converse-ai/contexts/mainContext.tsx:241` (low confidence); Q4",
+      "ask": "Say where the per-member default view persists (user preferences, which service) and that the count reuses pagination.total on the filtered team list, with the index it needs (service_type plus owner plus unanswered)."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Do we ingest replies a salesperson sends from the dealer CRM (VinSolutions, eLeads, DriveCentric) or log calls made outside Spyne, for any provider?",
+      "blocks": "Clear rule for the unanswered state (issue 3)",
+      "source": "Integrations team; integrations-backend and browser-automation repos"
+    },
+    {
+      "question": "Which code reads action items with assigned_to == 'SYSTEM', and does an action-item assignee change in crm-core fire a notification or an external CRM push?",
+      "blocks": "Action-item owner inheritance (issue 1)",
+      "source": "grep of conversational-ai-backend and crm-core-service action-items modules"
+    },
+    {
+      "question": "Does the crm-core ServiceLead or service appointment carry an assigned user, and how often is it filled?",
+      "blocks": "Service 'mine' vs team fallback (issue 9)",
+      "source": "crm-core-service:src/service/schemas/service-lead.schema.ts:25; Mongo dealer-leads"
+    },
+    {
+      "question": "What share of active Vini rooftops run with crm-core enabled, where local lead fields can go stale?",
+      "blocks": "Owner filter source of truth (issue 4)",
+      "source": "Engineering, integration config"
+    }
+  ]
+}

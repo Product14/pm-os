@@ -63,3 +63,27 @@
 - who: engineering
 - how: Engineering checks the service_v2 outbound prompt template for the InterestedVehicle or owned-vehicle block and lists the agentType values the lead memory department filter matches (`conversational-ai-backend:src/memory/lead-memory.service.ts:262`).
 - status: open
+
+### Q9
+- slot: request
+- unknown: Dealer P&L impact (decide Inputs): how many calls came back to this rooftop from the 7-day-old lead outbound campaign since go-live, and how many of those ended without an appointment or transfer because the agent could not say why we called?
+- blocks: the Dealer P&L impact input in decide.md (BDC time and days to appointment, currently inferred)
+- who: pm
+- how: Pull returned calls on leads with a prior outbound attempt for this rooftop from the conversation data, reading context/metrics and context/traps first (agentCallType is not direction); classify outcome by reading a sample of transcripts, not by summary fields.
+- status: open
+
+### Q10
+- slot: request
+- unknown: Do the Sales STL and Sales chat agents read the same vehicle-of-interest variables and the same lead memory query, and so share both halves of this gap?
+- blocks: rung 6 (every agent it lands on) in decide.md: STL and chat rows are unknown
+- who: engineering
+- how: Engineering checks whether the STL prefetch and the chat agent call the lead memory query at `conversational-ai-backend:src/agents/agents-v2.service.ts:3440` and render the vehicle-of-interest block from `src/call/dto/call-prompt-variables.dto.ts:59`.
+- status: open
+
+### Q11
+- slot: request
+- unknown: Cost of not solving (decide Inputs): has the rooftop escalated, paused or cut back the outbound campaign since go-live because of this, or is the only signal Spyne's internal make-or-break flag?
+- blocks: the Cost of not solving input in decide.md (no dealer-side churn or escalation signal; Arali has 0 interactions)
+- who: csm
+- how: CSM checks the rooftop's campaign status and recent check-in notes and asks the main Vini contact whether returned calls are still a complaint; fix the Arali company link so future signals land.
+- status: open

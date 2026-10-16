@@ -230,3 +230,24 @@
 - side: system
 - role: unknown
 - text: Comments 11 to 33 (2026-09-17 to 2026-10-14) cover only the Tekion vehicle-of-interest half. None mentions the callback context, a re-test, or a fix verified on this rooftop. Support follow-ups (comments 18, 31) got no resolution.
+
+### E34
+- source: bluebrain:conversational-ai-backend:src/prompts/base-system-prompts/sales/outbound-campaign/journey-router.xml:8
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: The aged lead follow-up use case sends journeyName `Agedleadfollowup` (workflowTemplates/dto/configure-campaign-workflow.dto.ts:20), and `mapOutboundJourneyNameForPrompt` folds aliases like aged_lead_followup into it (call/call-prompt-variables.util.ts:51, called at call/outbound-call.service.ts:118), so the router picks aged-lead-followup.xml, not the default; the campaign display name "7-Day-Old Lead Follow-Up Outbound" would not match and would fall to default-outbound-sales.xml if sent as journeyName (stored value for this campaign not verified). Either way the InterestedVehicle data block comes from sales/runtime-context.xml:29, which sales_new.xml:43 includes for every non-SMS call regardless of journey, and both journey templates tell the agent to name the vehicle when it exists. Local clone, branch release, a2b8754c7.
+
+### E35
+- source: bluebrain:conversational-ai-backend:src/conversation/conversation.service.ts:476
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: A call writes lead memory only when the conversation has a leadId and a non-empty summary (`tryAddMemoryForConversation`); the summary is the post-call report's summary joined (vapi/call.service.ts:302), and the endedReason (no answer, voicemail) does not gate it, so a missed attempt leaves a record only if the post-call report produced a summary for it (not verified for no-answer calls). The record holds only summary text plus department (memory/lead-memory.service.ts:178-195; schema has no purposeOfCall or vehicle field). Local clone, branch release, a2b8754c7.
+
+### E36
+- source: bluebrain:conversational-ai-backend:src/agents/agents-v2.service.ts:3822
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: service_v2 (service_new) does not render the InterestedVehicle block; it builds one primaryVehicle (year, make, model, trim, VIN) from the call's customerDetails first and falls back to the same customer_interest_vehicle_* prompt variables, rendered as PrimaryVehicle (service_new/context-data.xml:35) and as the outbound journey vehicle (agents-v2.service.ts:3887). Memory department is the agent type's `agentType` lowercased (getAgentDepartment, agents-v2.service.ts:4405-4425; comment names Sales and Service, so "sales" and "service") on both write (lead-memory.service.ts:178) and read (agents-v2.service.ts:3458), an exact match, so a Sales callback cannot see a Service outreach summary or the reverse. Local clone, branch release, a2b8754c7.

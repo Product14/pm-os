@@ -1,0 +1,137 @@
+{
+  "persona": "general-sales-manager",
+  "round": 1,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 3,
+    "Evidence": 4,
+    "P&L": 2,
+    "Above the DMS": 2,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 2,
+    "Brevity": 3,
+    "Desk control": 5,
+    "Rep handoff": 2,
+    "Inventory truth": 4,
+    "Attribution integrity": 2,
+    "Outcome metric": 1
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "general-sales-manager-r1-1",
+      "severity": "blocking",
+      "type": "wrong-for-dealers",
+      "quote": "Per-rooftop settings: owner source (Spyne assignee, takeover claimant, later CRM salesperson or DMS advisor), missed calls [E31], alert recipients [E33].",
+      "concern": "My reps get paid on the salesperson VinSolutions says owns the up. This ships a Spyne round-robin pick, or whoever clicked takeover, as 'mine' and pushes the real CRM salesperson to 'later'. Rep A gets told to answer rep B's customer, answers it, and now I have a commission fight on the floor. Takeover claimant as owner is worse: a manager or another rep who jumps in to save a lead becomes the owner. You already wrote that a wrong owner is worse than team Unread; the recommendation still makes the wrong owner the default.",
+      "because": "crm-core-service:src/assignment/assignment.service.ts:90 (assignee is a Spyne round-robin pick, cited in the one-pager's own risk); E6, E13 (reps work VinSolutions); missing (no evidence the round-robin assignee matches the CRM salesperson, Q17, Q18)",
+      "ask": "For sales, make the CRM assigned salesperson the only 'mine' source where the CRM exposes it (VinSolutions first, this rooftop). Use the Spyne assignee only at rooftops where Spyne's round-robin IS the store's assignment of record, confirmed per rooftop. Drop takeover claimant as an owner source; takeover is an action, not ownership. Where neither holds, ship the team Unanswered view, not a guessed 'mine'."
+    },
+    {
+      "id": "general-sales-manager-r1-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "- **Owner filter** on the team list from the lead assignee `conversational-ai-backend:src/leads/schemas/lead.schema.ts:42`; Vini action items inherit that owner, not SYSTEM.",
+      "concern": "Re-pointing Vini action items from SYSTEM to the round-robin owner is fine inside the console, but action items sync to the CRM. If that sync carries the assignee, you are now writing a rep onto a task in VinSolutions that may not be that customer's salesperson. That is rep assignment getting overwritten in my system of record, which breaks my pipeline report and who gets paid.",
+      "because": "E38 (action-item queue has an isSynced filter, so items sync out); conversational-ai-backend:src/crm_integration/crm_integration.service.ts:693 (cited in the one-pager); missing (whether the CRM sync writes an assignee)",
+      "ask": "State that the owner change is console-only and never written to the CRM task or lead owner, or show that the sync does not carry an assignee. Inherit the owner only from the CRM salesperson (see the owner-source issue), not the round-robin pick."
+    },
+    {
+      "id": "general-sales-manager-r1-3",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "- **Unanswered state:** stamp last customer message and last human reply on the inbound path, cleared by a reply, not a view `conversational-ai-backend:src/sms/sms.service.ts:1924`. `isUnread` stays as is; it drives service metrics and the Customers count `conversational-ai-backend:src/service-metrics/contact-metrics.service.ts:1743`.",
+      "concern": "'Last customer message' with no 'last human reply' means every customer text Vini already handled lands in my reps' unanswered queue. On about 600 leads a month that is a list nobody can clear, and the first week my guys see 80 items they stop opening it. Unanswered has to mean the customer is waiting on a person: asked for a human, asked something Vini cannot answer (price, payment, trade), or Vini handed off. Not 'a human has not typed since the customer did'.",
+      "because": "E10 (600 leads a month, dealer-stated); E31 (dealer wants 'unanswered phone call or unanswered message', i.e. waiting on someone); missing (no count of how many customer messages Vini resolves alone)",
+      "ask": "Define the entry rule as 'customer is waiting on a human' (handoff, needs-human flag, question Vini is not allowed to answer, missed call), not every customer message without a human reply. Size the queue per rep per day at this rooftop before building (see requests)."
+    },
+    {
+      "id": "general-sales-manager-r1-4",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "- **Unanswered state:** stamp last customer message and last human reply on the inbound path, cleared by a reply, not a view `conversational-ai-backend:src/sms/sms.service.ts:1924`. `isUnread` stays as is; it drives service metrics and the Customers count `conversational-ai-backend:src/service-metrics/contact-metrics.service.ts:1743`.",
+      "concern": "'Cleared by a reply' only counts replies sent from the console. My salespeople answer from VinSolutions texting, from a phone call, or face to face when the customer walks in. None of that clears this flag, so the queue fills with customers who were already handled and the rep learns to ignore it. Same failure as Unread, just slower.",
+      "because": "E13 (two VinSolutions tabs open, CRM is where the floor works); E16 ('two CRMs'); missing (no read of CRM activity or outbound calls named as a clear signal)",
+      "ask": "List what clears the state: console SMS reply, outbound call from Spyne, and CRM activity (text, call, logged contact) if we can read it. Name the CRM activity read as a dependency with whether we have it for VinSolutions, and add a one-click 'handled elsewhere' clear for the rest."
+    },
+    {
+      "id": "general-sales-manager-r1-5",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "A rep or advisor cannot open Conversations and see the replies waiting on them. We add a true \"unanswered\" state, an owner per conversation and a live count, for both departments. It removes cross-checking Action Items and the CRM and makes reply wait time measurable.",
+      "concern": "The TL;DR says this removes cross-checking the CRM. Your own table says 'CRM still closes the record', and CRM write-back is in Not building. My reps still have to open VinSolutions on every one of these to log the outcome. Do not tell my GM the CRM tab goes away.",
+      "because": "one-pager 'What it removes' row 1 and 'Not building' line; E10 ('go into [VinSolutions] just to close a record')",
+      "ask": "Change the TL;DR to what it actually removes: the Action Items cross-check and the hunt for which replies are yours. Say plainly that the CRM is still where the record is closed."
+    },
+    {
+      "id": "general-sales-manager-r1-6",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "- **Live count** and a per-member landing view, on the Needs Attention pattern [E22].",
+      "concern": "The person who asked is the manager who has 'trouble with them following up'. A per-member landing view helps the rep who already wants to follow up; it does nothing for me. I need one view by salesperson: how many are waiting on each rep and how long the oldest has been sitting, so I can walk over to the rep at 10am, not find out at month end.",
+      "because": "E6 ('I have a trouble with them following up'); E7, E13 (manager lives in Conversations and assigns leads)",
+      "ask": "Add a manager view on the same field: unanswered count and oldest wait per owner, per department. Make it part of acceptance, not a later phase."
+    },
+    {
+      "id": "general-sales-manager-r1-7",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "- **Alerts** to the owner through existing notification preferences `conversational-ai-backend:src/notifications/notifications.service.ts:156`.",
+      "concern": "Alerts to the owner only. On a Saturday my rep is with a customer or off, and the alert sits on his phone while the lead goes cold. There is no escalation, and no word on which channel these preferences deliver on. If it is a console notification or email, the floor never sees it.",
+      "because": "E33 (alerts tied to rep assignment); one-pager risk 'Handover alerts are unwired'; missing (channel of existing notification preferences, conversational-ai-backend:src/notifications/notifications.service.ts:156)",
+      "ask": "Name the channel (text to the rep's phone is what reaches the floor). Add an escalation rule as a rooftop setting: if the owner has not replied in N minutes during store hours, alert the sales manager or BDC."
+    },
+    {
+      "id": "general-sales-manager-r1-8",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "| Hours a reply waits for a human | unknown, not logged | measured per department | [Q15, Q20] |",
+      "concern": "'Measured' is not a result. Reply wait time is an activity number. I get judged on shows, units and gross, and this page never says what moves on the sales side. If wait time drops and appointments and shows from these replies do not move, we built a nicer inbox.",
+      "because": "missing (Q15: no baseline); persona Blocks-when on success measured without shows or sold units",
+      "ask": "Set a baseline at this rooftop before build and a target after: median hours a waiting customer sits before a human reply, and for those conversations the appointment-set, show and sold rate (from CRM status where we read it). State the days-removed claim per lead, not 'measured'."
+    },
+    {
+      "id": "general-sales-manager-r1-9",
+      "severity": "major",
+      "type": "scope",
+      "quote": "Not building: the five-counter board, the seven-stage journey, removing Customers, CRM write-back [E28, E30, E32, E34]. The Customers action-item defect goes to the bug path [E9].",
+      "concern": "Full value for my floor is the unanswered customer showing up where my reps already work: a task on the salesperson in VinSolutions. The case itself names it ('pushing unanswered replies into the dealer's CRM as tasks', E16). This line drops CRM write-back with no plan and no word on whether we have VinSolutions task write access, so the console stays a second CRM my reps have to remember to open.",
+      "because": "E16 ('no one really knows when [Spyne] reaches out unless they're in there'); E13; case.md Candidate direction 3; rubric 'Full value' (CRM-first)",
+      "ask": "Keep CRM write-back out of this release if you must, but state the CRM-first full-value path (unanswered as a task on the CRM salesperson), whether we have write access per CRM (VinSolutions first), and when it is planned."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does our VinSolutions read for Bob Johnson Auto Group return the assigned salesperson per lead, and on how many of its last-30-day leads does the Spyne round-robin assignee differ from it?",
+      "blocks": "general-sales-manager-r1-1, general-sales-manager-r1-2 (owner source)",
+      "source": "Integrations (VinSolutions fetcher) + crm-core leads.assigned_to"
+    },
+    {
+      "question": "When a Vini action item syncs to the CRM (isSynced), is an assignee written to the CRM task or lead?",
+      "blocks": "general-sales-manager-r1-2",
+      "source": "Engineering: conversational-ai-backend crm_integration.service.ts"
+    },
+    {
+      "question": "At this rooftop over the last 30 days, how many customer messages per rep per day had no later human reply, split by whether Vini answered or handed off?",
+      "blocks": "general-sales-manager-r1-3 (queue size under the proposed definition)",
+      "source": "Conversations data (ClickHouse / Mongo)"
+    },
+    {
+      "question": "Can we read CRM activity (texts, calls, logged contacts) from VinSolutions to clear a waiting customer, and do reps at this rooftop reply from VinSolutions or their phone rather than the console?",
+      "blocks": "general-sales-manager-r1-4",
+      "source": "Integrations + CSM (Tushar)"
+    },
+    {
+      "question": "What channel do existing notification preferences deliver on (SMS, email, console), and can they route by owner with an escalation recipient?",
+      "blocks": "general-sales-manager-r1-7",
+      "source": "Engineering: notifications.service.ts:156"
+    },
+    {
+      "question": "Baseline: median hours from a waiting customer message to a human reply at this rooftop, and the appointment, show and sold rate on those conversations.",
+      "blocks": "general-sales-manager-r1-8",
+      "source": "Conversations data + CRM lead status"
+    }
+  ]
+}

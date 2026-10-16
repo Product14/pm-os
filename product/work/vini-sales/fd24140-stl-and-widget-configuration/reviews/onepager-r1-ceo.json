@@ -1,0 +1,118 @@
+{
+  "persona": "ceo",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 3,
+    "P&L": 2,
+    "Above the DMS": 3,
+    "Honest unknowns": 4,
+    "Shared scope": 3,
+    "Full value": 3,
+    "Brevity": 4,
+    "Dealer economics": 2,
+    "Base leverage": 2,
+    "Dependency honesty": 3,
+    "Handoff clarity": 2,
+    "Decision readiness": 2
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "ceo-r1-1",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "It removes next-morning BDC callbacks and hand-keyed outcomes, and keeps the AI out of credit.",
+      "concern": "I cannot say the value of this in 60 seconds. No hours, no dollars, no days, per rooftop. 'Removes callbacks' is a direction, not a number, and the BDC still enters and calls these leads the next day today. Nothing ties it to days to sale or holding cost, which is the number we say we own.",
+      "because": "E8; Q15 open; missing",
+      "ask": "Put one P&L line in the TL;DR: BDC hours removed per rooftop per week (after-hours leads by type x minutes per callback, from Q15) and the lead-to-appointment days removed. If the inputs are not in hand, say 'not sized, Q15 by <date>' rather than implying removal."
+    },
+    {
+      "id": "ceo-r1-2",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "4 companies in 90 days: this rooftop plus 3 on calls, 0 in tickets [E21, E22].",
+      "concern": "E22 says the 3 raised an adjacent job, and one of them is a credit-app-first flow for subprime leads, which is the opposite of holding credit apps out. Counting them as the same job inflates base leverage. And none of the 3 is shown wanting write-back, so step 3 has demand from one store only.",
+      "because": "E22, E21",
+      "ask": "Split the count: how many of the 3 want the same per-type opener, how many want credit apps held out, how many want something else. State separately how many companies asked for write-back of STL outcomes (today: this rooftop only, E12)."
+    },
+    {
+      "id": "ceo-r1-3",
+      "severity": "major",
+      "type": "scope",
+      "quote": "**Step 3, full value:** CRM-first read, plus write-back of conversation and confirmed appointment through a channel agreed with the dealer.",
+      "concern": "Not challenging that full value is planned now. But as written, step 3 is a bespoke channel negotiated with one dealer that has an in-house system and no API. That is a one-off integration dressed as a platform step. And 'CRM-first read' means nothing for a dealer whose only feed is a forwarded ADF email.",
+      "because": "E12, E13; `crm-core-service:src/crm-sync/external-crm-sync.service.ts:149`; Q10, Q21",
+      "ask": "Define step 3 as one reusable channel offered to every no-API store (for example ADF email back or a generic outbound webhook), and name which CRMs we already write back to today so the CRM-first path is concrete for stores that have one. Say plainly that for this rooftop the 'read' is the ADF forward."
+    },
+    {
+      "id": "ceo-r1-4",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "**Step 0, this week, no build:** STL on for after-hours inquiries, appointment and credit-app types off; dated plan to the CSM.",
+      "concern": "We already told this dealer it was 'being worked on' with nothing behind it. Now we promise a dated plan while size and target quarter are open questions. If we hand out dates for steps 2 and 3 before engineering sizes them, we repeat the same credibility miss.",
+      "because": "E10, E25, E28, E31; Q16, Q17",
+      "ask": "Say which dates go to the dealer this week: step 0 live date and the step 1 parser answer date only. Steps 2 and 3 get dates after Q17 is answered, and the doc should say so."
+    },
+    {
+      "id": "ceo-r1-5",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "| Booked online appointments pushed to rebook | every one, if STL were on | 0 | [E6] |",
+      "concern": "'Today' is a hypothetical, since step 0 keeps these leads off STL, and 'After: 0' is promised while the doc itself says reply and follow-up may push a new appointment anyway (Q12). That is the kind of number that embarrasses us in front of a dealer.",
+      "because": "E6; Q12; risk line on reply and follow-up sharing the generic prompt",
+      "ask": "Replace with the real measure: show rate on online-appointment leads, today unknown, after step 2 measured. Or state 'after: 0, conditional on Q12 passing in step 1'."
+    },
+    {
+      "id": "ceo-r1-6",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "Build-generalised: lead type picks the STL first message from a per-rooftop template, and CRM-first write-back is planned now as the resolution [E22, E36] [PM].",
+      "concern": "There is no ask of me and no trade-off. What size is this, which quarter, and what on the Vini Sales roadmap moves to make room? Every yes is a no. Without that I cannot approve priority, only the direction.",
+      "because": "Q14, Q16, Q17; missing",
+      "ask": "Add one line under Decision: what is asked (approve steps 0 to 2 now, step 3 pending channel), the size range (M opener, L full value, per decide.md judgment until Q17), and what this displaces."
+    },
+    {
+      "id": "ceo-r1-7",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "**Flywheel stage:** lead to appointment, with the handoff to F&I (credit application)",
+      "concern": "The doc claims the sales to F&I handoff but only keeps the AI out of it. Holding credit-app leads off STL closes nothing: the credit applicant, often the highest-intent lead, still waits for the BDC next morning and nobody owns the hand to F&I.",
+      "because": "E5, E9, E22",
+      "ask": "Name who picks up an overnight credit-app lead and when, and whether the acknowledgment template notifies that person. If it does not, drop the F&I handoff claim from the flywheel line."
+    },
+    {
+      "id": "ceo-r1-8",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "| Time to first contact | next business day | before the BDC opens | [ASSUMPTION: STL silent hours allow a first text before the BDC opens] |",
+      "concern": "This is the only days-removed line and it rests on an assumption. If silent hours hold every overnight text until the BDC opens, the time win is near zero and the case is BDC hours only.",
+      "because": "Q22; E18",
+      "ask": "Resolve Q22 before Gate 2 or rewrite the row as conditional, with the fallback value if silent hours block it."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Weekly after-hours website leads at this rooftop by type (inquiry, online appointment, credit app), BDC hours, and minutes per next-day callback.",
+      "blocks": "ceo-r1-1, ceo-r1-5 (any P&L figure in hours or days)",
+      "source": "CSM via the dealer (Q15)"
+    },
+    {
+      "question": "Which CRMs and DMS providers do we have certified write-back to today for STL conversations and appointments, and how many active Vini Sales rooftops sit on each versus on no-API systems?",
+      "blocks": "ceo-r1-3 (whether step 3 is base leverage or a one-off)",
+      "source": "Integrations owner; crm-core-service external-crm-sync"
+    },
+    {
+      "question": "For each of the 3 companies in E22: same per-type opener job, credit-app hold-out, or credit-app-first flow; and did any of them ask for STL outcome write-back?",
+      "blocks": "ceo-r1-2",
+      "source": "Arali transcripts behind E22"
+    },
+    {
+      "question": "Engineering size for steps 1 to 3 and the target quarter.",
+      "blocks": "ceo-r1-4, ceo-r1-6",
+      "source": "STL and integrations owners (Q16, Q17)"
+    }
+  ]
+}

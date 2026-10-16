@@ -12,7 +12,7 @@ raised_by: Sudansh Tiruwa
 raised_by_role: onboarding
 csm:
 feature:
-outcome:
+outcome: bug
 prd:
 jira:
 ledger_match:

@@ -1,0 +1,127 @@
+{
+  "persona": "service-manager",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 3,
+    "Right decision": 3,
+    "Evidence": 3,
+    "P&L": 2,
+    "Above the DMS": 3,
+    "Honest unknowns": 3,
+    "Shared scope": 3,
+    "Full value": 3,
+    "Brevity": 4,
+    "Capacity truth": 4,
+    "Appointment quality": 3,
+    "Fixed ops metric": 1,
+    "Promise control": 4,
+    "DMS write-back": 3
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "service-manager-r1-1",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "Advisors work the same pages; an unanswered service customer is an RO that never opens (absorption; inferred) [E37, E39].",
+      "concern": "Every service line in this doc is inferred. Nobody on a service drive was asked, and the doc does not say whether this rooftop runs Vini Service at all. You are changing pages my BDC and advisors work every day on the word of a used car manager.",
+      "because": "missing; E37 and E39 are a PM note and an inferred frontend symbol; case.md Who feels this: 'no service-side dealer voice at this rooftop'; Q10 open",
+      "ask": "Add Q10 (does this rooftop, and which others, run Vini Service on this console, and which service roles work Conversations daily) to Open questions as a blocker for the service half. Answer it from a service manager or service BDC lead at a live Vini Service rooftop before the PRD."
+    },
+    {
+      "id": "service-manager-r1-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "**Unanswered state:** stamp last customer message and last human reply on the inbound path, cleared by a reply, not a view `conversational-ai-backend:src/sms/sms.service.ts:1924`.",
+      "concern": "On my drive, advisors call customers back from the desk phone or text them from the scheduler or DMS texting tool, not from your console. If only a console reply clears it, the queue never empties and my people stop trusting it within a week. Service also gets a flood of 'ok thanks' and 'see you Tuesday' after confirmations and reminders, and none of those need an answer.",
+      "because": "missing; no evidence on how service staff reply today or how many inbound service messages need no reply",
+      "ask": "Define what clears unanswered for service: a console reply, a logged outbound call, or a one-click 'handled / no reply needed' action (the 'Mark resolved' in E29, scoped down). State whether acknowledgement-only replies after a booked appointment count. Put both in Open questions with an owner."
+    },
+    {
+      "id": "service-manager-r1-3",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "**Owner filter** on the team list from the lead assignee `conversational-ai-backend:src/leads/schemas/lead.schema.ts:42`; Vini action items inherit that owner, not SYSTEM.",
+      "concern": "In service the lead assignee is a Spyne round-robin pick, not the advisor on the RO. If service action items stop being SYSTEM and inherit that pick, a customer's 'is my car ready?' lands on one person who may be off today, and it drops out of the team queue my BDC works. Your own risk line says a wrong owner is worse than team Unread.",
+      "because": "`crm-core-service:src/assignment/assignment.service.ts:90`; Q19; E38",
+      "ask": "Make owner inheritance conditional on the department's owner source being configured. Service action items stay team-owned (SYSTEM) until an advisor source is confirmed; say so in the Recommendation."
+    },
+    {
+      "id": "service-manager-r1-4",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "Per-rooftop settings: owner source (Spyne assignee, takeover claimant, later CRM salesperson or DMS advisor), missed calls [E31], alert recipients [E33].",
+      "concern": "'Later DMS advisor' is the whole service half of 'mine', and it is a DMS or scheduler read (CDK, Reynolds, Xtime, myKaarma) of the advisor on the open appointment or RO. That is a commercial data-access negotiation per provider, not a setting. The doc lists it as a dropdown option.",
+      "because": "Q19 open; org fact 4 (DMS read access is the first dependency); E40 shows fetchers resolve sales vs service, not an advisor",
+      "ask": "Name the DMS or scheduler read needed for a service owner, per provider, and whether we have it today (yes, no, unknown). Mark service 'mine' as not in this release unless that read exists."
+    },
+    {
+      "id": "service-manager-r1-5",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "| Hours a reply waits for a human | unknown, not logged | measured per department | [Q15, Q20] |",
+      "concern": "Nothing here tells me what this does for absorption, hours per RO or customer-pay. 'Measured per department' is a dashboard, not an outcome. For service the measure that matters is whether an answered reply turns into a booked appointment in my scheduler and an RO.",
+      "because": "missing; rubric P&L criterion; persona lens 'Fixed ops metric'",
+      "ask": "Add a service row: unanswered service replies that later became a booked appointment or an opened RO, today unknown, after measured, with the data source named. Do not size it without a baseline; state it is unknown."
+    },
+    {
+      "id": "service-manager-r1-6",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "| Screens to work one reply | Conversations, Action Items, CRM | One console page; CRM still closes the record | [E13] [ASSUMPTION: reps stop opening Action Items] |",
+      "concern": "This row is sales only. In service the record closes in the scheduler or DMS, and my advisors already have the DMS, the scheduler and a texting tool open. Adding a console page they must watch is a fourth screen, not one.",
+      "because": "missing; E13 is a sales-side quote",
+      "ask": "Add the service equivalent: which screens a service user works a reply in today and after, with 'scheduler or DMS still closes the record' stated, or mark it unknown pending Q10."
+    },
+    {
+      "id": "service-manager-r1-7",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "A department with no owner source gets a team \"Unanswered\" view, never a guessed \"mine\" [ASSUMPTION: team view is an acceptable fallback for service].",
+      "concern": "A team queue is how most service BDCs already work, so the fallback is probably right. But a team-wide alert on every unanswered service reply is exactly the 'sent to everyone' the dealer complained about.",
+      "because": "E33; Q22",
+      "ask": "For a department on the team fallback, route alerts to a configured role (service BDC lead or service manager), not every member. State it next to the fallback."
+    },
+    {
+      "id": "service-manager-r1-8",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "A rep or advisor cannot open Conversations and see the replies waiting on them.",
+      "concern": "In many stores the person answering service texts and calls is the service BDC or appointment coordinator, not the advisor at the counter. 'Advisor' is right only for status questions on an open RO. Designing the service view around advisors may pick the wrong user.",
+      "because": "case.md Who feels this lists service advisors, service managers and service BDC agents; Q10",
+      "ask": "Name the service BDC or scheduling coordinator as the primary service user, and advisors only for open-RO status replies, or mark the service user unknown pending Q10."
+    },
+    {
+      "id": "service-manager-r1-9",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "| 7 | Will service teams accept team \"Unanswered\" until an advisor source exists? | Service CSM | Fallback |",
+      "concern": "A CSM will tell you the account is fine. Ask the person who runs the drive.",
+      "because": "Q22; persona core",
+      "ask": "Change 'Who answers' to a service manager or service BDC lead at a live Vini Service rooftop, via the Service CSM."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does Bob Johnson Auto Group, and which other rooftops, run Vini Service on this console, and which service roles (BDC, advisor, manager) open Conversations or Action Items in the last 30 days?",
+      "blocks": "service-manager-r1-1, r1-8: who the service half is designed for",
+      "source": "CSM; console page views split by serviceType (Q10)"
+    },
+    {
+      "question": "How are service action items assigned today (SYSTEM, round-robin, or an advisor), and how do service teams work them: as a team queue or per person?",
+      "blocks": "service-manager-r1-3: whether owner inheritance changes service routing",
+      "source": "Vini backend lead; action-items assignedTo split by serviceType"
+    },
+    {
+      "question": "What share of inbound service customer messages arrive after a booked appointment or reminder and are acknowledgements needing no reply?",
+      "blocks": "service-manager-r1-2: whether the service unanswered queue is usable without a 'no reply needed' action",
+      "source": "conversations store, serviceType=service, sample of inbound messages"
+    },
+    {
+      "question": "Which DMS and scheduler integrations (CDK, Reynolds, Tekion, PBS, Xtime, myKaarma) return the advisor on an appointment or open RO, and do we have read access commercially?",
+      "blocks": "service-manager-r1-4: service 'mine'",
+      "source": "integrations-backend and crm-core owners (Q19)"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "stage": "jira-pending",
+  "started": "2026-10-15",
+  "rubrics": {
+    "decide": 1,
+    "onepager": 2,
+    "prd": 2
+  },
+  "lessons_loaded": [],
+  "observations_loaded": {},
+  "rounds": {},
+  "requests": 0,
+  "gates": [],
+  "notes": "Freshness: all sources fetched 2026-10-15. Sufficiency: thin slots (context_30d EMPTY on 23736 and 22370) were already searched at triage and Arali has no dealer interactions; left as open questions. No stable lessons or persona observations exist yet."
+}

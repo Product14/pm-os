@@ -209,3 +209,73 @@
 - side: system
 - role: engineering
 - text: Top match chat-service, whose card describes chat between website visitors and sales agents; converse-ai-widget card lists service scheduling among widget conversations. No service-specific takeover path surfaced.
+
+### E31
+- source: bluebrain:conversational-ai-backend:src/sequence-workflows/services/sequence-task-execution-orchestrator.service.ts:581
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: Neither `toggleHumanHandoverLocked` (src/sms/sms.service.ts:2817 to 3030) nor the takeover skip in `validateExecutionPreconditions` (orchestrator lines 581 to 679) checks agentType or department; the skip keys only off the lead-level `Lead.isSmsHumanTransferActive` flag (src/leads/schemas/lead.schema.ts:79), so every non-call task on that lead is skipped, sales or service. Read from local clone a2b8754c7.
+
+### E32
+- source: bluebrain:chat-service:src/chat/schemas/chat-session.schema.ts:5
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: Web chat sessions carry an agent type `'sales' | 'service' | 'receptionist'` (ChatAgentType), with per-agent-type defaults on the session schema; trace_handler on the chat handover route resolved no helpers, so whether handover itself is limited by agent type is not confirmed.
+
+### E33
+- source: jira:RETCONVAI-5190
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: The conversation link in RETCONVAI-5190 opens the Console inbox with serviceType=service, so a Console takeover has already been used on a service conversation.
+
+### E34
+- source: bluebrain:conversational-ai-backend:src/sequence-workflows/services/sequence-task-execution-orchestrator.service.ts:649
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: Code comment, "RETCONVAI-4553 follow-up": "SMS-only, a CALL-channel task (e.g. a follow-up dial) is unaffected, since the rep taking over the text thread says nothing about whether the lead should still be called." Added in commit 5c0a254bb on 2026-08-24 ("added human transfer (#4965)").
+
+### E35
+- source: pm-doc:brainstorming-flows/projects/crm-sync-enhancements/prd-stop-outbound-followup.md:86
+- date: 2026-10-16
+- side: system
+- role: unknown
+- text: The July stop-outbound PRD defines a manual per-lead pause from the Spyne console as a stop reason (FR-3, lines 86 to 93: no outbound while paused, inbound still answered, audit of who, why and when); it does not mention human takeover.
+
+### E36
+- source: pm-doc:brainstorming-flows/projects/crm-sync-enhancements/prd-stop-outbound-followup.md:136
+- date: 2026-10-16
+- side: system
+- role: unknown
+- text: The same PRD does not define CRM rep activity as a stop reason; any non-console pause surface is out of MVP scope (line 136) and an open question (line 155). Status: dated 2026-07-14, header still "Working title, confirm" (line 8), no approval recorded in the file.
+
+### E37
+- source: jira:RETCONVAI-5165
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: RETCONVAI-5165: status Product Backlog, has an assigned engineer, no sprint set, last updated 2026-09-23.
+
+### E38
+- source: jira:RETCONVAI-5190
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: RETCONVAI-5190: status Product Backlog, unassigned, sprint field CI Sprint 13 (2026-08-24 to 2026-09-02), last updated 2026-10-13; the description covers only the one reported customer's next-day call, and an engineering comment on 2026-09-25 says "This was identified as not an issue. Please close this ticket." It does not scope call suppression on every takeover.
+
+### E39
+- source: clickhouse:dealer_leads.conversations
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: ClickHouse holds no humanTransferDetails, handover or takeover column in any table; dealer_leads.conversations has only the current `aiMode` (auto 1,117,511, off 764,310, null 30,590), which is not takeover-specific and has no history, so per-rooftop takeover counts cannot be computed there.
+
+### E40
+- source: search:search-transcripts:salesperson takes over the text conversation in the Spyne console inbox
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: 2026-07-18 to 2026-10-16, no company filter: Spyne staff demoed or pointed to Console takeover at 6 distinct companies; at 3 companies dealer staff said reps work the lead in their own CRM or system rather than the Console. Ticket search for Console takeover use: 0 relevant tickets.

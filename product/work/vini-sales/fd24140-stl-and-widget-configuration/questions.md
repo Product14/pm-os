@@ -103,3 +103,139 @@
 - who: engineering
 - how: STL owner confirms the settings schema and whether ops can edit it in Admin Tool > Vini Config like the channel switches (E4).
 - status: open
+
+### Q14
+- slot: request
+- unknown: Does a lead-type-aware STL opener with CRM write-back sit on the Vini Sales area roadmap this quarter? product/areas/vini-sales/CLAUDE.md lists what ships today but no roadmap.
+- blocks: decide.md Inputs, Strategic fit (area roadmap)
+- who: pm
+- how: PM checks the Vini Sales quarterly goals sheet and states whether this job maps to a committed goal or would displace one.
+- status: open
+
+### Q15
+- slot: request
+- unknown: How many after-hours website leads a week does this rooftop forward, split by inquiry, online appointment and credit application, and how many BDC hours go to next-day callbacks and confirmations?
+- blocks: decide.md Inputs, Dealer P&L impact (sizing)
+- who: csm
+- how: CSM asks the VP Marketing for a typical week's after-hours website lead count by type and the BDC time spent on them; once forwarding is live, count leads on the team's forwarding inbox by parsed type.
+- status: open
+
+### Q16
+- slot: request
+- unknown: When is the full-value path (CRM-first, lead-type-aware STL first message with write-back) planned to ship, even if a first step ships before it?
+- blocks: decide.md Ladder rung 7 (when)
+- who: pm
+- how: PM sets a target quarter after the engineering estimate (Q17) and records it in decisions.md.
+- status: open
+
+### Q17
+- slot: request
+- unknown: What is the engineering size of the full-value path (ADF lead-type fields, per-type opener on the STL lead-type entry, write-back channel) and of the opener-only step?
+- blocks: decide.md Inputs, Cost and risk to build (S, M or L is a judgment today)
+- who: engineering
+- how: STL owner and integrations owner size the three pieces against parseAdf (integrations-backend :315), resolveStlGate and upsertSpeedToLeadSettings (conversational-ai-backend speed-to-lead-console-call.service.ts :422, :47), and the write-back options in Q10.
+- status: open
+
+### Q18
+- slot: request
+- unknown: Does parseAdf set a lead type, appointment date/time/store or credit-app flag inline, and which ParsedEmailData field becomes the lead's external_type and source? The graph lists no helper for any of these (helpers exist only for comments, phone, vehicle, address, subject source), and no writer of external_type was found.
+- blocks: Step 1 (input to the opener); step 2 sizing
+- who: engineering
+- how: Integrations owner reads parseAdf (integrations-backend src/email-parsing/email-parser.service.ts:315 to :415) and the SQS consumer behind extractEmailData (email-parsing.service.ts:86), then posts the dealer's sample emails (Q2) to POST /email-parsing/test-parse. If appointments are dropped, reuse extractAdfAppointments / transformAdfAppointmentToMeetingInput from lambdas crm-integrations/webhook-processor/crm-clients/adf.js:156, :182.
+- status: open
+
+### Q19
+- slot: request
+- unknown: Do forwarded website email leads arrive with source SPEED_TO_LEAD and external_type website or spyne_console? If so, isAlwaysAllowStlLead (speed-to-lead-console-call.service.ts:406, env STL_ALWAYS_ALLOW_LEAD_TYPES) bypasses the per-type config, and no per-type template would ever be read.
+- blocks: Step 2 design (where the template lookup sits relative to the bypass)
+- who: engineering
+- how: STL owner checks source and external_type on this team's email-forwarded leads, and the prod value of STL_ALWAYS_ALLOW_SOURCE / STL_ALWAYS_ALLOW_LEAD_TYPES.
+- status: open
+
+### Q20
+- slot: request
+- unknown: Will a new opener-template field on the speedToLeadByLeadType entry survive both writers (upsertSpeedToLeadSettings :47 via SpeedToLeadSourceConfigDto :53 under global whitelist/forbidNonWhitelisted, and the console's upsertStlFollowUpConfig conversation-notifications.service.ts:2408 merge at :2489), and does the console UI need a field so ops can edit it?
+- blocks: Step 2 configuration surface (Q13)
+- who: engineering
+- how: STL owner reads the :2489 merge and the console STL settings form, then round-trips a test field on a UAT team through both endpoints.
+- status: open
+
+### Q21
+- slot: request
+- unknown: Can any existing outbound path write back to a dealer with no CRM API (ADF email back, generic webhook)? The graph shows write-back only through crm-core pushToExternalCrm and dealer-leads start-insertion-process, both driven by a configured third-party CRM integration.
+- blocks: Step 3 (write-back) scope and whether it is a build or a configuration
+- who: engineering
+- how: Integrations owner checks crm-core-service src/crm-sync/external-crm-sync.service.ts:149 and dealer-leads-backend api/helpers/crm-integrations/start-insertion-process.js:638 for a non-API provider type; pair with the dealer ask in Q10.
+- status: open
+
+### Q22
+- slot: assumption
+- unknown: STL silent hours allow a first text before the BDC opens
+- blocks: one-pager v1, What it removes (time to first contact)
+- who: engineering
+- how: STL owner reads this team's silent-hours setting and checks when a lead forwarded at 11 pm gets its first text on a UAT team.
+- status: open
+
+### Q23
+- slot: request
+- unknown: (R1, E39) Which field in buildAdfLeadInput (integrations-backend email-parsing-consumer.service.ts:409) sets the lead's external_type and source for a forwarded ADF email, and does it keep the ADF lead type or appointment time anywhere?
+- blocks: Step 1 and Step 2; whether a per-type off switch or opener can key on this rooftop's types (E41)
+- who: engineering
+- how: Integrations owner reads buildAdfLeadInput :409 and createLeadFromAdfEmail :376, then sends the dealer's sample emails (Q2) to POST /email-parsing/test-parse and reads the stored lead's external_type, lead_type and source.
+- status: open
+
+### Q24
+- slot: request
+- unknown: (R4, E42) Do the dealer's website and credit-app forms capture SMS consent, and does the forwarded ADF carry it?
+- blocks: Step 0 and Step 2 (contact compliance)
+- who: csm
+- how: CSM asks the dealer's software development manager for the form consent language and checks the sample ADF emails (Q2) for a consent field.
+- status: open
+
+### Q25
+- slot: request
+- unknown: (deferred D3) Has the dealer paused its own after-hours automated texts for leads it forwards to Spyne, and will it before STL starts? STL cannot see those texts (E43).
+- blocks: Step 0 go-live (duplicate contact); gm-r1-7
+- who: csm
+- how: CSM answers the dealer's 2026-09-29 question (E15) on the email thread and gets a yes or no before go-live.
+- status: open
+
+### Q26
+- slot: request
+- unknown: (deferred D4) What does today's STL notification email contain (lead status, appointment time), who at the rooftop receives it, and when is it sent relative to BDC open?
+- blocks: Interim morning handoff before step 3; hand-keying row
+- who: engineering
+- how: STL owner sends one UAT test lead and forwards the resulting notification email; CSM confirms the rooftop recipients.
+- status: open
+
+### Q27
+- slot: request
+- unknown: (deferred D5) Can the reply agent create an assigned callback task for the BDC after hours?
+- blocks: Step 2 scope for appointment and credit-app types
+- who: engineering
+- how: Vini Sales backend owner checks the reply agent's tool list for an action-item or task tool and runs one after-hours UAT reply.
+- status: open
+
+### Q28
+- slot: request
+- unknown: (deferred D6) What is the show rate today on online-appointment website leads, and who follows up on credit applications (BDC or F&I) with what committed response time?
+- blocks: Show-rate baseline; credit-app receiving role; gm-r1-4
+- who: csm
+- how: CSM asks the VP Marketing on the existing thread.
+- status: open
+
+### Q29
+- slot: request
+- unknown: (deferred D8) Which CRMs and DMS providers have certified write-back today for STL conversations and appointments, and how many active Vini Sales rooftops sit on each versus on no-API systems?
+- blocks: ceo-r1-3 (whether step 3 is base leverage or a one-off)
+- who: engineering
+- how: Integrations owner lists providers behind crm-core-service pushToExternalCrm (external-crm-sync.service.ts:149); a count of active Vini Sales teams by configured CRM follows.
+- status: open
+
+### Q30
+- slot: request
+- unknown: (deferred D9) For each of the 3 companies in E22: is it the same per-type opener job, a credit-app hold-out or a credit-app-first flow, and did any ask for STL outcome write-back?
+- blocks: ceo-r1-2
+- who: pm
+- how: PM rereads the Arali transcripts behind E22 and tags each company.
+- status: open

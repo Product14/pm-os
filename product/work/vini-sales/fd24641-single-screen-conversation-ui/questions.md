@@ -103,3 +103,83 @@
 - who: pm
 - how: Walk the spec with a Vini Service CSM and one service manager persona review before the decide step
 - status: open
+
+### Q14
+- slot: request
+- unknown: How many rooftops have the same job: Vini-created customer replies left unread by the assigned person, in sales or service, over the last 90 days
+- blocks: decide.md Ladder rung 3 and Inputs, Demand breadth
+- who: pm
+- how: Count rooftops with unread conversations older than one business day, split by serviceType, from the conversations store; cross-check with CSM accounts that coach "live in Conversations" (E25)
+- status: open
+
+### Q15
+- slot: request
+- unknown: How long a Vini-created customer reply waits before a human answers, per rooftop and department, and how many such leads or service customers go cold
+- blocks: decide.md Ladder rung 2 and Inputs, Dealer P&L impact
+- who: pm
+- how: Measure time from customer reply to first human message on unread conversations for this rooftop and a sample of others, by serviceType; read context/metrics and context/traps first
+- status: open
+
+### Q16
+- slot: request
+- unknown: Whether this rooftop shows a churn or health risk tied to follow-up or console usability, beyond the CSM's ETA request (E2)
+- blocks: decide.md Inputs, Cost of not solving
+- who: csm
+- how: Read the rooftop's Arali health trend and open signals for the last 30 days; ask the CSM whether this ticket is tied to renewal or adoption risk
+- status: open
+
+### Q17
+- slot: request
+- unknown: Whether the local `leads.assigned_to` field (conversational-ai-backend:src/leads/schemas/lead.schema.ts:42) is populated for sales and service leads when crm-core is enabled, and whether it equals crm-core's round-robin assignee; the team conversations list reads local leads (customers.service.ts:2452)
+- blocks: solution-context, the assignee filter on the "My unanswered" view
+- who: engineering
+- how: Ask the Vini backend lead; sample local leads vs crm-core sales_lead assigned_to for one rooftop
+- status: open
+
+### Q18
+- slot: request
+- unknown: Whether any CRM fetcher in integrations-backend (VinSolutions, eLeads, Tekion, DriveCentric) reads the dealer CRM's assigned salesperson, and whether that owner differs from Spyne's round-robin assignee (crm-core-service:src/assignment/assignment.service.ts:90)
+- blocks: solution-context, whether "mine" means the CRM owner or the Spyne assignee; per-provider read is a commercial dependency
+- who: engineering
+- how: Ask the integrations-backend owner which providers expose a salesperson or owner field on lead fetch today
+- status: open
+
+### Q19
+- slot: request
+- unknown: Where a service advisor for a service lead or appointment comes from (DMS, Xtime or other scheduler), and what writes meetings.assigned_to (conversational-ai-backend:src/meetings/appointment-alert.service.ts:160)
+- blocks: solution-context, the service half of "My unanswered" and assignee-routed alerts
+- who: engineering
+- how: Ask the integrations-backend and crm-core owners which DMS and scheduler integrations return an advisor id
+- status: open
+
+### Q20
+- slot: request
+- unknown: How to define "unanswered": isUnread flips true on conversation create, call updates, dealer-sent email and AI outbound (conversation.service.ts:520, :650, :777; sms.service.ts:753), and read state is one shared lastReadAt per conversation (conversation.schema.ts:183). Is there an existing "last inbound customer message with no reply after it" field, and should read state become per member?
+- blocks: solution-context, the queue definition, its count and its metric
+- who: engineering
+- how: Ask the Vini backend lead whether smsChatCompletions or the inbound handler (sms.service.ts:1924) can stamp lastInboundAt and lastHumanReplyAt, and the cost of per-user read state
+- status: open
+
+### Q21
+- slot: request
+- unknown: With crm-core enabled, has_unread is written only to crm-core (leads.service.ts:135) while the Customers list unreadCount and team list read local leads; does local unread go stale for crm-core rooftops?
+- blocks: solution-context, trusting any unread count as the live count or as a metric
+- who: engineering
+- how: Ask the crm-core owner whether crm-core writes back to the shared leads collection; compare counts for one crm-core rooftop
+- status: open
+
+### Q22
+- slot: assumption
+- unknown: team view is an acceptable fallback for service
+- blocks: v1.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q23
+- slot: assumption
+- unknown: reps stop opening Action Items
+- blocks: v1.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open

@@ -1,0 +1,141 @@
+{
+  "persona": "ceo",
+  "round": 1,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 2,
+    "Evidence": 3,
+    "P&L": 2,
+    "Above the DMS": 3,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 2,
+    "Brevity": 3,
+    "Dealer economics": 2,
+    "Base leverage": 1,
+    "Dependency honesty": 3,
+    "Handoff clarity": 2,
+    "Decision readiness": 2
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "ceo-r1-1",
+      "severity": "blocking",
+      "type": "intent-challenge",
+      "quote": "No reason was recorded at the gate; the case for building is the advocate's: an engaged lead waits until someone happens to look, and nothing shows a rep which replies are theirs [E16, E17].",
+      "concern": "You are asking for an L build for both departments on one rooftop whose manager told us he needs no build, with zero other rooftops asking in 90 days, and the page itself says nobody wrote down why we overruled that. I fund capabilities for the base, not one loud store. I am not saying no; I am saying I cannot sign a quarter of engineering without the reason on the page.",
+      "because": "E8, E25, E26; decisions.md Overrides 2026-10-16 (reason not given)",
+      "ask": "PM records the reason for the override in Decision, naming the base signal it rests on (a same-job count across rooftops, or a reply-wait baseline that shows the problem is broad), and adds a stop rule: what result after launch would make us pull it back. If no base signal exists, say so and size the bet as one rooftop."
+    },
+    {
+      "id": "ceo-r1-2",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "Cost: engaged leads going cold (front-end and F&I gross) and manager checking time; no figure exists [E6, Q15].",
+      "concern": "Leads going cold is a sell-more-cars argument in different words. I cannot say this value in 60 seconds to a dealer group: which cost goes away, how many hours or days, for which role, and who at the store signs for it versus who benefits. The handoff this closes, AI to salesperson, is the real story and it is not named.",
+      "because": "E6, E10, E16; Q15 (no figure)",
+      "ask": "Lead with cost removed: manager hours spent cross-checking per week and hours a Vini-engaged reply waits for a human, per department, using a measured baseline from our own conversation data (see requests), not an estimate. Name the AI-to-salesperson handoff it closes, who benefits (salesperson, advisor) and who buys (GM, used car manager). Keep lost gross as a secondary, attributed line or drop it."
+    },
+    {
+      "id": "ceo-r1-3",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "It removes cross-checking Action Items and the CRM and makes reply wait time measurable.",
+      "concern": "The TL;DR promises the CRM step goes away; your own table says the CRM still closes the record, and the dealer's complaint was exactly having to go into VinSolutions to close a record. If a sales manager reads only the TL;DR, we have overpromised.",
+      "because": "E10, E13; one-pager 'What it removes' row 'One console page; CRM still closes the record'",
+      "ask": "TL;DR says it removes the Action Items cross-check and that the CRM step stays until a CRM-first path exists."
+    },
+    {
+      "id": "ceo-r1-4",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "**Owner filter** on the team list from the lead assignee `conversational-ai-backend:src/leads/schemas/lead.schema.ts:42`; Vini action items inherit that owner, not SYSTEM.",
+      "concern": "The whole feature is 'mine', and the page itself says 'mine' has no true source: the sales assignee is our round-robin pick, not the CRM salesperson, and service has no advisor field. We would ship a queue that routes replies to the wrong rep and call it a capability. The CRM read of the assigned salesperson is a per-provider dependency and its status is not on the page.",
+      "because": "`crm-core-service:src/assignment/assignment.service.ts:90`; Q17, Q18, Q19; E41",
+      "ask": "Put the per-CRM status on the page: which CRMs we read the assigned salesperson from today (at least VinSolutions for this rooftop) and which we do not. Make Open questions 2 and 3 a gate before build, not after, and ship 'mine' only where the owner source is verified; everywhere else the team Unanswered view."
+    },
+    {
+      "id": "ceo-r1-5",
+      "severity": "major",
+      "type": "scope",
+      "quote": "**Size:** sales-only on the round-robin assignee is M; both departments is L [PM].",
+      "concern": "Every yes is a no to something else. An L is named with no trade-off: what on the Vini sales roadmap moves out, and how this relates to the Console v2 epic so we do not build the same queue twice.",
+      "because": "E23, E24; missing",
+      "ask": "Name what this L displaces this quarter and state whether it becomes the first Console v2 deliverable or is kept separate, with the reason."
+    },
+    {
+      "id": "ceo-r1-6",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Hours a reply waits for a human | unknown, not logged | measured per department | [Q15, Q20] |",
+      "concern": "'Measured' is not an outcome. Nothing in this table is a number we can hold ourselves to, so in 60 days nobody can say whether this worked. I remember what was promised.",
+      "because": "Q15, Q20; missing",
+      "ask": "Get the baseline before build from existing message timestamps (see requests), then set a target reduction in hours to first human reply per department and the review date. Add the judge's revisit signal as the success check: unread conversations stop piling up at this rooftop while matching assignedTo action items close."
+    },
+    {
+      "id": "ceo-r1-7",
+      "severity": "major",
+      "type": "scope",
+      "quote": "Not building: the five-counter board, the seven-stage journey, removing Customers, CRM write-back [E28, E30, E32, E34].",
+      "concern": "Right not to build the CSM's board. But the floor lives in the CRM, and 'no one really knows when Spyne reaches out unless they're in there'. Our position is the layer above the DMS and CRM, not a second inbox reps must remember to open. The full-value path, Vini-engaged replies landing as tasks on the assigned salesperson in the dealer's CRM, is not stated or planned.",
+      "because": "E16, E10, E13; candidate direction 3 in case.md; five facts 4",
+      "ask": "State the CRM-first full-value path (reply surfaced as a CRM task on the assigned salesperson, per-provider write status), and say whether this release takes it or plans it, with the dependency named as a commercial negotiation per provider."
+    },
+    {
+      "id": "ceo-r1-8",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "Advisors work the same pages; an unanswered service customer is an RO that never opens (absorption; inferred) [E37, E39].",
+      "concern": "Half the L is justified by an inference with no service-side dealer voice and no usage data showing advisors work Conversations at all. Fixed ops is where the money is, so if this is real it should be the lead argument; if it is not, we are spending on it blind.",
+      "because": "E37, E39; no service-side dealer evidence",
+      "ask": "Add the service usage fact (do advisors or service BDC open Conversations, per rooftop) or label the absorption value as unknown and add it to Open questions with an owner."
+    },
+    {
+      "id": "ceo-r1-9",
+      "severity": "minor",
+      "type": "feasibility",
+      "quote": "**Alerts** to the owner through existing notification preferences `conversational-ai-backend:src/notifications/notifications.service.ts:156`.",
+      "concern": "Alerts sent to a round-robin owner who is not the real salesperson is noise on a rep's phone, and handover alerts are already unwired. This is the fastest way to lose a manager's trust.",
+      "because": "`conversational-ai-backend:src/tools/human-transfer.service.ts:149`; `crm-core-service:src/assignment/assignment.service.ts:90`",
+      "ask": "Ship owner alerts only where the owner source is verified; elsewhere alert the team or the manager per the rooftop setting."
+    },
+    {
+      "id": "ceo-r1-10",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Build-generalised, feature my-unanswered-queue: the PM chose to build over the judge's already-possible [PM].",
+      "concern": "The first line of Decision is internal process, not a decision. I want the recommendation, the value and the ask in the first two lines.",
+      "because": "rubric Brevity; persona Decision readiness",
+      "ask": "Open Decision with what we build, for whom, the cost or hours removed and the ask; move the override history to Risks."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Median and p90 hours from a customer reply to the first human reply, per department (sales, service), last 30 days, for this rooftop and across all Vini rooftops.",
+      "blocks": "ceo-r1-2, ceo-r1-6 (baseline and target); ceo-r1-1 (base signal)",
+      "source": "conversation message timestamps in conversational-ai-backend data or ClickHouse (Q15)"
+    },
+    {
+      "question": "How many rooftops have customer replies with no human reply after N hours, the same-job count rather than the same-words count.",
+      "blocks": "ceo-r1-1 (base leverage)",
+      "source": "ClickHouse conversation data (Q14)"
+    },
+    {
+      "question": "Which CRMs in our integrations expose the assigned salesperson today, and is VinSolutions one of them? Is leads.assigned_to filled and equal to crm-core's assignee?",
+      "blocks": "ceo-r1-4, ceo-r1-9",
+      "source": "Integrations team; engineering (Q17, Q18)"
+    },
+    {
+      "question": "Do service advisors, service managers or service BDC agents open the Conversations page, and at how many rooftops?",
+      "blocks": "ceo-r1-8",
+      "source": "console product analytics by department"
+    },
+    {
+      "question": "Does reassigning Vini-created action items from SYSTEM to the lead assignee change what is synced to the dealer's CRM?",
+      "blocks": "ceo-r1-4 (CRM side effects)",
+      "source": "Vini backend engineering, action-items isSynced path"
+    }
+  ]
+}

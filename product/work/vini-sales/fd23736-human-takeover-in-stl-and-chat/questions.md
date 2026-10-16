@@ -87,3 +87,51 @@
 - who: engineering
 - how: Integrations engineer checks the DriveCentric API scope Spyne holds today; if activity is not in scope, PM raises it with the DriveCentric partner contact.
 - status: open
+
+### Q12
+- slot: request
+- unknown: Across rooftops with Console takeover, how many have reps who reply to Vini leads only from the CRM and never press takeover?
+- blocks: decide.md Inputs > Demand breadth for the delta (CRM activity read); ladder rung 3
+- who: engineering
+- how: Answer R3 (takeover counts per rooftop, last 30 days); CSMs confirm for the 3 companies in E20 where reps reply.
+- status: open
+
+### Q13
+- slot: request
+- unknown: How often does a Vini lead get a duplicate touch (Vini SMS or call within a few hours of a rep's text or call), and how much staff time goes to checking two systems?
+- blocks: decide.md Inputs > Dealer P&L impact; ladder rung 2 has no figure
+- who: engineering
+- how: Data pull on leads with both Vini and rep activity where the CRM logs rep touches; otherwise ask the dealer BDC lead for an estimate and label it dealer-reported.
+- status: open
+
+### Q14
+- slot: request
+- unknown: Is "one owner per lead" (takeover note, call suppression, CRM activity pause) on the vini-sales roadmap, and in which quarter?
+- blocks: decide.md Inputs > Strategic fit (area roadmap); ladder rung 7 timing
+- who: pm
+- how: Area owner in `OWNERS.md` confirms; `product/areas/vini-sales/CLAUDE.md` lists no roadmap.
+- status: open
+
+### Q15
+- slot: request
+- unknown: Why are CALL-channel tasks deliberately excluded from takeover suppression in the sequence orchestrator, and what breaks if they are suppressed?
+- blocks: decide.md Inputs > Cost and risk to build (call suppression wire); ladder rung 4
+- who: engineering
+- how: Answer R2; then ask the RETCONVAI-5190 owner.
+- status: open
+
+### Q16
+- slot: request
+- unknown: Does the July 2026 stop-outbound requirements doc (crm-sync-enhancements) already define manual pause or CRM rep activity as a reason to stop outbound, and was it approved?
+- blocks: decide.md Inputs > Prior decisions; ladder rung 4 (in-from-CRM wire may already be specified)
+- who: pm
+- how: Answer R4; the PM reads the doc and records its status in decisions.md.
+- status: open
+
+### Q17
+- slot: request
+- unknown: Per-rooftop count of Console SMS takeovers (humanTransferDetails.phase ever ACTIVE, or human-transfer claimed Kafka events) in the last 30 days, for this rooftop and for all DriveCentric rooftops. ClickHouse has no takeover field (E39); Arali shows only that takeover is demoed and that some reps work in their CRM instead (E40).
+- blocks: decide.md ladder rung 3; Inputs > Demand breadth (delta); Q1, Q12 (from R3)
+- who: engineering
+- how: Engineer runs a read-only Mongo count on Conversation.humanTransferDetails (phase ACTIVE, claimedAt in the last 30 days) grouped by teamId, or counts claimed events on the human-transfer Kafka topic, then joins teamId to CRM provider.
+- status: open

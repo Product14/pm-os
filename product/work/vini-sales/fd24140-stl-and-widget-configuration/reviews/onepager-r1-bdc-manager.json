@@ -1,0 +1,132 @@
+{
+  "persona": "bdc-manager",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 3,
+    "P&L": 3,
+    "Above the DMS": 3,
+    "Honest unknowns": 2,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 4,
+    "CRM completeness": 2,
+    "Human reach": 2,
+    "Show discipline": 2,
+    "Workload effect": 2,
+    "Contact compliance": 1
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "bdc-manager-r1-1",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "It removes next-morning BDC callbacks and hand-keyed outcomes, and keeps the AI out of credit.",
+      "concern": "Until step 3 nothing Ava does lands in our system; it lives in Console and an email. My agents work the queue in our system, so at 8 am they still call every overnight lead, including the ones Ava already texted or booked. Steps 0 to 2 do not remove callbacks, they add a second touch, and hand-keying grows with every lead STL works. The TL;DR sells step 3's benefit as if steps 0 to 2 deliver it.",
+      "because": "E12, E13, E8",
+      "ask": "Say plainly which step removes what: step 0 to 2 removes nothing from the BDC unless the morning handoff is defined; callbacks and hand-keying come off only at step 3 or with an interim per-lead handoff (see next issue)."
+    },
+    {
+      "id": "bdc-manager-r1-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "- **Step 0, this week, no build:** STL on for after-hours inquiries, appointment and credit-app types off; dated plan to the CSM.",
+      "concern": "Step 0 starts outbound texting with no morning handoff and no suppression. Two double-contacts are left open: the dealer's own after-hours automated texts, which the VP Marketing asked about and nobody answered, and my BDC calling at open a lead Ava is mid-conversation with or already booked. A customer who booked with Ava at 11 pm and gets a BDC call at 9 am asking to set an appointment is the review the GM forwards me.",
+      "because": "E15, E8, E12, missing",
+      "ask": "Make step 0 conditional on (a) the dealer confirming their own after-hours automation is paused for forwarded leads, and (b) a per-lead morning handoff before the BDC opens: one record per lead with status (no reply, replied, appointment set with date and time, opted out), so the BDC skips or confirms instead of cold-calling. Name who receives it."
+    },
+    {
+      "id": "bdc-manager-r1-3",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| Outcomes keyed by hand | every conversation | 0 after step 3 | [E12, E13] |",
+      "concern": "Before step 3, an appointment Ava sets on an inquiry exists only in Console and an email. If nobody keys it, the customer shows up and nobody is expecting them, and my board never gets the set. I am credited on shows; an appointment outside my system is a no-show risk and an uncredited set. 'Every conversation' also hides that the volume to key goes up the moment step 0 starts.",
+      "because": "E12, E13, obs: none loaded (persona core: CRM is the system of record; appointment credit)",
+      "ask": "Add a row for appointments Ava sets before step 3: who keys them, by when, and how they are tagged as Ava-set so the BDC board counts them. Size the hand-keying added at step 0 from Q15 volume."
+    },
+    {
+      "id": "bdc-manager-r1-4",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Booked online appointments pushed to rebook | every one, if STL were on | 0 | [E6] |",
+      "concern": "Not pushing a rebook is the floor, not the win. The reason to text an online-appointment lead overnight is to get them to show. There is no show-rate line, no reminder path, and nothing on what happens when the customer replies 'I need to move it'. If Ava reschedules and it is not written back before step 3, the store has the old time and the customer has the new one.",
+      "because": "E6, E5, Q12",
+      "ask": "Measure success on shows for online-appointment leads (show rate before and after). In step 2, a reschedule or cancel reply on an online-appointment lead creates an assigned BDC task with the new requested time instead of Ava booking it, until write-back exists. State whether existing appointment reminders apply to these leads."
+    },
+    {
+      "id": "bdc-manager-r1-5",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "- **Step 2:** opener template per lead-type entry; no template keeps today's opener. No-PII on credit-app is platform logic.",
+      "concern": "Step 2 changes only the first text. The follow-up runs on the same generic prompt, so a customer we just confirmed gets a follow-up nudging them to book. That is a double-contact on a customer who already did what we wanted. Step 1 only proves whether the type reaches reply and follow-up; step 2 does not say what ships if it does not.",
+      "because": "Q12, E36 (isFollowUpEnabled :123 in the same STL service)",
+      "ask": "Step 2 scope: follow-up is off by default for online-appointment and credit-app types unless a type-aware follow-up template exists, and the reply agent must carry the type before those openers go live. If Q12 says it cannot, those types stay off."
+    },
+    {
+      "id": "bdc-manager-r1-6",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Per rooftop: lead-type mapping, on/off and opener per type, credit-app held out or acknowledged, write-back channel.",
+      "concern": "'Acknowledged' tells a credit applicant 'the team will follow up'. Follow up by whom, by when? Credit apps are the hottest leads we get and they sit between sales and F&I, where nobody owns the handoff. If the customer replies with a question at midnight, Ava cannot discuss it and there is no human on. Without an owner and a clock, the acknowledgment is a promise nobody keeps.",
+      "because": "E1, E5, obs: none loaded (persona core: every transfer ends with a named human or assigned task)",
+      "ask": "For credit-app acknowledged: name the receiving role per rooftop (BDC or F&I), require an assigned task with the reason created when the lead arrives and on any reply, and a stated response target. Add receiving role to the per-rooftop config list."
+    },
+    {
+      "id": "bdc-manager-r1-7",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "Per rooftop: lead-type mapping, on/off and opener per type, credit-app held out or acknowledged, write-back channel.",
+      "concern": "We are texting leads the dealer forwards by email from their website form, including credit applications. Nothing in the one-pager says whether those forms capture SMS consent, whether the forwarded ADF carries it, or that per-store opener templates keep opt-out language and honour STOP. The store carries that risk, and a dealer-editable template is exactly where opt-out wording gets deleted.",
+      "because": "missing",
+      "ask": "Add consent and opt-out to Risks and Open questions with an owner: consent provenance for forwarded website leads, opt-out handling on STL texts, and opt-out text as a platform-enforced part of every template, not per-store copy."
+    },
+    {
+      "id": "bdc-manager-r1-8",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "- **Step 3, full value:** CRM-first read, plus write-back of conversation and confirmed appointment through a channel agreed with the dealer.",
+      "concern": "A conversation dump and an appointment are not enough. My agents filter on lead status. If write-back lands as a note in the timeline, it is invisible to the queue. I also need to know the appointment was set by Ava so the board and spiffs are right, and opt-outs must come back so we stop calling.",
+      "because": "E12, obs: none loaded (persona core: CRM completeness, appointment credit)",
+      "ask": "Specify write-back as structured fields: lead status, appointment (date, time, store, set-by Ava vs confirmed), opt-out flag, plus the summary. Note which of these a no-API dealer channel (Q10) can carry."
+    },
+    {
+      "id": "bdc-manager-r1-9",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "| Time to first contact | next business day | before the BDC opens | [ASSUMPTION: STL silent hours allow a first text before the BDC opens] |",
+      "concern": "If silent hours hold the overnight text until morning, Ava's first text and my agent's first call land at the same time, which is the double-contact case. The time-to-first-contact claim and the BDC overlap depend on the same open answer.",
+      "because": "Q22, E18",
+      "ask": "Tie Q22 to the morning handoff: if the first text goes out at or after BDC open, Ava-worked leads must be held out of the BDC call queue for a stated window."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Has the dealer paused its own after-hours automated texts for leads it forwards to Spyne (their question on 2026-09-29)?",
+      "blocks": "Step 0 go-live (duplicate contact)",
+      "source": "CSM, email thread arali:ddf14dfa (E15)"
+    },
+    {
+      "question": "What does today's STL notification email contain (per lead status, appointment time?), who at the rooftop receives it, and when is it sent relative to BDC open?",
+      "blocks": "Interim morning handoff before step 3; hand-keying row",
+      "source": "Engineering (STL owner) and CSM"
+    },
+    {
+      "question": "Do the dealer's website and credit-app forms capture SMS consent, and does the forwarded ADF carry it? How does STL handle STOP/opt-out today?",
+      "blocks": "Step 0 and step 2 (contact compliance)",
+      "source": "CSM with dealer; engineering for STL opt-out handling"
+    },
+    {
+      "question": "Can follow-up be switched off per lead-type entry today (isFollowUpEnabled scope), and can the reply agent create an assigned callback task after hours?",
+      "blocks": "Step 2 scope for appointment and credit-app types",
+      "source": "Engineering, conversational-ai-backend speed-to-lead-console-call.service.ts :123"
+    },
+    {
+      "question": "Show rate today on online-appointment website leads, and who at the rooftop receives credit-app leads (BDC or F&I)?",
+      "blocks": "Show-rate baseline; credit-app receiving role",
+      "source": "CSM with VP Marketing / BDC"
+    }
+  ]
+}

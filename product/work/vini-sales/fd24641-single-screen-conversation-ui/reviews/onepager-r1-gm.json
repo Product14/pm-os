@@ -1,0 +1,136 @@
+{
+  "persona": "gm",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 3,
+    "Evidence": 4,
+    "P&L": 2,
+    "Above the DMS": 3,
+    "Honest unknowns": 4,
+    "Shared scope": 3,
+    "Full value": 2,
+    "Brevity": 4,
+    "Statement impact": 2,
+    "System of record": 2,
+    "Adoption cost": 3,
+    "Failure visibility": 2,
+    "Handoff ownership": 2
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "gm-r1-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "**Alerts** to the owner through existing notification preferences",
+      "concern": "My problem is that my salespeople do not follow up. You are fixing it by giving the same salespeople a view and a ping. If the rep ignores the ping, nothing happens until I go looking, which is exactly where I am today. That is adoption that depends on my people changing habits with me enforcing it.",
+      "because": "E6",
+      "ask": "Add a manager-free escalation: a reply unanswered by the owner past a per-rooftop threshold moves to the team view and alerts the manager or BDC lead. Name the default threshold as an open question and who sets it."
+    },
+    {
+      "id": "gm-r1-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "One console page; CRM still closes the record",
+      "concern": "The dealer's complaint was having to go into VinSolutions 'just to close a record'. After this, reps still work a queue in your console and then still open the CRM. My managers look in the CRM. If a rep answers from the console and it never shows on the lead in VinSolutions, my desk sees no follow-up and I have a second place I have to check.",
+      "because": "E10",
+      "ask": "State whether a human reply sent from the console posts to the dealer CRM as activity today, per CRM, and if not name it as a dependency. Restate the 'After' column honestly: two places, not one, until that lands."
+    },
+    {
+      "id": "gm-r1-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "stamp last customer message and last human reply on the inbound path, cleared by a reply, not a view",
+      "concern": "My guys answer from VinSolutions, from their cell, or by calling the customer back. If only a reply typed in your console clears 'unanswered', the count is wrong on day one and my people stop trusting it within a week.",
+      "because": "E13",
+      "ask": "Define what counts as a human reply across channels (console text, outbound call, CRM-sent text or email) and give the rep a one-click 'handled' with a reason, so the queue matches what actually happened."
+    },
+    {
+      "id": "gm-r1-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "The sales assignee is a Spyne round-robin pick, not the CRM salesperson",
+      "concern": "If 'mine' in your console is a different person from the salesperson on the lead in my CRM, a customer's reply goes to the wrong rep while the right rep never sees it. That is a customer-facing failure and the one-pager has no way to detect or fix it.",
+      "because": "`crm-core-service:src/assignment/assignment.service.ts:90`",
+      "ask": "Say which owner source ships first and when 'mine' is allowed to appear: only where it is confirmed to match the CRM salesperson, otherwise team view. Add a reassign action and a way for the manager to see owner mismatches."
+    },
+    {
+      "id": "gm-r1-5",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "A department with no owner source gets a team \"Unanswered\" view, never a guessed \"mine\" [ASSUMPTION: team view is an acceptable fallback for service].",
+      "concern": "A team view with nobody named is a queue nobody owns. In service that means the reply sits between the advisors and the service BDC, and I eat it on CSI. Nobody is paid on that handoff.",
+      "because": "missing",
+      "ask": "Name who owns the team 'Unanswered' view per department by default (service manager or service BDC lead for service; BDC manager or sales manager for sales) and route the escalation in gm-r1-1 to that person."
+    },
+    {
+      "id": "gm-r1-6",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "Cost: engaged leads going cold (front-end and F&I gross) and manager checking time; no figure exists [E6, Q15].",
+      "concern": "Where does this show up on my statement and how will I know it worked at my store? 'Measured per department' after launch is not a baseline. Without a before number I cannot tell the dealer principal this vendor line paid for itself.",
+      "because": "Q15",
+      "ask": "Name the one rooftop measure (median hours from customer reply to human reply, and share answered within one business hour, per department), get the baseline from Q15 before ship, and tie it to the statement line it protects: gross on leads already paid for and ROs opened, not more leads."
+    },
+    {
+      "id": "gm-r1-7",
+      "severity": "major",
+      "type": "scope",
+      "quote": "Not building: the five-counter board, the seven-stage journey, removing Customers, CRM write-back [E28, E30, E32, E34].",
+      "concern": "Fine to say no to the boards. But CRM write-back is the piece that makes this stop being a second place to look, and it is dropped with no plan, owner or date.",
+      "because": "E34",
+      "ask": "State the CRM-first full-value path (read the CRM salesperson as owner, post reply activity to the CRM) and whether this release takes it or plans it, naming the per-provider data access it depends on."
+    },
+    {
+      "id": "gm-r1-8",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "**Live count** and a per-member landing view, on the Needs Attention pattern [E22].",
+      "concern": "A count that is wrong is worse than no count. The risks section says unread goes stale on crm-core rooftops, but the live count ships anyway.",
+      "because": "Q21",
+      "ask": "Make Q21 a gate for the live count: no count on a rooftop until the stale-unread question is answered for that integration."
+    },
+    {
+      "id": "gm-r1-9",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Advisors work the same pages; an unanswered service customer is an RO that never opens (absorption; inferred) [E37, E39].",
+      "concern": "Service is where my margin is, and this line is inferred with no service voice. It also skips the cross-department case: a sales conversation where the customer asks about service, or a service customer asking about a trade, lands in whose queue?",
+      "because": "E37",
+      "ask": "Get one service manager to confirm the service half before PRD, and state where a conversation that crosses departments lands and who owns it."
+    },
+    {
+      "id": "gm-r1-10",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "One shared capability, designed for both departments [PM]:",
+      "concern": "Both departments is right, but I want to know whether outbound, speed-to-lead and chat replies show up in the same queue, because those are the ones my reps forget.",
+      "because": "missing",
+      "ask": "List every agent the queue covers (sales inbound, outbound, STL, chat; service inbound, outbound) with yes, no or unknown, as the case already does."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does a human reply sent from the Vini console post to the dealer CRM (VinSolutions first) as lead activity today, and for which other CRMs?",
+      "blocks": "gm-r1-2, gm-r1-7: whether the console is a second place to look",
+      "source": "integrations-backend owner"
+    },
+    {
+      "question": "How do this rooftop's salespeople reply to customers today: from the console, from VinSolutions, or by phone? Share of each if available.",
+      "blocks": "gm-r1-3: what must clear the unanswered state",
+      "source": "CSM for the rooftop, or conversation and call logs"
+    },
+    {
+      "question": "Baseline: median hours from customer reply to first human reply, and share answered within one business hour, by department, for this rooftop and a sample of others (Q15).",
+      "blocks": "gm-r1-6: statement impact and success measure",
+      "source": "PM, conversations store"
+    },
+    {
+      "question": "Who works service replies at stores using Vini Service today: advisors, service BDC, or the service manager?",
+      "blocks": "gm-r1-5, gm-r1-9: owner of the service team view",
+      "source": "Service CSM"
+    }
+  ]
+}
