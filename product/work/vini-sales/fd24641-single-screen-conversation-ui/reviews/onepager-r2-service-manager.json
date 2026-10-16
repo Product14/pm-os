@@ -1,0 +1,127 @@
+{
+  "persona": "service-manager",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 3,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 3,
+    "Capacity truth": 4,
+    "Appointment quality": 3,
+    "Fixed ops metric": 2,
+    "Promise control": 4,
+    "DMS write-back": 4
+  },
+  "previous_issues": [
+    {
+      "id": "service-manager-r1-1",
+      "fixed": true,
+      "note": "Q10 is Open question 4, answered by a service manager at a live Vini Service rooftop, blocking the service half; Problem now says service user and RO value are unknown. It still does not ask whether this rooftop runs Vini Service at all (see new r2-4)."
+    },
+    {
+      "id": "service-manager-r1-2",
+      "fixed": true,
+      "note": "Clear rule now includes one-click 'Handled elsewhere' / 'No reply needed' with actor and time, and Vini-answered messages stay out, which covers post-reminder 'ok thanks'. For service the only automatic clear is a console action; scheduler/DMS activity is not named (new r2-1)."
+    },
+    {
+      "id": "service-manager-r1-3",
+      "fixed": true,
+      "note": "Action items join the owner at read time, never reassigned; service stays on the team view until its source is connected."
+    },
+    {
+      "id": "service-manager-r1-4",
+      "fixed": true,
+      "note": "Provider table names the scheduler/DMS advisor read with status 'none read [Q19]' and an owner; 'mine' ships only where connected. Not broken out per provider (CDK, Reynolds, Xtime, myKaarma), acceptable at one-pager level; carry to the PRD."
+    },
+    {
+      "id": "service-manager-r1-5",
+      "fixed": true,
+      "note": "ROs opened is now a check line under Q15. Data source for ROs is not named (new r2-3)."
+    },
+    {
+      "id": "service-manager-r1-6",
+      "fixed": true,
+      "note": "After column now reads 'Conversations plus CRM or scheduler/DMS'. Today column is still the sales trio; minor, not re-raised."
+    },
+    {
+      "id": "service-manager-r1-7",
+      "fixed": true,
+      "note": "Owner alerts only where connected, one per episode; escalation texts a named role, not the whole team."
+    },
+    {
+      "id": "service-manager-r1-8",
+      "fixed": true,
+      "note": "Problem states the service main user is unknown; Open question 4 asks which service roles work Conversations."
+    },
+    {
+      "id": "service-manager-r1-9",
+      "fixed": true,
+      "note": "Who answers is now 'Service manager, live Vini Service rooftop'."
+    }
+  ],
+  "issues": [
+    {
+      "id": "service-manager-r2-1",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "| CRM activity in, console replies out | clearing, one place to look | unknown [Q18] | integrations-backend owner |",
+      "concern": "Clearing reads only CRM activity, which is the sales record. My advisors and service BDC answer from the desk phone, Xtime/myKaarma texting or the DMS, and the proof a customer was handled is an appointment booked in the scheduler or an RO opened. With no scheduler/DMS activity read, every service item clears only by someone clicking 'Handled elsewhere'. On a busy drive nobody clicks, the queue fills with handled customers and the BDC stops trusting it.",
+      "because": "missing; rubric 'Above the DMS'; persona 'The scheduler as the single source of truth'; E40 shows DMS fetchers ingest leads, not appointment or RO activity; Q19",
+      "ask": "Add a provider row: 'Scheduler or DMS activity in (appointment booked, RO opened, outbound text from the scheduler's texting tool) | service clearing | unknown | integrations-backend owner'. Until it exists, state that service clears by console action or one click only, and make the Open question 4 interview test whether staff will click."
+    },
+    {
+      "id": "service-manager-r2-2",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "- **Escalation:** past N minutes in store hours, it moves to the team view and texts the named role [E6]. Owner alerts only where connected, one per episode [E33].",
+      "concern": "'Store hours' is not my hours. The service drive opens earlier and closes earlier than the showroom and is usually shut Sunday. Escalating on showroom hours texts my service manager at 8pm and Sunday afternoon for a drive that is closed.",
+      "because": "missing; persona 'Does it respect my rules'; E33 (alerts not sent to everyone)",
+      "ask": "Say 'department hours' (sales hours for sales, service hours for service), and let N differ by department in Open question 5."
+    },
+    {
+      "id": "service-manager-r2-3",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "Check, not the claim: appointments shown and ROs opened on waiting conversations [Q15].",
+      "concern": "'ROs opened' needs an RO read from the DMS tied back to the conversation. That read is not in the provider table and we do not have it, so this check cannot be run for service as written.",
+      "because": "missing; Q19 'none read'; org fact 4",
+      "ask": "Name the source for ROs opened (DMS RO read, status unknown, same owner as the advisor read) or replace it for service with 'appointments booked in the scheduler', also marked unknown."
+    },
+    {
+      "id": "service-manager-r2-4",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| 4 | Which service roles work Conversations, and is the team view acceptable? [Q10] | Service manager, live Vini Service rooftop | Service half |",
+      "concern": "Two things are missing: whether Bob Johnson runs Vini Service on this console at all, and what 'blocks Service half' means. The Decision says build service at every rooftop now, so it reads as if service ships before anyone on a drive has answered.",
+      "because": "service-manager-r1-1 request (Q10); Decision line 'sales and service, every rooftop'",
+      "ask": "Add 'which rooftops run Vini Service here' to question 4, and say what it gates: service design is built (fixed intent), but the per-rooftop flag is not turned on for service until question 4 is answered."
+    },
+    {
+      "id": "service-manager-r2-5",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "- Read state is one `lastReadAt` per conversation, so a manager reading clears it for the rep `conversational-ai-backend:src/conversation/conversation.schema.ts:183`.",
+      "concern": "Brevity: v2 is about 950 words against about 600. The point still lands from the Decision and TL;DR, but the Evidence section repeats the 'What it removes' table, and this line is the same fact and file as the 'Replies hidden by someone reading' row.",
+      "because": "rubric Brevity",
+      "ask": "Cut this line (the table row carries it) and fold the remaining three code bullets into one line: 'Today the list has no owner filter, unread flips on AI sends and call updates, and Vini action items sit on SYSTEM' with the three refs. Drop the Decision's third line ('Asked for a command board...') since 'Not building' already says it. Saves roughly 100 words."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Which schedulers and DMSs (Xtime, myKaarma, CDK, Reynolds, Tekion, PBS) give us appointment-booked or RO-opened events per customer, and do we have read access commercially?",
+      "blocks": "service-manager-r2-1, r2-3: automatic clearing and the RO check for service",
+      "source": "integrations-backend owner (Q19)"
+    },
+    {
+      "question": "What are the configured service department hours vs sales hours at Vini Service rooftops, and does the console hold them separately?",
+      "blocks": "service-manager-r2-2: escalation window for service",
+      "source": "Vini backend / org-settings hours config"
+    }
+  ]
+}

@@ -97,3 +97,43 @@ Stage: onepager, round 1. 23 requests raised across 4 reviewer files (backend-en
 - question: What is this team's STL silent-hours setting, and when would a lead forwarded at 11 pm get its first text?
 - from: gm
 - status: deferred: cap reached -> Q22
+
+## Round 2
+
+Stage: onepager, round 2. 8 requests across 4 reviewer files, deduped to 7. One answered from the local code clone; the rest map to open questions.
+
+### R6
+- question: Can the STL follow-up and the FOLLOW_UP cadence be stopped for the forwarding inbox's leads without a build?
+- blocks: Step 0 go-live (bdc-manager-r2-1)
+- from: bdc-manager
+- status: answered (E44): excludeSource and the team silence-nudge switch are existing settings
+
+### R7
+- question: Which tools does the SMS reply agent have for this team (credit tools), and can they be disabled per lead or type?
+- from: backend-engineer
+- status: open -> Q31
+
+### R8
+- question: Do Vini or the dealer send reminders for Ava-confirmed or Ava-set appointments?
+- from: bdc-manager
+- status: open -> Q32 (PRD)
+
+### R9
+- question: Can the dealer's forward exclude appointment and credit-app leads, and by what rule?
+- from: gm
+- status: open -> Q33
+
+### R10
+- question: After-hours website leads per week by type, BDC hours on them, and today's show rate on online appointments.
+- from: gm
+- status: open -> Q15, Q28
+
+### R11
+- question: This team's STL silent-hours setting and the first-text time for a lead forwarded at 11 pm.
+- from: gm
+- status: open -> Q22
+
+### R12
+- question: What on the current Vini Sales plan moves if the M-size opener is taken this quarter?
+- from: ceo
+- status: open -> Q14 (PM, escalated as ceo-r2-2)

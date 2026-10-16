@@ -1,0 +1,155 @@
+{
+  "persona": "backend-engineer",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 3,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 3,
+    "Code-cited baseline": 4,
+    "Integration reality": 4,
+    "Failure design": 2,
+    "Observability and rollback": 3,
+    "Scope discipline": 3
+  },
+  "previous_issues": [
+    {
+      "id": "backend-engineer-r1-1",
+      "fixed": true,
+      "note": "\"Action items join the owner at read time, never reassigned.\" Nothing is written to action items or the CRM, so the SYSTEM write path and its readers are untouched."
+    },
+    {
+      "id": "backend-engineer-r1-2",
+      "fixed": true,
+      "note": "There is now a per-channel definition. AI replies are excluded (\"What Vini fully answers stays out\"), and backfill is Open question 3. Field names and source of truth are left to the PRD, which is acceptable for a one-pager. Two terms in the definition are still ambiguous; see backend-engineer-r2-4."
+    },
+    {
+      "id": "backend-engineer-r1-3",
+      "fixed": true,
+      "note": "The one-click \"Handled elsewhere\" / \"No reply needed\" is logged with actor and time. CRM activity counts only where we read it, and that is Q18 in the provider table."
+    },
+    {
+      "id": "backend-engineer-r1-4",
+      "fixed": true,
+      "note": "There is one owner source per rooftop (CRM or scheduler/DMS), the takeover claimant is gone, and Open question 2 covers crm-core on and off. The consequence, that no source is connected today, is not surfaced; see backend-engineer-r2-1."
+    },
+    {
+      "id": "backend-engineer-r1-5",
+      "fixed": true,
+      "note": "\"Per-rooftop flag, default off.\" It does not say that the flag being off leaves isUnread and its readers as they are; see backend-engineer-r2-2."
+    },
+    {
+      "id": "backend-engineer-r1-6",
+      "fixed": false,
+      "note": "The resolution log says \"one per episode, failures logged\", but v2 says only \"one per episode\". Failure logging is not in the document. v2 also adds a new escalation text trigger with no failure design; see backend-engineer-r2-3."
+    },
+    {
+      "id": "backend-engineer-r1-7",
+      "fixed": true,
+      "note": "\"baseline from reply events shipped before the UI\" is in the measure table."
+    },
+    {
+      "id": "backend-engineer-r1-8",
+      "fixed": true,
+      "note": "The estimate is deferred to engineering and the not-building list exists. Phasing is effectively handled by the team-view fallback. The gate cites the wrong questions; see backend-engineer-r2-6."
+    },
+    {
+      "id": "backend-engineer-r1-9",
+      "fixed": true,
+      "note": "Now \"none read [Q19]\"."
+    },
+    {
+      "id": "backend-engineer-r1-10",
+      "fixed": false,
+      "note": "The per-member landing view was cut, which settles the persistence half. The resolution log says \"count reuses the list total\", but v2 does not say it. The manager view now asks for count plus oldest wait per owner, which is a group-by aggregation, not pagination.total. That is PRD detail, so I am not re-raising it."
+    }
+  ],
+  "issues": [
+    {
+      "id": "backend-engineer-r2-1",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "Build an \"Unanswered\" queue on Conversations, sales and service, every rooftop (size L): per person where the dealer's assignment is connected, a team view elsewhere [PM] [E43].",
+      "concern": "Read with the risk table, 'connected' covers zero rooftops at launch. No code reads the CRM salesperson. VinSolutions push hardcodes 'AI SPYNE', and 'salesperson' has 0 hits org-wide. No scheduler or DMS advisor is read for service either. So this release ships the team view at every rooftop, including Bob Johnson on VinSolutions. The per-person queue the dealer asked for [E7] waits on per-provider data-access agreements that have no owner date. The Decision and TL;DR lead with 'per person', and a busy reader will plan as if 'mine' ships.",
+      "because": "`conversational-ai-backend:src/external_crm_integrations/prepare_crm_data/vinsolutions.ts:191`; solution-context Integration limits (salesperson 0 hits, search_columns); Q18, Q19",
+      "ask": "Add one line to the Decision: 'At launch every rooftop gets the team view; per person turns on per provider as each owner read is agreed and built, VinSolutions first, status unknown.' Add the requesting rooftop's provider status to the risk table."
+    },
+    {
+      "id": "backend-engineer-r2-2",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "We add an unanswered state only a human answer clears, owners from the dealer's CRM or scheduler/DMS, a count and escalation.",
+      "concern": "The document never says whether this is a new field or a change to isUnread, and never lists who else is hit. updateCustomerActivity has at least 10 writers (SMS v1 and v2, calls, email, chat, chat mirror). isUnread also drives GET /service-metrics/contact, the Customers unreadCount and the Needs Attention unreadCount facet. If the stamps ride on those writers or redefine unread, every one of those counts moves at rooftops where the flag is off. That is a shared-service change with no downstream callers listed.",
+      "because": "solution-context 'Who else calls it'; `conversational-ai-backend:src/service-metrics/contact-metrics.service.ts:1743`; `conversational-ai-backend:src/leads/leads.service.ts:844`; `conversational-ai-backend:src/leads/leads.service.ts:1775`",
+      "ask": "State it in the Recommendation: 'Unanswered is new, additive fields stamped by every channel writer; isUnread, lastReadAt and their readers (contact metrics, Customers unreadCount, Needs Attention) are unchanged; flag off means no stamps are read.'"
+    },
+    {
+      "id": "backend-engineer-r2-3",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "**Escalation:** past N minutes in store hours, it moves to the team view and texts the named role [E6]. Owner alerts only where connected, one per episode [E33].",
+      "concern": "This adds a time-driven trigger and none of its inputs exist. (1) Store hours per department need a source. (2) The 'named role' has no user mapping, because getUserEmailsAndContacts filters by department, not by role. (3) A text that fires on elapsed time, with no inbound event, needs a scheduled job, and there isn't one. Handover alerts are still a TODO. The doc also dropped 'failures logged' from the r1 resolution. A rep's phone that never gets the text fails silently, and the dealer finds out first. 'Moves to the team view' also means nothing at the launch state, where the team view is the only view.",
+      "because": "`conversational-ai-backend:src/notifications/notifications.service.ts:156`; `conversational-ai-backend:src/tools/human-transfer.service.ts:149`; `conversational-ai-backend:src/action-items/action-items.service.ts:300` (pastSla is a read-time due_date < now filter, no job)",
+      "ask": "Split it. Make 'overdue' a read-time filter on the unanswered stamp, like pastSla, with no job. Send texts only behind their own sub-flag, with a named per-rooftop recipient user, one text per episode, and sent/failed counted per rooftop. Add store-hours source and recipient mapping to Open question 5."
+    },
+    {
+      "id": "backend-engineer-r2-4",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "**Unanswered:** SMS and chat, a customer message after a Vini handoff or flag, or once a human is active, with no human reply since; calls, a missed call not returned (setting) [E31]; email, no human reply since. What Vini fully answers stays out.",
+      "concern": "This is the queue definition and also the wait-time metric, and three of its terms have no signal behind them. 'Flag' is undefined: is it a Vini-created action item, a needs-attention marker, or something else? 'Handoff' and 'human is active' map to humanTransferPhase, which is traced for SMS only. Chat runs in a separate chat-service with its own session state. 'Human reply' needs an actor. has_unread already treats AI sends and manual replies the same, and Vini outbound calls are not a human returning a call. On a Vini rooftop the AI answers inbound calls, so 'missed call' has to mean something like a failed transfer to a human or a promised callback. Nothing names that record.",
+      "because": "`conversational-ai-backend:src/leads/leads.service.ts:1628` (takeover phase, SMS only); `conversational-ai-backend:src/sms/sms.service.ts:753`, `:2691` (AI and human sends hit the same path); `chat-service` (separate chat backend, Blue Brain find_prior_art); E31; missing (no call-record source for 'missed')",
+      "ask": "For each channel, name the signal that opens an episode, for example 'SMS: humanTransferPhase PENDING or Vini action item created', and define 'human reply' as a send whose actor is a console user. Define 'missed call' as an unanswered transfer or a promised callback, or move it to an open question with the call-record source to check."
+    },
+    {
+      "id": "backend-engineer-r2-5",
+      "severity": "minor",
+      "type": "feasibility",
+      "quote": "**Mine** is the CRM's assigned salesperson (sales) or the scheduler or DMS advisor (service), read CRM/DMS-first; never Spyne's round-robin pick or a takeover claimant [PM] [E43].",
+      "concern": "There is no data contract for the owner once we read it. A filterable 'mine' and an action-item join need the owner stored next to the lead the team list pre-queries. That means a stored copy with a source and a synced-at time. Without it, every list load becomes a cross-service join. The doc also doesn't say how fresh the owner is, webhook or poll. If a manager reassigns a lead in VinSolutions and we poll nightly, the rep sees the wrong queue all day.",
+      "because": "`conversational-ai-backend:src/customers/customers.service.ts:2452` (team list pre-queries local leads); `conversational-ai-backend:src/leads/schemas/lead.schema.ts:42`; Q18",
+      "ask": "Add to Open question 1 or 2: the owner is a read-only copy on the lead, with source, provider id and synced-at, refreshed by webhook where the provider offers one. State the staleness the floor can accept."
+    },
+    {
+      "id": "backend-engineer-r2-6",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "**Size:** L, separate from Console v2 [PM] [E23]; engineering estimate after Q17 to Q19. Handover alerts are unwired `conversational-ai-backend:src/tools/human-transfer.service.ts:149`.",
+      "concern": "Q17 asks whether local assigned_to matches crm-core's round-robin assignee. The fixed intent rules round-robin out, so Q17 no longer gates anything. The questions that actually size the build are Q18 and Q19 (owner reads), Q20 (stamping on every writer) and Q21 (whether local leads go stale under crm-core).",
+      "because": "decisions.md fixed intent 1; Q17, Q20, Q21",
+      "ask": "Change the gate to 'engineering estimate after Q18 to Q21'."
+    },
+    {
+      "id": "backend-engineer-r2-7",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "- **Judge's case (already-possible):** \"I'm just telling you workflow\" [E8]; 0 other rooftops asked in 90 days [E25, E26]. Overridden by the PM: strategic [E42].",
+      "concern": "Brevity. At about 950 words against about 600, v2 repeats itself. This bullet restates the Decision's 'Why'. The E13 Problem line ('two VinSolutions tabs') repeats the 'Screens per reply' row, and the first Evidence bullet repeats the Problem's E7 ask. TL;DR plus Decision still give the recommendation, but they leave out the fact that matters most, that no owner source is connected at launch (r2-1).",
+      "because": "rubric Brevity; decide.md already records the judge's case",
+      "ask": "Cut this bullet (decide.md and decisions.md Overrides hold it). Cut the E13 Problem line and the first Evidence bullet. Spend about 30 of the roughly 100 words saved on the r2-1 launch-state line."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Which call record marks a transfer that reached no human, or a callback Vini promised, so 'missed call' can be defined on a Vini rooftop?",
+      "blocks": "Calls half of the unanswered definition (r2-4)",
+      "source": "conversational-ai-backend call/transfer modules; livekit warm-transfer flow"
+    },
+    {
+      "question": "Does the 'External CRM Message Sync' flow in conversational-ai-backend ingest salesperson replies or activity from any CRM?",
+      "blocks": "'CRM activity where we read it' clear rule; risk table row 3 (Q18)",
+      "source": "Blue Brain flow card on conversational-ai-backend; integrations-backend owner"
+    },
+    {
+      "question": "Where are per-department store hours held for a rooftop, and which user is the 'named role' recipient per department?",
+      "blocks": "Escalation (r2-3)",
+      "source": "user-management / central-config owners; notifications.service.ts:156"
+    }
+  ]
+}

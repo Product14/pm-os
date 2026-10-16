@@ -1,0 +1,155 @@
+{
+  "persona": "ceo",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 3,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 2,
+    "Dealer economics": 3,
+    "Base leverage": 2,
+    "Dependency honesty": 3,
+    "Handoff clarity": 3,
+    "Decision readiness": 3
+  },
+  "previous_issues": [
+    {
+      "id": "ceo-r1-1",
+      "fixed": true,
+      "note": "Answered by the PM (strategic: the console is the product) and the reason now sits in Decision [E42]. Not re-raised. The stop rule I asked for is still missing; carried in ceo-r2-4 as an acceptance gap, not as a challenge."
+    },
+    {
+      "id": "ceo-r1-2",
+      "fixed": true,
+      "note": "'Leads going cold' is gone. Cost is now manager time and hours a customer waits at the AI-to-salesperson handoff. Who benefits versus who signs is still not named; see ceo-r2-7 (minor)."
+    },
+    {
+      "id": "ceo-r1-3",
+      "fixed": true,
+      "note": "TL;DR now says the CRM still closes the record. The Action Items half of the same sentence still overclaims; see ceo-r2-6."
+    },
+    {
+      "id": "ceo-r1-4",
+      "fixed": true,
+      "note": "Per-provider read table added and 'mine' ships only where a source is connected. That table also shows no source is connected today, which the Decision line does not say; see ceo-r2-1."
+    },
+    {
+      "id": "ceo-r1-5",
+      "fixed": false,
+      "note": "'What does the L displace' moved to Open question 6 with the PM, the document's own author, as the answer owner. That is a deferral, not a trade-off. 'Separate from Console v2' has no reason given. Carried as ceo-r2-3."
+    },
+    {
+      "id": "ceo-r1-6",
+      "fixed": false,
+      "note": "Baseline before the UI is a real improvement. The After column still says 'target per department': no number, no rule for setting it, no review date, no pull-back rule. Carried as ceo-r2-4."
+    },
+    {
+      "id": "ceo-r1-7",
+      "fixed": true,
+      "note": "CRM-first full-value path stated, with per-provider certified write-back and 'planned after this read-only release'. No date (Open question 6), acceptable for a one-pager."
+    },
+    {
+      "id": "ceo-r1-8",
+      "fixed": true,
+      "note": "Service value and main user labelled unknown, Open question 4 has an owner outside the PM."
+    },
+    {
+      "id": "ceo-r1-9",
+      "fixed": true,
+      "note": "Owner alerts only where connected, one per episode."
+    },
+    {
+      "id": "ceo-r1-10",
+      "fixed": true,
+      "note": "Decision now opens with what we build. It still has no value line and no ask of me; folded into ceo-r2-1."
+    }
+  ],
+  "issues": [
+    {
+      "id": "ceo-r2-1",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Build an \"Unanswered\" queue on Conversations, sales and service, every rooftop (size L): per person where the dealer's assignment is connected, a team view elsewhere [PM] [E43].",
+      "concern": "Read this headline next to your own dependency table: the CRM salesperson is 'not read', the scheduler/DMS advisor is 'none read'. So on launch day 'per person' runs at zero rooftops, including Bob Johnson, whose ask was '[my] unanswered' [E7]. What we actually ship is a team Unanswered view with escalation at every rooftop, and per-person waits on an agreement nobody has started. That can still be the right bet, but the top line has to say it or I will be asked in 60 days why the rep queue never arrived. Second risk to name: our own VinSolutions appointment push writes assignedTo 'AI SPYNE', so a future CRM read could come back with us as the owner on Vini-booked records.",
+      "because": "one-pager v2 Risks table rows 1 and 2; `conversational-ai-backend:src/external_crm_integrations/prepare_crm_data/vinsolutions.ts:191`; solution-context (no code reads the dealer CRM salesperson); E7, E43",
+      "ask": "Rewrite the Decision as two lines: (1) what ships in this L on day one (team Unanswered view, escalation, manager view, both departments, at zero per-person rooftops) and the hours it should remove; (2) per-person 'mine' starts at the first rooftop whose CRM or scheduler read is agreed, VinSolutions first, with a target date or 'not started'. End with the ask of me in one line (approve the L, and approve opening the VinSolutions read negotiation). Add the 'AI SPYNE' owner risk to Risks."
+    },
+    {
+      "id": "ceo-r2-2",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "| CRM salesperson, VinSolutions first | sales \"mine\" | not read `conversational-ai-backend:src/external_crm_integrations/prepare_crm_data/vinsolutions.ts:191` | integrations-backend owner |",
+      "concern": "The table header rightly says each read is a data-access agreement, then hands every row to an engineering owner. Data access is a commercial negotiation with each provider, not an engineering task. With an engineer as owner, nobody is negotiating, and the headline feature waits forever.",
+      "because": "org fact 4; one-pager v2 Risks table header 'a data-access agreement each'",
+      "ask": "Name the commercial owner (partnerships or whoever holds the VinSolutions relationship) for each provider row, with engineering as the build owner beside them, and the current status of the conversation: not started, in progress, or agreed."
+    },
+    {
+      "id": "ceo-r2-3",
+      "severity": "major",
+      "type": "scope",
+      "quote": "| 6 | What does the L displace; when is write-back? | PM | Roadmap |",
+      "concern": "Carried from ceo-r1-5. Every yes is a no to something else, and the author of the page cannot leave the trade-off as an open question for the author. 'Separate from Console v2' also has no reason, so I cannot tell if we are building the same queue twice.",
+      "because": "E23; ceo-r1-5; missing",
+      "ask": "Before the gate, name the Vini sales roadmap item this L moves out of the quarter, and give the one-line reason it stays out of Console v2 (for example: Console v2 is unscheduled backlog [E23]). Move the answer into Risks and delete Open question 6, or keep only 'when is write-back' there."
+    },
+    {
+      "id": "ceo-r2-4",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Hours a customer waits for a human | unknown; baseline from reply events shipped before the UI | target per department | [Q15] |",
+      "concern": "Carried from ceo-r1-6, and the stop rule I asked for in ceo-r1-1. 'Target per department' is still not something we can be held to. I accept the number cannot exist before the baseline, but the rule for setting it, the date we look, and what result pulls it back can be written today.",
+      "because": "Q15, Q20; ceo-r1-1 ask (stop rule); decide.md revisit signal",
+      "ask": "Write: target set within 2 weeks of baseline as a stated cut in median and p90 hours to first human reply per department; review 30 days after the flag goes on at the first rooftops (name them, Bob Johnson first); pull-back rule: if median wait does not fall at those rooftops, the rollout to other rooftops stops. Add the judge's revisit signal as the check: unanswered conversations stop piling up while matching action items close."
+    },
+    {
+      "id": "ceo-r2-5",
+      "severity": "major",
+      "type": "scope",
+      "quote": "- Read state is one `lastReadAt` per conversation, so a manager reading clears it for the rep `conversational-ai-backend:src/conversation/conversation.schema.ts:183`.",
+      "concern": "Brevity. v2 is about 950 words against a 600 target and got longer than v1 (855). The point I most need, that no rooftop gets per-person on launch, is buried in a Risks table, while the top half repeats itself: this line is the same fact as the last row of 'What it removes', and the Evidence section restates Problem in code references. A busy reader of TL;DR and Decision alone gets the wrong picture.",
+      "because": "rubric Brevity; persona Decision readiness",
+      "ask": "Cut about 350 words: (1) shrink Evidence to two bullets, 'no owner filter on the team list' and 'unread is not unanswered', each with one code ref, and drop this lastReadAt bullet and the SYSTEM bullet (the table row and Recommendation already carry them); (2) move the per-channel 'Unanswered' and 'Cleared by' definitions to the PRD and leave one line each; (3) delete Decision line 3 ('Asked for a command board...') and the 'Judge's case' bullet in Risks, which live in decide.md and decisions.md; (4) Problem to three lines (E5, E6 or E10, Cost)."
+    },
+    {
+      "id": "ceo-r2-6",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "It removes the Action Items cross-check and the hunt for who owes a reply; the CRM still closes the record.",
+      "concern": "The table below labels the Action Items part an assumption, and the manager told us he keeps Action Items open 'because that filtering also helps me'. 'The hunt for who owes a reply' is also only true where an owner is read, which is nowhere on day one.",
+      "because": "E13; one-pager v2 'What it removes' row 'Screens per reply' [ASSUMPTION: reps stop opening Action Items]; Risks table",
+      "ask": "TL;DR: 'It aims to remove the Action Items cross-check (to be checked at the first rooftop) and shows the team who is waiting; per person once the CRM or scheduler owner is read.'"
+    },
+    {
+      "id": "ceo-r2-7",
+      "severity": "minor",
+      "type": "five-facts",
+      "quote": "Cost: manager cross-checking time and hours a customer waits at the AI-to-salesperson handoff, which nobody is paid on; neither is measured [E6, E16, Q15].",
+      "concern": "The handoff is named, good. Who at the store benefits versus who signs is still missing, and that is how I sell it to a dealer group in 60 seconds.",
+      "because": "E6, E13, E16; persona Handoff clarity",
+      "ask": "Add half a line: benefits the salesperson, service advisor and the used car or sales manager; signs the GM or dealer principal; for service, the fixed-ops director (unknown until Open question 4)."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Median and p90 hours from a customer reply to the first human reply, per department, last 30 days, for Bob Johnson and across all Vini rooftops (re-raised from round 1; still not run).",
+      "blocks": "ceo-r2-4",
+      "source": "conversation message timestamps, conversational-ai-backend data or ClickHouse (Q15)"
+    },
+    {
+      "question": "Does our current VinSolutions agreement allow reading the assigned salesperson on a lead, and who at Spyne owns that provider relationship?",
+      "blocks": "ceo-r2-1, ceo-r2-2",
+      "source": "partnerships / integrations lead (Q18)"
+    },
+    {
+      "question": "Which Vini sales roadmap items are committed this quarter, so the L's displacement can be named?",
+      "blocks": "ceo-r2-3",
+      "source": "PM, Vini sales roadmap"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "persona": "backend-engineer",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 5,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 4,
+    "Code-cited baseline": 4,
+    "Integration reality": 5,
+    "Failure design": 3,
+    "Observability and rollback": 4,
+    "Scope discipline": 4
+  },
+  "previous_issues": [
+    {
+      "id": "backend-engineer-r2-1",
+      "fixed": true,
+      "note": "The Decision now says \"none is connected today\" and that the team view ships at every rooftop on day one. The risk table gives VinSolutions salesperson as \"not read\", with the vinsolutions.ts:191 citation. A busy reader can no longer plan as if \"mine\" ships."
+    },
+    {
+      "id": "backend-engineer-r2-2",
+      "fixed": true,
+      "note": "\"New fields; `isUnread` unchanged.\" That keeps contact metrics, Customers unreadCount and Needs Attention where they are. The list of writers belongs in the PRD."
+    },
+    {
+      "id": "backend-engineer-r2-3",
+      "fixed": true,
+      "note": "Escalation is now a copy, not a move, and \"failures counted\" is back, which also closes r1-6. The manager recipient and the hours source are in Open question 4. I accept that the mechanism (read-time overdue filter, no scheduled job, texts sub-flag) belongs in the PRD."
+    },
+    {
+      "id": "backend-engineer-r2-4",
+      "fixed": true,
+      "note": "I accept the rejection as belonging in the PRD. v3 names the action item as the opening signal, makes missed calls optional, and carries the missed-call record in Open question 2. The one-pager decision still holds without the per-channel signals."
+    },
+    {
+      "id": "backend-engineer-r2-5",
+      "fixed": true,
+      "note": "I accept the rejection as belonging in the PRD. Freshness (\"how fresh\") and the console member mapping are in Open question 1. The owner-copy data contract (source, provider id, synced-at) must be in the PRD."
+    },
+    {
+      "id": "backend-engineer-r2-6",
+      "fixed": true,
+      "note": "Now reads \"estimate after Q18 to Q21\"."
+    },
+    {
+      "id": "backend-engineer-r2-7",
+      "fixed": true,
+      "note": "The Judge's case bullet is gone and the Evidence is down to two bullets. It is about 724 words. TL;DR plus Decision now carry the launch state."
+    }
+  ],
+  "issues": [
+    {
+      "id": "backend-engineer-r3-1",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Review 30 days after launch, requesting rooftop first; if median wait does not fall, rollout stops.",
+      "concern": "At the requesting rooftop, reps reply from VinSolutions [E13], and CRM activity is read nowhere [Q18]. Measured 'first human reply' is therefore console replies only. If reps shift replies into the console, the median falls even when the customer waits just as long. If they don't shift, click-clears never stop the wait clock, so the episodes look open forever. Either way the stop rule reads channel shift, not wait, at the one rooftop the review checks first.",
+      "because": "E13; Q18; solution-context 'Where the outcome is logged' (no event records time to first human reply today)",
+      "ask": "Before the review, compute the wait rule only on episodes where the reply source is fully seen (console-only reps or CRM read). Report the console-reply share next to it so channel shift is visible. The PRD can carry the query."
+    },
+    {
+      "id": "backend-engineer-r3-2",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Build an \"Unanswered\" queue on Conversations, sales and service, every rooftop (size L), because the console is the product [PM] [E37, E42].",
+      "concern": "This conflicts with \"Flag per rooftop per department; service off until Open question 3\". A reader of the Decision alone will assume service and every rooftop are live on day one, and the doc never says what the sales flag defaults to. Engineering needs the launch default to plan rollout and rollback.",
+      "because": "v3 Recommendation, Manager view bullet; Open question 3",
+      "ask": "One clause in the Decision: 'sales on per rooftop by flag (default stated); service built, flag off until Open question 3'."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Which call record marks a transfer that reached no human, or a callback Vini promised (carried from r2, now Open question 2)?",
+      "blocks": "Missed calls in Unanswered; PRD stage only",
+      "source": "conversational-ai-backend call/transfer modules"
+    }
+  ]
+}

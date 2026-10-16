@@ -1,0 +1,141 @@
+{
+  "persona": "gm",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 3,
+    "Full value": 4,
+    "Brevity": 3,
+    "Statement impact": 3,
+    "System of record": 3,
+    "Adoption cost": 2,
+    "Failure visibility": 3,
+    "Handoff ownership": 4
+  },
+  "previous_issues": [
+    {
+      "id": "gm-r1-1",
+      "fixed": true,
+      "note": "Escalation added: past N minutes in store hours it moves to the team view and texts the named role; N is Open question 5. New concern on false escalations raised as gm-r2-1."
+    },
+    {
+      "id": "gm-r1-2",
+      "fixed": true,
+      "note": "TL;DR says the CRM still closes the record; After column is Conversations plus CRM or scheduler/DMS; console replies to CRM named as a dependency, status unknown [Q18]."
+    },
+    {
+      "id": "gm-r1-3",
+      "fixed": true,
+      "note": "Clear rule now covers console reply or call, CRM activity where read, and a logged one-click 'Handled elsewhere' / 'No reply needed'. The click is the adoption cost, raised as gm-r2-1."
+    },
+    {
+      "id": "gm-r1-4",
+      "fixed": true,
+      "note": "'Mine' only where the CRM/DMS source is connected, else team view. No console reassign is consistent with the fixed intent. Gap left: CRM owner with no console seat, raised as gm-r2-2."
+    },
+    {
+      "id": "gm-r1-5",
+      "fixed": true,
+      "note": "Team view owned by a named role per department."
+    },
+    {
+      "id": "gm-r1-6",
+      "fixed": true,
+      "note": "Cost now framed as cost and hours removed; baseline from reply events before the UI. Measure still loosely defined and can be gamed by the click, raised as gm-r2-3; manager time has no measure, gm-r2-4."
+    },
+    {
+      "id": "gm-r1-7",
+      "fixed": true,
+      "note": "CRM-first full-value path stated, needs certified write-back per provider, planned after this read-only release; timing in Open question 6."
+    },
+    {
+      "id": "gm-r1-8",
+      "fixed": true,
+      "note": "Open question 2 (Q17, Q21) blocks the count."
+    },
+    {
+      "id": "gm-r1-9",
+      "fixed": true,
+      "note": "Service confirmation is Open question 4; cross-department owner is in Open question 5."
+    },
+    {
+      "id": "gm-r1-10",
+      "fixed": false,
+      "note": "Skipped for length. v2 names channels but not which agents (sales inbound, outbound, STL, chat; service inbound, outbound) the queue covers. One line fixes it; see gm-r2-6 for where the words come from."
+    }
+  ],
+  "issues": [
+    {
+      "id": "gm-r2-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "**Cleared by** a console reply or call, CRM activity where we read it, or one click (\"Handled elsewhere\", \"No reply needed\"), logged with actor and time.",
+      "concern": "My guys keep two VinSolutions tabs open and text from there. Your own risks table says CRM activity is read nowhere today. So at launch every reply sent from VinSolutions or a cell phone stays 'unanswered' until the rep comes back to your console and clicks. That is the extra step the dealer already told you these guys will not take, and when they skip it the escalation texts my sales manager about customers who were answered an hour ago. He mutes it in a week and the queue is dead.",
+      "because": "E10, E13; Risks table row 'CRM activity in, console replies out | unknown [Q18]'",
+      "ask": "Tie the per-rooftop switch-on to where reps actually reply: turn escalation texts on only at rooftops where CRM activity is read or the rooftop confirms its reps reply from the console. Elsewhere ship the queue without escalation. Add a pilot check: the share of items cleared by 'Handled elsewhere'. If it is high, the queue is a to-do list of work already done."
+    },
+    {
+      "id": "gm-r2-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "**Mine** is the CRM's assigned salesperson (sales) or the scheduler or DMS advisor (service), read CRM/DMS-first; never Spyne's round-robin pick or a takeover claimant [PM] [E43].",
+      "concern": "I accept that the CRM owner is the owner. But not every salesperson or advisor in my CRM has a console seat; he is adding two right now. If the owner in VinSolutions has no console login, or the lead gets reassigned in the CRM and you have not picked it up yet, the customer sits in 'mine' for someone who will never see it. The escalation catches it eventually, but only after the customer has already waited.",
+      "because": "E6; missing (no CRM-user-to-console-member mapping named)",
+      "ask": "Name the CRM/DMS-user-to-console-member mapping as a dependency. State that a waiting customer whose owner has no console seat, or no mapping, goes straight to the team view. Give the manager view a count of unmapped owners. Say how quickly a CRM reassignment shows up in 'mine'."
+    },
+    {
+      "id": "gm-r2-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "unknown; baseline from reply events shipped before the UI",
+      "concern": "This is the only number I can take to the dealer principal, and it is soft in two ways. The before number misses every reply my reps already send from VinSolutions, so 'before' looks worse than it was. The after number counts a 'No reply needed' click as an answer, so a rep can clear his queue without talking to anyone. Either way the hours come down on paper and the customer waits just as long.",
+      "because": "Q15, Q18, E13",
+      "ask": "Define the measure: median hours from customer message to the first human reply, and the share answered within one business hour, per department. Count clicks separately, not as replies. Show in the manager view the share each owner cleared by click. At rooftops where CRM activity is not read, state that the baseline undercounts replies."
+    },
+    {
+      "id": "gm-r2-4",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "| Manager cross-checking time | unknown | one view per owner | [E6] |",
+      "concern": "'One view per owner' is a screen, not a saving. This is the second line you put on my statement, as manager time, and nothing here measures it.",
+      "because": "E6, E13",
+      "ask": "Either name how it is measured (for example, how many screens the used car manager has open at this rooftop before and 30 days after, per E13) or drop the row and keep the hours claim alone."
+    },
+    {
+      "id": "gm-r2-5",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Per-rooftop flag, default off.",
+      "concern": "The service half is unconfirmed (Open question 4) and the sales half is what this rooftop asked for. I need to turn this on for sales without forcing an unvalidated team view on my service drive, or turn service off without breaking sales.",
+      "because": "E37, Q10",
+      "ask": "Make the flag per rooftop per department."
+    },
+    {
+      "id": "gm-r2-6",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Read state is one `lastReadAt` per conversation, so a manager reading clears it for the rep",
+      "concern": "At about 950 words against a 600 budget, the point still comes through: the Decision and TL;DR carry the recommendation on their own. But three of the five Evidence bullets are code citations an engineer needs and I do not. This one repeats the 'Replies hidden by someone reading' row word for word in meaning.",
+      "because": "missing",
+      "ask": "Collapse the three code bullets in Evidence (unread flips, lastReadAt, SYSTEM-assigned action items) into one line, 'Today's unread is not unanswered and has no owner' with the three refs, and move the detail to the PRD. That saves about 70 words. Spend about 20 of them on the agent coverage line from gm-r1-10."
+    }
+  ],
+  "requests": [
+    {
+      "question": "At this rooftop, what share of salesperson replies to Vini-engaged customers go out from VinSolutions or a phone rather than the console?",
+      "blocks": "gm-r2-1, gm-r2-3: whether the click-to-clear queue and its baseline are trustworthy",
+      "source": "CSM for Bob Johnson Auto Group, or VinSolutions activity if readable"
+    },
+    {
+      "question": "Does any CRM or DMS integration map a CRM/DMS user id to a Spyne console member today?",
+      "blocks": "gm-r2-2: routing 'mine' to a real console seat",
+      "source": "integrations-backend owner"
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "persona": "bdc-manager",
+  "round": 2,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 3,
+    "CRM completeness": 4,
+    "Human reach": 3,
+    "Show discipline": 2,
+    "Workload effect": 3,
+    "Contact compliance": 2
+  },
+  "previous_issues": [
+    { "id": "bdc-manager-r1-1", "fixed": true, "note": "TL;DR now says callbacks and hand-keying leave the BDC only at step 3 and hours are unsized (Q15)." },
+    { "id": "bdc-manager-r1-2", "fixed": true, "note": "Step 0 go-live now requires the dealer's after-hours texts paused (Q25) and a per-lead handoff to a named BDC role before open (Q26). Whether today's notification email can carry that is raised below as new issue r2-3." },
+    { "id": "bdc-manager-r1-3", "fixed": true, "note": "Row now says Ava-set appointments are keyed from the handoff and tagged Ava-set, rising with volume. Who keys is implied by the named BDC recipient; acceptable for a one-pager." },
+    { "id": "bdc-manager-r1-4", "fixed": false, "note": "Partly fixed: show-rate row added and reschedule replies go to a BDC task. Still missing: whether reminders run on Ava-confirmed or Ava-set appointments, and where show data comes from at a store with no API. Re-raised as r2-5." },
+    { "id": "bdc-manager-r1-5", "fixed": false, "note": "Follow-up is now fully off for appointment and credit-app types (STL follow-up plus the FOLLOW_UP cadence). But the openers can still go live while the reply agent is type-blind, and there is no fallback if Q27 finds no task tool. Re-raised as r2-4." },
+    { "id": "bdc-manager-r1-6", "fixed": true, "note": "Credit-app is held out by default and acknowledged only once the store names an owner and a response time; handoff recipient added to per-rooftop config." },
+    { "id": "bdc-manager-r1-7", "fixed": true, "note": "Consent added to Risks and Open questions (Q24); opt-out stated as platform logic. Step 0 go-live does not wait on it, and opt-out is narrower than the doc implies (E42). Raised as new issue r2-2." },
+    { "id": "bdc-manager-r1-8", "fixed": true, "note": "Step 3 now writes lead status, Ava-set appointment, opt-out and summary as structured data." },
+    { "id": "bdc-manager-r1-9", "fixed": false, "note": "The row now says 'or no change', but Q22 is still not tied to the morning handoff. If the first text lands at BDC open, my agent and Ava hit the same lead at once. Re-raised as r2-6 (minor)." }
+  ],
+  "issues": [
+    {
+      "id": "bdc-manager-r2-1",
+      "severity": "blocking",
+      "type": "wrong-for-dealers",
+      "quote": "- **Step 0, this week, no build, no reliance on lead type:** the dealer forwards inquiries only; appointment and credit-app leads wait for step 1 (Q23).",
+      "concern": "Step 0 says what happens overnight and at 8 am. It says nothing about what Ava does after my BDC picks the lead up. The follow-up cadence runs on these leads by default. Suppression cannot see my agents' calls at a store with no CRM integration. So at 2 pm my agent is working a customer on the phone while Ava texts the same customer a follow-up nudge to book. That is an active lead owned by a human getting contacted with no suppression rule, and the GM will forward me the complaint.",
+      "because": "E43 (suppression sees only Spyne signals, not BDC calls), E41 (FOLLOW_UP cadence runs unless excluded), E12 (no API), E8 (BDC works these leads next day)",
+      "ask": "State Ava's stop rule for step 0 forwarded leads before go-live. Either (a) the STL follow-up and the FOLLOW_UP cadence are off for the forwarding-inbox source (excludeSource, E41), so Ava works only the overnight window and stops when the BDC opens, or (b) Ava continues only on leads the handoff marks 'Ava working', and the BDC has a named way to stop her per lead. Pick one and put it in the step 0 go-live list."
+    },
+    {
+      "id": "bdc-manager-r2-2",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Before go-live: a forwarded test lead's source and type checked (Q19); the dealer's own after-hours texts paused (Q25);",
+      "concern": "The Open questions table says Q24 (consent) blocks step 0, but the step 0 go-live list leaves it out, so we would start texting forwarded website and form leads without knowing whether they consented. Step 2 also calls opt-out 'platform logic', but on the main SMS path only an exact 'STOP' sets opt-out. 'Stop texting me' or 'unsubscribe' keeps the texts coming. The store carries that risk, not us.",
+      "because": "E42, Q24",
+      "ask": "Add Q24 to the step 0 go-live list, or have the dealer accept the consent position in writing. Add a line saying STL opt-out on the main path honours only exact STOP today (E42). Either widen it to the legacy keyword set before step 0 or list it as a step 0 risk with an owner."
+    },
+    {
+      "id": "bdc-manager-r2-3",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "the STL notification email reaches a named BDC role before open with each lead's status and any appointment time, so the BDC confirms instead of cold-calling (Q26).",
+      "concern": "Step 0 is sold as 'no build', but the whole morning handoff rests on Q26, which is open: we do not know what that email contains or when it is sent. If it is one email per event overnight, my agents get a pile of emails, not a queue. If it carries no status, they cold-call everyone anyway. The doc has no fallback if Q26 comes back no.",
+      "because": "Q26 (open), E13 (dealer already said Console and notification emails were not enough)",
+      "ask": "State the minimum the handoff must carry: one list per morning, every forwarded lead, with status (no reply, replied, appointment set with time, opted out). State what happens if today's email cannot do that: either a Console export the BDC pulls before open, or step 0 waits and the handoff is scoped as a build."
+    },
+    {
+      "id": "bdc-manager-r2-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Those two types keep all follow-up off until reply and follow-up carry the type; reschedule replies become a BDC task (Q27).",
+      "concern": "Follow-up off is right, but the reply is the real risk. A customer who gets 'your appointment is confirmed for Saturday at 10' and texts back a question lands with a reply agent that may not know about the appointment (Q12) and pushes them to book again. Also, 'reschedule replies become a BDC task' depends on Q27, which is open. If the reply agent cannot create a task after hours, the reschedule goes nowhere.",
+      "because": "Q12, Q27 (both open), E6",
+      "ask": "Make it explicit that appointment and credit-app openers do not go live until Q12 shows the reply turn carries the type and appointment. If Q27 finds no task tool, reschedule and question replies go into the morning handoff marked 'reschedule requested' with the time the customer asked for."
+    },
+    {
+      "id": "bdc-manager-r2-5",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Show rate, online appointments | unknown | measured after step 2 | [E6], Q28 |",
+      "concern": "Who measures it, and from what data? Shows live in the dealer's own system, and that system has no API, so nothing tells Spyne whether a customer showed. Q28 asks for a baseline only. There is also still no line on reminders. An appointment Ava confirms or sets has no stated reminder path, so the show rate is left to chance.",
+      "because": "E12, Q28, persona core (Blocks when: appointments booked with no confirmation and reminder path)",
+      "ask": "Name the show-data source: the dealer's monthly show report via the CSM until step 3 has a read path. State whether the store's existing reminders, or Vini's, run on Ava-confirmed and Ava-set appointments. If neither does, put the reminder path in step 2 scope."
+    },
+    {
+      "id": "bdc-manager-r2-6",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "| Time to first contact | next business day | before the BDC opens, or no change | [ASSUMPTION: STL silent hours allow a first text before the BDC opens] |",
+      "concern": "'Or no change' is honest. But if silent hours push the first text to BDC open, Ava and my agent hit the lead at the same minute, and the handoff shows 'no reply' for every lead.",
+      "because": "Q22, E43",
+      "ask": "Tie Q22 to the handoff. If the first text goes out at or after open, those leads are listed as 'Ava texting, hold call until <time>'."
+    },
+    {
+      "id": "bdc-manager-r2-7",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "| BDC next-day calls | unknown | none before step 3; booked leads confirmed, not cold-called | [E8], Q26 |",
+      "concern": "'None before step 3' reads as 'zero next-day calls', which is the opposite of what is meant. It also leaves out the after-step-3 state, so the row never says what comes off my team.",
+      "because": "E8, E12",
+      "ask": "Reword to 'no reduction before step 3; booked leads confirmed instead of cold-called; after step 3, calls only on leads with no Ava outcome (volume unsized, Q15)'."
+    },
+    {
+      "id": "bdc-manager-r2-8",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "- A lead type switched off stops STL at every gate, keyed on external_type; an unset type falls to DEFAULT [E41].",
+      "concern": "Brevity: about 980 words against a 600 target. The point still comes through: TL;DR and Decision carry the recommendation, and the ask and what it removes are clear. But the Evidence section repeats what Problem, Recommendation and Risks already say, in engineering terms a BDC or GM reader skips.",
+      "because": "rubric Brevity",
+      "ask": "Concrete cut, about 200 words: delete the Evidence section and keep its tags inline where the claim sits (E39 to E43 already sit in Step 0, Step 1 and Risks). Drop the code path from Problem bullet 3 (keep 'one shared prompt, no lead-type variable'). Move the 'four callers / shared lead store' risk bullet to the PRD."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does the STL follow-up and the FOLLOW_UP cadence run on this team's forwarded leads during business hours today, and can excludeSource on the forwarding inbox stop it without a build?",
+      "blocks": "Step 0 go-live (r2-1, Ava contacting leads the BDC is working)",
+      "source": "Engineering, conversational-ai-backend sequence-task-execution-orchestrator.service.ts :1956 and sequence-workflow-creation.service.ts :507"
+    },
+    {
+      "question": "Do Vini or the dealer's own system send appointment reminders for an appointment Ava confirms or sets on an STL lead?",
+      "blocks": "Show discipline for steps 0 and 2 (r2-5)",
+      "source": "Engineering (Vini reminders) and CSM (dealer reminder process)"
+    }
+  ]
+}

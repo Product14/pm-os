@@ -1,0 +1,74 @@
+{
+  "persona": "gm",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 5,
+    "Honest unknowns": 5,
+    "Shared scope": 3,
+    "Full value": 4,
+    "Brevity": 4,
+    "Statement impact": 3,
+    "System of record": 4,
+    "Adoption cost": 4,
+    "Failure visibility": 4,
+    "Handoff ownership": 4
+  },
+  "previous_issues": [
+    {
+      "id": "gm-r2-1",
+      "fixed": true,
+      "note": "Escalation texts now run only where we see replies (CRM read, or console-only reps), failures are counted, and click-clear share is a check after launch. My manager will not get texts about customers already answered from VinSolutions."
+    },
+    {
+      "id": "gm-r2-2",
+      "fixed": true,
+      "note": "Owners without a console seat fall to the team view with a named manager; the console-member mapping and freshness sit in Open question 1. Unmapped-owner count deferred to PRD is fine; the decision does not change without it."
+    },
+    {
+      "id": "gm-r2-3",
+      "fixed": true,
+      "note": "Measure is median hours to first human reply per department; clicks show per owner and do not stop the wait clock; baseline is labelled as missing CRM-sent replies. One gap left in how the stop rule uses it at the pilot store, raised as gm-r3-1."
+    },
+    {
+      "id": "gm-r2-4",
+      "fixed": true,
+      "note": "Manager-time row dropped; the hours claim stands alone."
+    },
+    {
+      "id": "gm-r2-5",
+      "fixed": true,
+      "note": "Flag is per rooftop per department; service off until Open question 3."
+    },
+    {
+      "id": "gm-r2-6",
+      "fixed": false,
+      "note": "Evidence bullets collapsed as asked. The agent coverage line (inbound, outbound, STL, chat; service inbound, outbound) was cut again and deferred to PRD. The one-pager decision is not wrong without it, so the deferral is legitimate; not re-raised."
+    }
+  ],
+  "issues": [
+    {
+      "id": "gm-r3-1",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Review 30 days after launch, requesting rooftop first; if median wait does not fall, rollout stops.",
+      "concern": "The go or no-go runs first at the one store where you cannot see the replies. That used car manager's people work out of two VinSolutions tabs, CRM activity is read nowhere yet, and a click does not stop the clock. So at that rooftop the median wait counts only console replies. It can fail to fall while the floor is answering customers, or fall for reasons that have nothing to do with the queue. You would stop the rollout, or push it out, on a number that is blind at the pilot store.",
+      "because": "E10, E13; Q15, Q18; v3 line \"pre-UI baseline misses CRM-sent replies\"",
+      "ask": "Say the stop rule uses median wait only where replies are visible (CRM activity read, or reps who reply from the console). Anywhere else, judge on click-clear share and what the manager says about his day. Or run the first review at a rooftop where reps reply from the console. The PRD can carry the detail, but the one-pager should not promise a stop decision on a number the pilot store cannot produce."
+    },
+    {
+      "id": "gm-r3-2",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Day one, every rooftop gets the team \"Unanswered\" view; \"mine\" turns on per rooftop as its owner source connects, and none is connected today [E43].",
+      "concern": "The Decision says every rooftop gets it on day one. The Recommendation says the flag is per rooftop per department and service stays off until Open question 3. A service manager reading the Decision would expect it on his drive on day one.",
+      "because": "v3 Recommendation line \"Flag per rooftop per department; service off until Open question 3.\"",
+      "ask": "Say \"every rooftop's sales team gets the team view on day one; service follows Open question 3\"."
+    }
+  ],
+  "requests": []
+}

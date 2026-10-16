@@ -1,0 +1,141 @@
+{
+  "persona": "general-sales-manager",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 3,
+    "Desk control": 5,
+    "Rep handoff": 3,
+    "Inventory truth": 4,
+    "Attribution integrity": 5,
+    "Outcome metric": 3
+  },
+  "previous_issues": [
+    {
+      "id": "general-sales-manager-r1-1",
+      "fixed": true,
+      "note": "'Mine' is now the CRM salesperson or scheduler/DMS advisor, never the round-robin pick or a takeover claimant, with a team view until the source is connected (v2 Recommendation). The exception I asked for (Spyne assignee where round-robin is the store's record) was not taken, and the fixed intent rules it out. I accept that."
+    },
+    {
+      "id": "general-sales-manager-r1-2",
+      "fixed": true,
+      "note": "'Action items join the owner at read time, never reassigned' and 'this read-only release' mean nothing is written to the VinSolutions task or lead owner."
+    },
+    {
+      "id": "general-sales-manager-r1-3",
+      "fixed": true,
+      "note": "For SMS, chat and calls, the entry rule now means a customer is waiting on a person, and 'What Vini fully answers stays out.' Email still uses the old rule (new issue r2-4). The queue is still not sized per rep per day (carried as a request)."
+    },
+    {
+      "id": "general-sales-manager-r1-4",
+      "fixed": true,
+      "note": "Cleared by a console reply or call, CRM activity where read, or a one-click clear logged with actor and time. Viewing never clears it. The CRM activity read is in the risk table as unknown [Q18]. The one-click clear opens a gaming hole (new issue r2-2)."
+    },
+    {
+      "id": "general-sales-manager-r1-5",
+      "fixed": true,
+      "note": "The TL;DR now says it removes the Action Items cross-check and that 'the CRM still closes the record'."
+    },
+    {
+      "id": "general-sales-manager-r1-6",
+      "fixed": true,
+      "note": "'Manager view: count and oldest wait per owner' is in the Recommendation. It only works where an owner is connected, and the asking rooftop is not connected (new issue r2-1)."
+    },
+    {
+      "id": "general-sales-manager-r1-7",
+      "fixed": true,
+      "note": "Escalation after N minutes in store hours now texts the named role. The owner alert channel is still unnamed (new minor r2-6). Escalation 'moves' the item off the rep (new issue r2-3)."
+    },
+    {
+      "id": "general-sales-manager-r1-8",
+      "fixed": true,
+      "note": "A baseline from reply events ships before the UI, a target is set per department, and appointments shown are tracked as a check. Shows meet my outcome lens. No target number is acceptable until the baseline exists."
+    },
+    {
+      "id": "general-sales-manager-r1-9",
+      "fixed": true,
+      "note": "The CRM-first full-value path is stated: tasks on the CRM salesperson and console replies posted back. It needs certified write-back per provider and is planned after this read-only release. The date is open question 6 (PM)."
+    }
+  ],
+  "issues": [
+    {
+      "id": "general-sales-manager-r2-1",
+      "severity": "major",
+      "type": "scope",
+      "quote": "| CRM salesperson, VinSolutions first | sales \"mine\" | not read `conversational-ai-backend:src/external_crm_integrations/prepare_crm_data/vinsolutions.ts:191` | integrations-backend owner |",
+      "concern": "The store that asked runs VinSolutions, and we do not read the salesperson there today. Nothing in this page says whether building that read is part of the L. If it is not, my store launches with a team Unanswered list, and my 'count and oldest wait per owner' view is empty because there is no owner. I am adding two salespeople and already have 'trouble with them following up'. The one thing I asked for was '[my] unanswered, click on it'. A team list does not tell me which of them is sitting on a customer.",
+      "because": "E6, E7, E13; `conversational-ai-backend:src/external_crm_integrations/prepare_crm_data/vinsolutions.ts:191` (not read, per v2); missing (whether the VinSolutions read is in this release)",
+      "ask": "Either put the VinSolutions salesperson read in this release, and hold the launch at this rooftop until 'mine' and the per-owner manager view work, or say plainly in the Decision that the asking rooftop gets team-only first and give the date or condition when 'mine' arrives."
+    },
+    {
+      "id": "general-sales-manager-r2-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "- **Cleared by** a console reply or call, CRM activity where we read it, or one click (\"Handled elsewhere\", \"No reply needed\"), logged with actor and time. Viewing never clears it.",
+      "concern": "If a salesperson can zero his count with one click, the two new guys learn that in their first week. The click is logged, but if the log is not on my screen it does not exist. Worse, if a click counts as an answer, the wait-time number you are baselining looks better exactly when the follow-up got worse.",
+      "because": "E6 ('trouble with them following up'); missing (no manager visibility of one-click clears in v2)",
+      "ask": "Show one-click clears per owner in the manager view, next to count and oldest wait. Leave one-click clears out of 'hours a customer waits for a human': only a real reply, or CRM activity we can read, stops the clock."
+    },
+    {
+      "id": "general-sales-manager-r2-3",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "- **Escalation:** past N minutes in store hours, it moves to the team view and texts the named role [E6]. Owner alerts only where connected, one per episode [E33].",
+      "concern": "'Moves to the team view' takes the customer off the salesperson who ignored him, so ignoring it makes it go away. Once it sits in a team list, a second salesperson answers it, and on Saturday I have two guys claiming the same up.",
+      "because": "E6; persona block 'rep assignment gets overwritten, breaking ... commission'",
+      "ask": "Make escalation a copy, not a move. The customer stays on the owner's queue and counts in his oldest wait, and the named manager is texted. State that answering from the team view never changes the CRM owner."
+    },
+    {
+      "id": "general-sales-manager-r2-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "- **Unanswered:** SMS and chat, a customer message after a Vini handoff or flag, or once a human is active, with no human reply since; calls, a missed call not returned (setting) [E31]; email, no human reply since. What Vini fully answers stays out.",
+      "concern": "SMS got the 'waiting on a person' rule, but email went back to 'no human reply since'. If Vini answers email, or lead-notification emails count, every one of them lands in my reps' queue on about 600 leads a month. That is the list nobody clears, which I raised last round, coming back through another channel. It also contradicts the last sentence of the same line.",
+      "because": "E10; `conversational-ai-backend:src/conversation/conversation.service.ts:520` (unread flips on dealer email, per v2 Evidence); missing (whether Vini answers email and which emails count)",
+      "ask": "Give email the same rule as SMS: only after a Vini handoff or flag, or once a human is active. Say that lead-provider notification emails never enter the queue."
+    },
+    {
+      "id": "general-sales-manager-r2-5",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Asked for a command board at one rooftop; building the queue for every rooftop with this job [E27, E37].",
+      "concern": "Brevity: v2 is about 950 words against a 600 target. The point survives: Decision plus TL;DR tell me what we build and why. But several lines say things twice.",
+      "because": "missing (length only)",
+      "ask": "Cut this line, because 'Not building: the two boards' already says it. Cut the Evidence bullet on `lastReadAt`, because the 'Replies hidden by someone reading' row repeats it. Cut the 'Judge's case' risk bullet down to the 0-in-90-days count, because Decision line 2 already states the override. That saves roughly 80 words."
+    },
+    {
+      "id": "general-sales-manager-r2-6",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Owner alerts only where connected, one per episode [E33].",
+      "concern": "The escalation text is named, but the owner alert channel is not. My salesperson is on the lot, not at a console. A console badge does not reach him.",
+      "because": "E33 (dealer wants Spyne text notifications tied to assignment)",
+      "ask": "Name the owner alert channel as a text to the salesperson's phone, from the same preferences the escalation uses."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Is building the VinSolutions assigned-salesperson read inside this L, and when would 'mine' be live at Bob Johnson Auto Group?",
+      "blocks": "general-sales-manager-r2-1",
+      "source": "integrations-backend owner + PM"
+    },
+    {
+      "question": "Under the v2 definition, how many unanswered customers per rep per day would this rooftop have had over the last 30 days?",
+      "blocks": "general-sales-manager-r1-3 sizing (carried), r2-4",
+      "source": "Conversations data (ClickHouse / Mongo)"
+    },
+    {
+      "question": "Does Vini answer customer email at this rooftop, and do lead-provider notification emails create or flip conversations?",
+      "blocks": "general-sales-manager-r2-4",
+      "source": "Vini backend"
+    }
+  ]
+}

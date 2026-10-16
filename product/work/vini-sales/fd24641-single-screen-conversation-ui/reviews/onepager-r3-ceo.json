@@ -1,0 +1,100 @@
+{
+  "persona": "ceo",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 5,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 4,
+    "Dealer economics": 3,
+    "Base leverage": 3,
+    "Dependency honesty": 4,
+    "Handoff clarity": 3,
+    "Decision readiness": 4
+  },
+  "previous_issues": [
+    {
+      "id": "ceo-r2-1",
+      "fixed": true,
+      "note": "Decision now says day one is the team view at every rooftop, 'mine' turns on per rooftop and none is connected today, the VinSolutions read is inside the L (flagged assumption), and it ends with the ask. Negotiation status is not stated; for the PM at Gate 2 (Open question 4). The 'AI SPYNE' owner risk was moved to the PRD; acceptable since unmapped owners fall to the team view."
+    },
+    {
+      "id": "ceo-r2-2",
+      "fixed": true,
+      "note": "Provider reads are now 'negotiated by a commercial owner (unnamed), built by integrations-backend', which is the right split. Naming the owner and the status of each conversation is for the PM at Gate 2."
+    },
+    {
+      "id": "ceo-r2-3",
+      "fixed": true,
+      "note": "Reason it stays apart from Console v2 is given (unscheduled backlog, E23). What the L displaces is stated as unknown and routed to the PM in Open question 4: for the PM at Gate 2, not blocking."
+    },
+    {
+      "id": "ceo-r2-4",
+      "fixed": true,
+      "note": "Target rule (cut set 2 weeks after baseline), review date (30 days, requesting rooftop first) and pull-back rule (rollout stops if median wait does not fall) are written, flagged [ASSUMPTION] for the PM. See ceo-r3-1 on whether that review can see the requesting rooftop's replies."
+    },
+    {
+      "id": "ceo-r2-5",
+      "fixed": true,
+      "note": "724 words, down from 947, with the named cuts applied. Still above the 600 target, but Decision and TL;DR now carry the recommendation on their own."
+    },
+    {
+      "id": "ceo-r2-6",
+      "fixed": true,
+      "note": "TL;DR no longer claims the Action Items cross-check goes away; per-person is scoped to 'where the owner is read'. Action Items use is now a post-launch check."
+    },
+    {
+      "id": "ceo-r2-7",
+      "fixed": false,
+      "note": "Rejected as PRD/GTM scope. Minor; I accept the rejection and do not re-raise it. Who benefits versus who signs should be in the GTM brief."
+    }
+  ],
+  "issues": [
+    {
+      "id": "ceo-r3-1",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Review 30 days after launch, requesting rooftop first; if median wait does not fall, rollout stops.",
+      "concern": "The pull-back rule is judged at the one rooftop whose replies we cannot see. His reps reply from VinSolutions (E13), CRM activity is read nowhere (Q18), and one-click clears do not stop the wait clock. So there the median hours to first human reply can only fall if reps change where they reply. A flat number there would stop the rollout for the wrong reason, and a falling one would only tell us reps moved into the console. The stop rule is right; the test rooftop and the measure have to match.",
+      "because": "E13, E16; one-pager v3 'pre-UI baseline misses CRM-sent replies'; Risks 'CRM activity, unknown [Q18]'",
+      "ask": "One line: the 30-day review runs at a rooftop where replies are seen (console-only reps, or CRM activity read); at the requesting rooftop, until CRM activity is read, report the click-clear time per owner as a separate check, not the gating number. Not blocking; the PM can set this at Gate 2."
+    },
+    {
+      "id": "ceo-r3-2",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "Texts only where we see replies (CRM read, or console-only reps); failures counted.",
+      "concern": "Read with 'none is connected today' and E13, the requesting rooftop gets no manager texts and no 'mine' on day one: it gets a team Unanswered list cleared by one click. The TL;DR says 'a team view with escalation'. That is true at console-only rooftops, not at the store that asked. I would rather the dealer hears that from us now than finds it in week one.",
+      "because": "E13; one-pager v3 Decision line 2 and Risks 'CRM activity, unknown [Q18]'",
+      "ask": "Add half a line to the Decision: 'At the requesting rooftop, day one is the team list with one-click clears; texts and \"mine\" wait on the VinSolutions reads.' CSM sets that expectation before launch."
+    },
+    {
+      "id": "ceo-r3-3",
+      "severity": "minor",
+      "type": "five-facts",
+      "quote": "Cost: manager cross-checking and hours a customer waits at the AI-to-salesperson handoff, on about 600 leads a month (dealer-stated), unpaid and unmeasured; service RO value unknown [E10, E16, E37, Q15].",
+      "concern": "Hours to first human reply is the right handoff measure, but it is not yet a P&L line I can say to a dealer group in 60 seconds. Nothing in evidence ties wait hours to appointments set or ROs opened, so I do not want a number invented. I do want the baseline query to produce that link, or the PRD will still be selling response time.",
+      "because": "missing; Q15; persona Dealer economics",
+      "ask": "For the PRD: run the Q15 baseline split by appointment set (sales) and RO or booking (service, where read) for customers answered inside versus outside N hours, so the value line is stated in appointments or ROs per rooftop from our own data, attributed as Spyne data."
+    }
+  ],
+  "for_pm_at_gate_2": [
+    "Name what the L displaces this quarter (Open question 4).",
+    "Name the commercial owner for the VinSolutions read and state the negotiation status: not started, in progress, or agreed.",
+    "Confirm the VinSolutions salesperson read fits inside the L (assumption in Decision).",
+    "Confirm or replace the 2-week target and 30-day review (Q25), and pick the review rooftop per ceo-r3-1."
+  ],
+  "requests": [
+    {
+      "question": "Median hours from a customer reply to the first human reply, per department, last 30 days, for the requesting rooftop and across Vini rooftops, split by whether an appointment or RO followed (re-raised; still not run).",
+      "blocks": "ceo-r3-1, ceo-r3-3 (PRD, not this gate)",
+      "source": "conversational-ai-backend message timestamps or ClickHouse (Q15)"
+    }
+  ]
+}

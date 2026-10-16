@@ -239,3 +239,27 @@
 - who: pm
 - how: PM rereads the Arali transcripts behind E22 and tags each company.
 - status: open
+
+### Q31
+- slot: request
+- unknown: (round 2, backend-engineer) Which tools does the Sales Inbound SMS reply agent have enabled for this team, in particular get_credit_applications and fetch_credit_score, and can they be disabled per lead or per lead type?
+- blocks: Step 2 credit-app acknowledged option (reply turn on a credit-app lead)
+- who: engineering
+- how: Vini Sales backend owner lists the reply agent's tool definitions for this team (credit tools are on the redaction list at conversational-ai-backend src/utils/message.utils.ts:65) and checks whether a per-lead tool filter exists.
+- status: open
+
+### Q32
+- slot: request
+- unknown: (round 2, bdc-manager) Do Vini or the dealer's own system send appointment reminders for an appointment Ava confirms or sets on an STL lead?
+- blocks: PRD show discipline for steps 0 and 2
+- who: engineering
+- how: Vini Sales backend owner checks whether reminders fire for STL-set or STL-confirmed appointments; CSM asks the VP Marketing how the store reminds online-appointment customers today.
+- status: open
+
+### Q33
+- slot: request
+- unknown: (round 2, gm) Can the dealer's website lead forward exclude online-appointment and credit-application leads, and by what rule (form type, ADF field, subject line)? The dealer planned to forward both inquiries and applications (E9).
+- blocks: Step 0 go-live (forward rule)
+- who: csm
+- how: CSM confirms the rule with the dealer's software development manager, then one appointment and one credit-app test lead go through the real forward and are shown not to arrive.
+- status: open

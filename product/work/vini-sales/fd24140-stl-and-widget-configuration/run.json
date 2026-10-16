@@ -1,5 +1,5 @@
 {
-  "stage": "decide",
+  "stage": "prd",
   "started": "2026-10-15",
   "rubrics": {
     "decide": 1,
@@ -10,15 +10,37 @@
   "observations_loaded": {},
   "rounds": {
     "onepager": {
-      "round": 1,
-      "raised": 36,
-      "accepted": 36,
-      "rejected": 0,
-      "escalated": 0,
-      "discarded": 0
+      "round": 2,
+      "raised": 69,
+      "accepted": 65,
+      "rejected": 3,
+      "escalated": 1,
+      "discarded": 0,
+      "r1": {
+        "raised": 36,
+        "accepted": 36,
+        "rejected": 0,
+        "escalated": 0,
+        "discarded": 0
+      },
+      "r2": {
+        "raised": 33,
+        "accepted": 29,
+        "rejected": 3,
+        "escalated": 1,
+        "discarded": 0,
+        "accepted_partial": 11,
+        "words_v3": 735
+      }
     }
   },
-  "requests": 5,
-  "gates": [],
+  "requests": 12,
+  "gates": [
+    {
+      "gate": "onepager",
+      "date": "2026-10-16",
+      "result": "approved"
+    }
+  ],
   "notes": "Freshness: all sources fetched 2026-10-15. Sufficiency: thin slots (context_30d EMPTY on 23736 and 22370) were already searched at triage and Arali has no dealer interactions; left as open questions. No stable lessons or persona observations exist yet."
 }

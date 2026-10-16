@@ -1,0 +1,102 @@
+{
+  "persona": "backend-engineer",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 5,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 4,
+    "Code-cited baseline": 4,
+    "Integration reality": 5,
+    "Failure design": 4,
+    "Observability and rollback": 4,
+    "Scope discipline": 4
+  },
+  "previous_issues": [
+    {
+      "id": "backend-engineer-r2-1",
+      "fixed": true,
+      "note": "Step 2 now reads 'Both wait for Q12; then credit-app replies get a holding text and BDC task'. The acknowledged option is gated on the technical condition, not only on a named owner, and a fixed holding text means the reply agent and its credit tools do not run on that turn. Per-lead tool disabling is parked as Q31 for the PRD, which is fine. The Q-reference on that line is off (new minor r3-4)."
+    },
+    {
+      "id": "backend-engineer-r2-2",
+      "fixed": true,
+      "note": "Row now says 'dealer-reported, CSM owns; our rebook-text count, target 0'. Source and owner named, plus a Spyne-side count we can actually run from the task log."
+    },
+    {
+      "id": "backend-engineer-r2-3",
+      "fixed": true,
+      "note": "CSM confirms the forward excludes appointment and credit-app leads and tests one of each (Q33); BDC manager catches slips; CSM spot-checks week one."
+    },
+    {
+      "id": "backend-engineer-r2-4",
+      "fixed": true,
+      "note": "Q23 moved to the steps 1 and 2 row; Q24 sits on the step 0 go-live list as accepted-in-writing."
+    },
+    {
+      "id": "backend-engineer-r2-5",
+      "fixed": true,
+      "note": "Step 3 now reads 'CRM read where we have access, write-back where certified (Q29)'. Read and write are separated."
+    },
+    {
+      "id": "backend-engineer-r2-6",
+      "fixed": true,
+      "note": "Handoff is 'today's STL email' with a Console fallback until a step 2 morning list. No longer implies a build inside step 0."
+    },
+    {
+      "id": "backend-engineer-r2-7",
+      "fixed": true,
+      "note": "Q9 dropped, Q11 kept, service openers listed under Not building."
+    },
+    {
+      "id": "backend-engineer-r2-8",
+      "fixed": true,
+      "note": "Evidence down to three bullets, v3 about 735 words. Decision and TL;DR carry the point."
+    }
+  ],
+  "issues": [
+    {
+      "id": "backend-engineer-r3-1",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "first text only; silence nudge off, forwarding source excluded from the cadence, both existing settings [E43, E44].",
+      "concern": "E44 holds: excludeSource is a per-team setting (conversation-notifications.service.ts:2634) and the nudge is switched in upsertStlFollowUpConfig (:2408). But whether this combination sends a first text depends on which workflow-creation path the forwarded lead takes, and the doc does not say. The STL first text is sent inline only on the API path (createLeadFollowUpFromLead, sequence-follow-up.controller.ts:37). The SQS path (handleEvent) never sends STL: it records step 1 as 'sqs-stl-deferred-to-api', and when the lead is excluded from follow-up it skips workflow creation entirely (sequence-workflow-creation.service.ts:193 to :208). So if forwarded ADF leads arrive by SQS only, step 0 goes live and sends nothing, silently. On the API path it works: STL fires inline and the cadence tasks fail at execution (orchestrator :1956). The go-live check 'test lead source and type (Q19)' checks fields, not the outcome. Not blocking, because the failure is silent non-contact, not wrong contact, and the BDC still calls next day.",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:193`, `:208`, `:497`; `conversational-ai-backend:src/sequence-workflows/follow-up-request-validation.ts:30` (SQS_STL_STEP_SKIP_REASON); `conversational-ai-backend:src/sequence-workflows/controllers/sequence-follow-up.controller.ts:37`; E44; Q19",
+      "ask": "Make the step 0 go-live check an outcome check: one test lead through the real forward gets its first text, and the lead has no scheduled FOLLOW_UP task. Engineering confirms which creation path (API inline or SQS) forwarded ADF leads take, as part of Q19."
+    },
+    {
+      "id": "backend-engineer-r3-2",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "first text only; silence nudge off, forwarding source excluded from the cadence, both existing settings [E43, E44].",
+      "concern": "Both switches are team-wide. E44 itself says the nudge switch is per team, not per source or type, and excludeSource matches on the lead's source string, which other streams at this team may share. If this team already has STL or follow-up running on any other lead stream, step 0 turns those off too. E44 also notes prod values for this team were not checked.",
+      "because": "E44; `conversational-ai-backend:src/notifications/conversation-notifications.service.ts:2408`, `:2634`",
+      "ask": "Add to the go-live checks: the CSM reads this team's current STL and follow-up settings in prod and confirms no other lead stream shares the forwarding source or relies on the silence nudge."
+    },
+    {
+      "id": "backend-engineer-r3-3",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "opt-out widens beyond STOP.",
+      "concern": "This reads as a per-rooftop step 2 item, but opt-out parsing lives in the shared inbound SMS handler (sms.service.ts handleInboundSmsV2, E42), so widening it changes behaviour for every Vini SMS team, sales and service. That is the right change, but it is a platform change with its own callers and should not ride inside a one-rooftop opener step.",
+      "because": "E42 (`conversational-ai-backend:src/sms/sms.service.ts:2349`)",
+      "ask": "Mark it as a platform-wide change in step 2 and list the shared handler's callers in the PRD."
+    },
+    {
+      "id": "backend-engineer-r3-4",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "then credit-app replies get a holding text and BDC task (Q31), reschedules a task or handoff line (Q27).",
+      "concern": "The references are swapped. Q31 is whether credit tools can be disabled per lead. Whether the reply agent can create a BDC task after hours is Q27. As written, the credit-app BDC task looks unblocked by Q27, and the tools-off point is not stated at all.",
+      "because": "questions.md Q27, Q31",
+      "ask": "Reword: 'credit-app replies get a holding text and BDC task (Q27), with credit tools off for that lead (Q31); reschedules get a task or handoff line (Q27)'."
+    }
+  ],
+  "requests": []
+}

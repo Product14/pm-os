@@ -1,0 +1,75 @@
+{
+  "persona": "service-manager",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 5,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 4,
+    "Capacity truth": 4,
+    "Appointment quality": 3,
+    "Fixed ops metric": 3,
+    "Promise control": 4,
+    "DMS write-back": 4
+  },
+  "previous_issues": [
+    {
+      "id": "service-manager-r2-1",
+      "fixed": true,
+      "note": "Cleared-by now reads 'a scheduler booking or RO (service) where read; else one click', the provider line names 'scheduler/DMS advisor, booking and RO, none read [Q19]', and Open question 3 asks 'will they click?'. Scheduler texting-tool sends are not named; acceptable, carry to PRD."
+    },
+    {
+      "id": "service-manager-r2-2",
+      "fixed": true,
+      "note": "Escalation is now 'after N minutes in that department's hours'; N and hours sit in Open question 4."
+    },
+    {
+      "id": "service-manager-r2-3",
+      "fixed": true,
+      "note": "Check now reads 'service bookings or ROs where read'."
+    },
+    {
+      "id": "service-manager-r2-4",
+      "fixed": true,
+      "note": "Open question 3 asks which rooftops run Vini Service and blocks 'Service flag'; Manager view says 'service off until Open question 3'."
+    },
+    {
+      "id": "service-manager-r2-5",
+      "fixed": true,
+      "note": "lastReadAt bullet folded into one Evidence line, command-board line removed; v3 reads from Decision and TL;DR."
+    }
+  ],
+  "issues": [
+    {
+      "id": "service-manager-r3-1",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "Texts only where we see replies (CRM read, or console-only reps); failures counted.",
+      "concern": "The text gate is worded for sales only. My advisors reply from the scheduler's texting tool or the desk phone, not a CRM. As written, service escalation texts either never fire (no CRM) or fire on customers an advisor already answered in Xtime or myKaarma.",
+      "because": "Q19 (scheduler/DMS reads none); persona 'The scheduler as the single source of truth'",
+      "ask": "Say 'CRM or scheduler/DMS read, or console-only staff', so service texts stay off until the scheduler read exists or the advisors work only in the console."
+    },
+    {
+      "id": "service-manager-r3-2",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "- **Mine:** the CRM salesperson or scheduler/DMS advisor, never Spyne's round-robin [PM] [E43]. Owners without a console seat fall to the team view (sales/BDC or service manager).",
+      "concern": "In the drive an advisor is attached to an appointment or an open RO, not to the customer for life. A customer texting about a first booking, or weeks after the RO closed, has no current advisor, and the doc only covers owners without a console seat.",
+      "because": "missing; persona 'What they protect' (scheduler as source of truth); Q19",
+      "ask": "Add 'or with no current appointment or open RO' to the team-view fallback for service, and have the PRD state which record (appointment or RO) supplies the advisor."
+    }
+  ],
+  "requests": [
+    {
+      "question": "In Xtime, myKaarma and the DMS service modules, is the advisor stored per appointment/RO or per customer, and how long after RO close does it persist?",
+      "blocks": "service-manager-r3-2: who 'mine' is for a service customer with no open appointment",
+      "source": "integrations-backend owner (Q19)"
+    }
+  ]
+}

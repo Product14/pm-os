@@ -1,0 +1,149 @@
+{
+  "persona": "backend-engineer",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 3,
+    "Code-cited baseline": 4,
+    "Integration reality": 4,
+    "Failure design": 3,
+    "Observability and rollback": 3,
+    "Scope discipline": 4
+  },
+  "previous_issues": [
+    {
+      "id": "backend-engineer-r1-1",
+      "fixed": true,
+      "note": "Step 0 no longer relies on lead type: dealer forwards inquiries only, forwarded test lead checked against the bypass (Q19) before go-live. Residual: the guard is entirely dealer-side with no check that it holds (new issue r2-3)."
+    },
+    {
+      "id": "backend-engineer-r1-2",
+      "fixed": true,
+      "note": "Contract stated: credit-app literal, no LLM; appointment uses date, time, store with no-specifics fallback; fields optional and both writers keep them (Risks, Q20). Whether the appointment confirm is a literal template with merge fields or an LLM instruction is left to the PRD, acceptable at one-pager level."
+    },
+    {
+      "id": "backend-engineer-r1-3",
+      "fixed": true,
+      "note": "Option chosen: appointment and credit-app types keep all follow-up off until reply and follow-up carry the type. Follow-up is covered; the inbound reply turn is not, see new issue r2-1."
+    },
+    {
+      "id": "backend-engineer-r1-4",
+      "fixed": true,
+      "note": "Read source named per dealer type and the PRD must specify idempotency, retry, alerts and partial writes. Wording now conflates read access with write-back certification, see r2-5 (minor)."
+    },
+    {
+      "id": "backend-engineer-r1-5",
+      "fixed": true,
+      "note": "Tasks record type and template key, clearing a template reverts the team, write-back has a per-rooftop off switch. The production check query itself is not written, but the template key makes it a one-line query; the outcome metric is the open gap (r2-2)."
+    },
+    {
+      "id": "backend-engineer-r1-6",
+      "fixed": true,
+      "note": "Fields optional, callers counted (four), shared lead store named, writers covered. Callers are counted, not named, which is enough for a one-pager since solution-context lists them."
+    },
+    {
+      "id": "backend-engineer-r1-7",
+      "fixed": true,
+      "note": "Now says porting ADF appointment code from another repo, under Q18."
+    },
+    {
+      "id": "backend-engineer-r1-8",
+      "fixed": true,
+      "note": "'Every one' row removed; replaced by show rate with unknown baseline. The replacement row has its own measurement problem (r2-2)."
+    },
+    {
+      "id": "backend-engineer-r1-9",
+      "fixed": true,
+      "note": "Q4 in Open questions, blocks Widget."
+    }
+  ],
+  "issues": [
+    {
+      "id": "backend-engineer-r2-1",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Credit-app acknowledgment is literal text, no LLM; appointment confirms use date, time and store, or no specifics if one is missing. Opt-out and no-PII are platform logic.",
+      "concern": "The literal text protects the first message only. Follow-up is off for these types, but inbound replies cannot be switched off: when the credit applicant texts back 'did I get approved?', the generic sales reply agent answers, and it does not know the lead is a credit app. In the local clone, external_type is read on the SMS path only for the STL gate (sms-v2.service.ts :844 to :930, :1863), nowhere in the inbound reply handling. The sales agent's tool set also includes credit tools: get_credit_applications and fetch_credit_score are on the redaction list in message.utils.ts:65, so they exist and can be called on a reply turn. 'No-PII is platform logic' has nowhere to key on the reply turn until the type is carried there (Q12). The doc gates the 'acknowledged' option on the store naming an owner (a business condition), not on this technical one, so step 2 could switch it on with the exposure the dealer ruled out (E5) one message later.",
+      "because": "`conversational-ai-backend:src/utils/message.utils.ts:65` (REDACTED_TOOL_CALL_NAMES = get_credit_applications, fetch_credit_score); `conversational-ai-backend:src/sms/sms-v2.service.ts:844`, `:930`, `:1863` (external_type used only for the STL gate); Q12; E5",
+      "ask": "Add to Step 2: credit-app 'acknowledged' cannot be turned on until step 1 proves the reply turn carries the type (Q12). Until then any reply on a credit-app lead gets a fixed holding text and becomes a BDC task (Q27), with credit tools unavailable for that lead."
+    },
+    {
+      "id": "backend-engineer-r2-2",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Show rate, online appointments | unknown | measured after step 2 | [E6], Q28 |",
+      "concern": "We cannot measure this. Shows live in the dealer's in-house system. They have no API (E12), and step 3 write-back is outbound only, so no step in this plan gives Spyne a read of whether the customer showed up. 'Measured after step 2' has no source and no owner. It is the only outcome metric on the opener, so step 2 ships with nothing that says whether it worked. The persona block applies: success metric with no validation plan.",
+      "because": "E12; Q28 (baseline is a CSM ask to the dealer, not a system read); `conversational-ai-backend:src/sequence-workflows/schemas/sequence-task.schema.ts:94` (task log, solution-context 'Where the outcome is logged')",
+      "ask": "Name the source: dealer-reported show rate from their system, monthly, CSM owns it (Q28). Add one Spyne-side check we can actually run, from the template key on the task: on appointment-type leads, the share that got the confirm opener and the count of Ava messages that propose a new time (target 0)."
+    },
+    {
+      "id": "backend-engineer-r2-3",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "the dealer forwards inquiries only; appointment and credit-app leads wait for step 1 (Q23).",
+      "concern": "This is the right control, but the dealer has to change their forward: today they plan to send inquiries and credit applications both (E9). If one credit-app or appointment email slips through, it gets the standard sales opener plus the FOLLOW_UP cadence (E41 limit 3), and nothing on our side flags it. Step 0 has no check that the control holds.",
+      "because": "E9, E41",
+      "ask": "Add: the dealer confirms the forward filter change in writing before go-live, and the CSM spot-checks the first week of forwarded emails for appointment or credit-app ADF content."
+    },
+    {
+      "id": "backend-engineer-r2-4",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| Q19, Q23 to Q26 | Bypass, type mapping, consent, dealer texts, handoff | Engineering, CSM | Step 0 |",
+      "concern": "Step 0 says 'no reliance on lead type', yet Q23 (type mapping) is listed as blocking it; Q23 blocks step 1. Q24 (consent) is also listed as a step 0 blocker while step 0 is promised 'this week'. If consent truly blocks go-live, the one date we give the dealer is at risk; if it does not, it should not sit in this row.",
+      "because": "questions.md Q23 (blocks Step 1 and Step 2), Q24; E42",
+      "ask": "Move Q23 to the Step 1 row. State whether Q24 blocks step 0 go-live or is a tracked risk, and if it blocks, say so next to the 'this week' date."
+    },
+    {
+      "id": "backend-engineer-r2-5",
+      "severity": "minor",
+      "type": "feasibility",
+      "quote": "read from the CRM where write-back is certified (Q29), else the forwarded ADF.",
+      "concern": "Read access and certified write-back are separate per provider. The CRM read connectors (Tekion, VinSolutions, eLeads, DriveCentric, low-confidence card) and the write path (crm-core pushToExternalCrm) are not the same set. Tying read to write certification will either under-read or imply write access we do not have.",
+      "because": "solution-context.md 'Integration limits' (`integrations-backend:src/crm/tekion/tekion.controller.ts:38`, `crm-core-service:src/crm-sync/external-crm-sync.service.ts:149`)",
+      "ask": "Reword: 'read from the CRM where we have read access, write back where write-back is certified (Q29), else read the forwarded ADF'."
+    },
+    {
+      "id": "backend-engineer-r2-6",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "the STL notification email reaches a named BDC role before open with each lead's status and any appointment time, so the BDC confirms instead of cold-calling (Q26).",
+      "concern": "Step 0 is labelled 'no build', but what today's notification email contains, and when it is sent, is open (Q26). I found no scheduled digest in the notifications module (no cron in src/notifications), so this is the per-conversation email as it exists. If it lacks status or appointment time, the morning handoff is a build item, not a step 0 configuration.",
+      "because": "Q26; local grep of `conversational-ai-backend:src/notifications/` (no @Cron)",
+      "ask": "Say 'today's per-conversation STL email, routed to a named BDC role', and add: if Q26 shows it lacks status or appointment time, adding them is step 2 scope."
+    },
+    {
+      "id": "backend-engineer-r2-7",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "new fields are optional, service scope comes first (Q9, Q11), both config writers keep them (Q20).",
+      "concern": "Q9 is mostly answered in code. Service leads never get an inline STL touch (NOT_SUPPORTED_FOR_SERVICE, sequence-workflow-creation.service.ts:479, verified in the local clone), and service messages come from a separate generator. The opener cannot reach service agents through this path. The real shared-surface risk is the parser and lead store (Q11). Keeping Q9 as a step 2 blocker sends engineering after a question we can already answer.",
+      "because": "`conversational-ai-backend:src/sequence-workflows/services/sequence-workflow-creation.service.ts:479`; solution-context.md 'Who else calls it'",
+      "ask": "Replace with: 'service leads are excluded from STL in code (:479); new parsed fields are optional and must not change what service agents read (Q11)'. Drop Q9 from the Step 2 row."
+    },
+    {
+      "id": "backend-engineer-r2-8",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "- Write-back needs a configured CRM; this dealer has no API [E12].",
+      "concern": "Brevity: at about 980 words against a 600 target, the point still comes through from the Decision and TL;DR, so this is minor. But the Evidence section mostly repeats the Recommendation and Risks. This bullet repeats Risks bullet 4. The E41, E39 and E40 bullets restate the step 0 and step 1 conditions.",
+      "because": "rubric Brevity",
+      "ask": "Cut Evidence to three bullets (E41 off-switch limits, E43 suppression blind spot, E22 demand) plus the widget line. Fold Risks bullet 1 into Step 1. Apply the r2-7 change. That saves about 120 words with no loss."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Which tools does the Sales Inbound SMS reply agent have enabled for this team, specifically get_credit_applications and fetch_credit_score, and can they be disabled per lead or per lead type?",
+      "blocks": "r2-1, the step 2 credit-app acknowledged option",
+      "source": "Vini Sales backend owner; agent tool definitions (outside src, per message.utils.ts:65 redaction list)"
+    }
+  ]
+}

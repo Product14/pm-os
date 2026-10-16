@@ -1,0 +1,104 @@
+{
+  "persona": "ceo",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 5,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 5,
+    "Honest unknowns": 4,
+    "Shared scope": 3,
+    "Full value": 4,
+    "Brevity": 4,
+    "Dealer economics": 3,
+    "Base leverage": 3,
+    "Dependency honesty": 4,
+    "Handoff clarity": 4,
+    "Decision readiness": 4
+  },
+  "previous_issues": [
+    {
+      "id": "ceo-r2-1",
+      "fixed": true,
+      "note": "The ask is now steps 0 and 1, which is no build plus a proof, and step 2 'stands without write-back'. The table carries what the early steps buy (status in hand for BDC calls, rebook-text count target 0, first contact before BDC open if Q22 clears). Hours are still unsized (Q15), which is acceptable for an ask this small."
+    },
+    {
+      "id": "ceo-r2-2",
+      "fixed": false,
+      "note": "Not fixed, and escalated correctly. My own fallback is applied: step 2 is 'direction only until volume (Q15) and displacement (Q14) are known'. That makes it not blocking. For the PM at Gate 2: name what the M opener displaces on the Vini Sales plan before step 2 moves from direction to priority."
+    },
+    {
+      "id": "ceo-r2-3",
+      "fixed": true,
+      "note": "Evidence is now 3 short bullets, each one tied to a step 0 decision (follow-up off, suppression blind spots, base demand). The page is 735 words, down from 979. That is still above my 700 target, but nothing on it is idle now."
+    },
+    {
+      "id": "ceo-r2-4",
+      "fixed": true,
+      "note": "Task and template-key detail and the failure-design sentence are gone, and Open questions is collapsed to 3 gating rows. The shortened 'Per rooftop' line stays because the template requires it. Fine."
+    },
+    {
+      "id": "ceo-r2-5",
+      "fixed": true,
+      "note": "The row now reads 'called with status in hand; step 3: unresolved only'. Nobody can lift that into a deck as 'the BDC stops calling'."
+    },
+    {
+      "id": "ceo-r2-6",
+      "fixed": true,
+      "note": "'Least sure: lead type reaching external_type (Q23); if not, step 2 waits on a parser port and is re-sized (Q18).' This is the line I asked for, and it says what changes if the bet fails."
+    },
+    {
+      "id": "ceo-r2-7",
+      "fixed": false,
+      "note": "The resolution says the dealer gets a date we control. The v3 line 'Dealer dates: this one and the step 1 answer' does not say that, and it is ambiguous. Carried as minor ceo-r3-1."
+    },
+    {
+      "id": "ceo-r2-8",
+      "fixed": true,
+      "note": "'CRM read where we have access, write-back where certified (Q29), else ADF in, one no-API channel out (Q10).' Read and write are now separate dependencies, as fact 4 needs."
+    }
+  ],
+  "issues": [
+    {
+      "id": "ceo-r3-1",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Dealer dates: this one and the step 1 answer [E10, E31].",
+      "concern": "'This one' could be read as a fixed go-live date. Step 0 cannot go live until the dealer pauses its own texts (Q25), forwards a passing test lead (Q19, Q33) and signs off on consent (Q24). We already told this dealer something was 'being worked on' and then missed it (E10, E31). If we promise a calendar date, the next miss is ours too.",
+      "because": "E10, E31; Q19, Q24, Q25, Q33",
+      "ask": "Reword to: 'Dealer dates: step 0 live N business days after your texts are paused and the test leads pass; the step 1 answer by <date>.'"
+    },
+    {
+      "id": "ceo-r3-2",
+      "severity": "minor",
+      "type": "five-facts",
+      "quote": "| Outcomes keyed by hand | every conversation | from the handoff; 0 after step 3 | [E12, E13] |",
+      "concern": "'0 after step 3' depends on a no-API write-back channel this dealer has not agreed to (Q10, Q21), and the Risks section calls that a commercial agreement. Stated flat in the table, it reads like write-back we already have.",
+      "because": "E12; Q10, Q21; fact 4",
+      "ask": "Change to '0 after step 3, once the write-back channel is agreed (Q10, Q21)'."
+    },
+    {
+      "id": "ceo-r3-3",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "**Step 1:** prove lead type and appointment reach external_type (Q23) and the reply turn (Q12).",
+      "concern": "I am asked to approve step 1, and it is the only step with no size and no owner. Step 2 is M and step 3 is L, so I can weigh those. I cannot weigh step 1.",
+      "because": "Q12, Q23; decide.md",
+      "ask": "Add a size and owner, for example '(S, engineering: one forwarded test lead traced end to end)'."
+    }
+  ],
+  "requests": [
+    {
+      "question": "For the PM at Gate 2: what on the current Vini Sales plan does the M-size step 2 opener displace or delay, or does it fit in existing capacity?",
+      "blocks": "nothing on this page (step 2 is direction only); blocks step 2 moving to priority",
+      "source": "Vini Sales PM (Q14, escalated ceo-r2-2)"
+    },
+    {
+      "question": "For the PM at Gate 2: answer-by dates for Q15 (volume, gates the step 2 commitment) and Q10/Q17 (channel and size, gate dating step 3).",
+      "blocks": "nothing on this page; without dates the full-value path stays planned with no date",
+      "source": "Vini Sales PM, CSM"
+    }
+  ]
+}

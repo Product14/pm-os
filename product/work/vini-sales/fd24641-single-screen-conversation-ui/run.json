@@ -1,5 +1,5 @@
 {
-  "stage": "onepager",
+  "stage": "prd",
   "started": "2026-10-15",
   "rubrics": {
     "decide": 1,
@@ -10,7 +10,7 @@
   "observations_loaded": {},
   "rounds": {
     "onepager": {
-      "rounds_run": 1,
+      "rounds_run": 2,
       "r1": {
         "raised": 48,
         "blocking": 3,
@@ -33,10 +33,48 @@
         },
         "resolution": "reviews/onepager-r1-resolution.md",
         "output": "one-pager/v2.md"
+      },
+      "r2": {
+        "raised": 31,
+        "blocking": 0,
+        "major": 17,
+        "minor": 14,
+        "discarded_generic": 0,
+        "merged_rows": 13,
+        "accepted": 28,
+        "rejected": 3,
+        "escalated": 0,
+        "minor_skipped": 0,
+        "reviewer_requests_pending": 13,
+        "verdicts": {
+          "gm": "revise",
+          "general-sales-manager": "revise",
+          "service-manager": "revise",
+          "backend-engineer": "revise",
+          "ceo": "revise"
+        },
+        "resolution": "reviews/onepager-r2-resolution.md",
+        "output": "one-pager/v3.md",
+        "words": 724,
+        "new_assumption_questions": [
+          "Q24",
+          "Q25"
+        ],
+        "pm_at_gate": [
+          "confirm VinSolutions read inside the L (Q24) and name the commercial owner",
+          "name what the L displaces this quarter",
+          "confirm 2-week target / 30-day review (Q25)"
+        ]
       }
     }
   },
   "requests": 0,
-  "gates": [],
+  "gates": [
+    {
+      "gate": "onepager",
+      "date": "2026-10-16",
+      "result": "approved"
+    }
+  ],
   "notes": "Freshness: all sources fetched 2026-10-15. Sufficiency: thin slots (context_30d EMPTY on 23736 and 22370) were already searched at triage and Arali has no dealer interactions; left as open questions. No stable lessons or persona observations exist yet."
 }

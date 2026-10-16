@@ -1,0 +1,52 @@
+{
+  "persona": "bdc-manager",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 4,
+    "CRM completeness": 4,
+    "Human reach": 4,
+    "Show discipline": 3,
+    "Workload effect": 4,
+    "Contact compliance": 4
+  },
+  "previous_issues": [
+    { "id": "bdc-manager-r2-1", "fixed": true, "note": "Option (a) taken: step 0 is first text only, with the silence nudge off and the forwarding source excluded from the FOLLOW_UP cadence, both existing settings (E44). Ava no longer nudges a lead my agent is working at 2 pm. Verifying those settings on the real source value is raised as minor r3-1." },
+    { "id": "bdc-manager-r2-2", "fixed": true, "note": "Q24 is on the go-live list, met by the dealer accepting the consent position and STOP-only opt-out in writing; widening opt-out beyond STOP is step 2 scope. The store accepts the risk with eyes open, which is what I asked for." },
+    { "id": "bdc-manager-r2-3", "fixed": true, "note": "Handoff named: today's STL email with each lead's status to the BDC manager (Q26), else Console until a step 2 morning list. A fallback exists, so step 0 does not depend on an unknown email format." },
+    { "id": "bdc-manager-r2-4", "fixed": true, "note": "Step 2 says both type openers wait for Q12; after that credit-app replies get a holding text and BDC task (Q31), reschedules a task or a handoff line (Q27). The no-task-tool fallback I asked for is there." },
+    { "id": "bdc-manager-r2-5", "fixed": true, "note": "Show-data source named (dealer-reported, CSM owns, Q28) plus a rebook-text count we can run, target 0. Reminder path deferred to the PRD as Q32, acceptable for a one-pager, but Q32 is missing from the Open questions table (minor r3-2)." },
+    { "id": "bdc-manager-r2-6", "fixed": true, "note": "Rejected as written, but 'first text before BDC open (Q22)' is now a go-live check, and with follow-up off only the first text could collide. That closes my concern." },
+    { "id": "bdc-manager-r2-7", "fixed": true, "note": "Row now reads 'called with status in hand; step 3: unresolved only'. Honest: no call reduction claimed before step 3." },
+    { "id": "bdc-manager-r2-8", "fixed": true, "note": "Evidence cut to 3 bullets, step 0 split into short bullets, code path out of Problem. Reads in one pass now." }
+  ],
+  "issues": [
+    {
+      "id": "bdc-manager-r3-1",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "- **Follow-up off:** first text only; silence nudge off, forwarding source excluded from the cadence, both existing settings [E43, E44].",
+      "concern": "The source on a forwarded lead comes from the email subject line (E39), so 'the forwarding source' is whatever value the parser writes, and E44 says prod values for this team were not checked. If the excludeSource entry does not match that value, the cadence runs and Ava follows up on leads my agents are calling. Also the silence nudge switch is per team, not per source, so turning it off changes every STL lead at this team, not only forwarded ones.",
+      "because": "E39, E41, E44",
+      "ask": "Add to the go-live checks: on the Q19 test lead, the stored source matches the excludeSource entry and no follow-up task is created. Note in one clause that the nudge switch is team-wide."
+    },
+    {
+      "id": "bdc-manager-r3-2",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "| Q11, Q12, Q14, Q15, Q23, Q27, Q28, Q31 | Engineering, CSM, PM | Steps 1 and 2 |",
+      "concern": "Q32 (do Vini or the store send reminders on an appointment Ava sets or confirms) is the open question behind show rate, and it blocks show discipline for steps 0 and 2. Ava can set appointments on step 0 inquiries, so it applies from step 0, but it is not listed anywhere on the page.",
+      "because": "Q32, E6",
+      "ask": "Add Q32 to the Steps 1 and 2 row (or the Step 0 row), so the PRD carries the reminder path for Ava-set and Ava-confirmed appointments."
+    }
+  ],
+  "requests": []
+}

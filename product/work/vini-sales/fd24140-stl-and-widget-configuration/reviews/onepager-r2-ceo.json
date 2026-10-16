@@ -1,0 +1,144 @@
+{
+  "persona": "ceo",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 2,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 3,
+    "Full value": 4,
+    "Brevity": 2,
+    "Dealer economics": 2,
+    "Base leverage": 3,
+    "Dependency honesty": 4,
+    "Handoff clarity": 3,
+    "Decision readiness": 3
+  },
+  "previous_issues": [
+    {
+      "id": "ceo-r1-1",
+      "fixed": true,
+      "note": "TL;DR now says plainly that callbacks and hand-keying leave the BDC only at step 3 and that hours are not sized (Q15). Honest, though Q15 has no date. The honesty exposes a new problem: steps 0 to 2, which is what I am asked to approve, carry no stated value (see ceo-r2-1)."
+    },
+    {
+      "id": "ceo-r1-2",
+      "fixed": true,
+      "note": "Evidence line now names the credit-app-first flow as one of the 3 and says write-back is asked here only. The per-company split is deferred to Q30, acceptable while E22 does not break it down."
+    },
+    {
+      "id": "ceo-r1-3",
+      "fixed": true,
+      "note": "Step 3 is now one reusable no-API channel, and the read for this rooftop is the forwarded ADF. Certified CRMs deferred to Q29. Wording mixes read and write certification (see ceo-r2-8, minor)."
+    },
+    {
+      "id": "ceo-r1-4",
+      "fixed": true,
+      "note": "'Dates to the dealer this week: step 0 live and the step 1 answer only.' Exactly the fix asked. Step 0's date still depends on dealer-side actions (ceo-r2-7, minor)."
+    },
+    {
+      "id": "ceo-r1-5",
+      "fixed": true,
+      "note": "Hypothetical 'every one / 0' row replaced by show rate on online appointments, baseline unknown, measured after step 2."
+    },
+    {
+      "id": "ceo-r1-6",
+      "fixed": false,
+      "note": "Ask and judgment sizes are now on top. The trade-off is not: 'Displaces: unknown (Q14)' is still no answer to 'every yes is a no'. What the Vini Sales roadmap gives up is the PM's call to make, not a fact to wait for. Carried as ceo-r2-2."
+    },
+    {
+      "id": "ceo-r1-7",
+      "fixed": true,
+      "note": "Flywheel line no longer claims the F&I handoff; credit-app leads stay with the store until it names an owner (Q28)."
+    },
+    {
+      "id": "ceo-r1-8",
+      "fixed": true,
+      "note": "Time to first contact now reads 'before the BDC opens, or no change' with the assumption tagged. Conditional with its fallback, as asked."
+    }
+  ],
+  "issues": [
+    {
+      "id": "ceo-r2-1",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "Ask: approve steps 0 to 2; step 3 stays planned, dated once channel (Q10) and size (Q17) are known.",
+      "concern": "You ask me to approve steps 0 to 2, and the TL;DR says the BDC hours and hand-keying only come off at step 3. So what do steps 0 to 2 buy on their own? Reading the table: time to first contact is 'or no change' (Q22), show rate is unmeasured, BDC calls are 'none before step 3'. That is an M-size build with no cost or days line I can repeat in 60 seconds. And if the dealer never agrees a write-back channel (Q10, Q21), is step 2 still worth doing?",
+      "because": "E12, E13, E33; Q15, Q22, Q28; TL;DR line 'Callbacks and hand-keying leave the BDC only at step 3'",
+      "ask": "Add one line under the Ask: what steps 0 to 2 remove on their own, by role (overnight inquiries reached before the BDC opens if Q22 clears; booked online appointments not pushed to rebook, show rate protected; no AI text on credit apps), and state whether step 2 still ships if step 3's channel is never agreed."
+    },
+    {
+      "id": "ceo-r2-2",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "Displaces: unknown (Q14).",
+      "concern": "Carried from ceo-r1-6. I cannot approve priority without knowing what moves. Roadmap fit is a judgment the Vini Sales PM owns, not an outside fact to wait on; 'unknown' means nobody made the call.",
+      "because": "Q14; decide.md Inputs 'Vini Sales area roadmap fit: unknown'; missing",
+      "ask": "Name what the M opener displaces or delays on the current Vini Sales plan (one line), or say it fits in existing capacity and why. If the PM cannot say, mark the ask as direction-only, not priority."
+    },
+    {
+      "id": "ceo-r2-3",
+      "severity": "major",
+      "type": "scope",
+      "quote": "A lead type switched off stops STL at every gate, keyed on external_type; an unset type falls to DEFAULT [E41].",
+      "concern": "Brevity. v2 is about 980 words against about 600, and every round-1 issue was answered by adding text. The point still survives in Decision and TL;DR, but the Evidence section (111 words) is code-gate mechanics I do not need, and it repeats what Problem, step 0 and Risks already cite. The page now reads like a PRD draft.",
+      "because": "rubric-onepager Brevity; persona 'Does not care about: implementation detail below the level of dependency and risk'",
+      "ask": "Cut the Evidence section to two bullets (demand: 3 adjacent on calls, 0 tickets, write-back asked here only; this dealer has no API). The external_type, DEFAULT, bypass and suppression facts are already carried by Q19, Q23 and Q25 in step 0 and belong in the PRD. Saves about 85 words."
+    },
+    {
+      "id": "ceo-r2-4",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Tasks record type and template key; clearing a template reverts the team.",
+      "concern": "Brevity, continued. Implementation detail added in round 1 that does not change any decision on this page.",
+      "because": "rubric-onepager Brevity",
+      "ask": "Move to the PRD: this sentence, 'the PRD specifies idempotency, retry, alerts and partial writes', the whole 'Per rooftop: ...' line (42 words), and Risks bullet 3 ('The gate has four callers...', 31 words). Collapse the Open questions table to the rows that gate the ask (Step 0, Dates, Step 3). Together with ceo-r2-3 this takes the page under 700 words with nothing a decision rests on lost."
+    },
+    {
+      "id": "ceo-r2-5",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "| BDC next-day calls | unknown | none before step 3; booked leads confirmed, not cold-called | [E8], Q26 |",
+      "concern": "In the 'After' column, 'none' reads as zero next-day calls, the opposite of what the TL;DR says. Anyone who lifts this table into a dealer deck tells the dealer the BDC stops calling. That is the claim that embarrasses us.",
+      "because": "E12, E13; TL;DR 'Callbacks and hand-keying leave the BDC only at step 3'",
+      "ask": "Rewrite After as 'no reduction until step 3; Ava-set appointments confirmed from the morning handoff, not cold-called'."
+    },
+    {
+      "id": "ceo-r2-6",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "If the parser drops lead type or appointment, step 2 waits on porting ADF appointment code from another repo (Q18).",
+      "concern": "The page never says what it is least sure of or what would change the recommendation. This risk line comes closest but gives no consequence for size or the ask.",
+      "because": "Q3, Q18, Q23; decide.md Revisit trigger",
+      "ask": "One line under the Ask: the thing least sure of (lead type reaching external_type, Q23) and what changes if it fails (step 2 re-sized after the port, ask narrows to step 0 plus step 1)."
+    },
+    {
+      "id": "ceo-r2-7",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Dates to the dealer this week: step 0 live and the step 1 answer only.",
+      "concern": "Step 0 cannot go live until the dealer pauses its own texts (Q25), forwards a test lead (Q19) and names a BDC recipient (Q26). If we give a hard live date, the miss lands on us again.",
+      "because": "E10, E31; Q19, Q25, Q26",
+      "ask": "Give the dealer a relative date: 'live N business days after your texts are paused and the test lead passes', so the only date we promise is one we control."
+    },
+    {
+      "id": "ceo-r2-8",
+      "severity": "minor",
+      "type": "five-facts",
+      "quote": "**Step 3, full value:** read from the CRM where write-back is certified (Q29), else the forwarded ADF.",
+      "concern": "Read access and certified write-back are separate negotiations per provider. Tying the read to write-back certification muddles which dependency gates which.",
+      "because": "Fact 4; Q29",
+      "ask": "Say 'read from the CRM where we have read access, write back where certified (Q29); else the forwarded ADF in and the no-API channel out'."
+    }
+  ],
+  "requests": [
+    {
+      "question": "What on the current Vini Sales plan moves if the M-size opener is taken this quarter?",
+      "blocks": "ceo-r2-2",
+      "source": "Vini Sales PM (Q14)"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "persona": "gm",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 2,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 3,
+    "Brevity": 2,
+    "Statement impact": 2,
+    "System of record": 3,
+    "Adoption cost": 3,
+    "Failure visibility": 2,
+    "Handoff ownership": 3
+  },
+  "previous_issues": [
+    {
+      "id": "gm-r1-1",
+      "fixed": true,
+      "note": "Step 0 no longer relies on lead type: the dealer forwards inquiries only and a forwarded test lead is checked against the bypass before go-live (Q19). Residual risk on the dealer's forward filter is raised as gm-r2-1."
+    },
+    {
+      "id": "gm-r1-2",
+      "fixed": true,
+      "note": "TL;DR now says callbacks and hand-keying leave the BDC only at step 3 and hours are unsized (Q15). Step 0 states what the BDC does differently (confirms instead of cold-calling)."
+    },
+    {
+      "id": "gm-r1-3",
+      "fixed": true,
+      "note": "Interim handoff named: STL notification email to a named BDC role before open (Q26). The second half of the ask, a dated decision point for step 3, is only conditional on Q10 and Q17 with no answer-by date; carried as minor gm-r2-8."
+    },
+    {
+      "id": "gm-r1-4",
+      "fixed": true,
+      "note": "Credit-app defaults to held out; acknowledged only once the store names an owner and response time (Q28)."
+    },
+    {
+      "id": "gm-r1-5",
+      "fixed": false,
+      "note": "Missing values are handled (no specifics), but a wrong parsed value is still confirmed to the customer with no detection and no named owner to call them. Re-raised as gm-r2-3."
+    },
+    {
+      "id": "gm-r1-6",
+      "fixed": false,
+      "note": "Follow-up cadence is now off for appointment and credit-app types, but the customer's reply to the confirm text still goes to a reply turn that may not carry the type, and step 2 does not say it waits for that. Re-raised as gm-r2-2."
+    },
+    {
+      "id": "gm-r1-7",
+      "fixed": true,
+      "note": "Dealer's own after-hours texts paused before go-live is in step 0 (Q25)."
+    },
+    {
+      "id": "gm-r1-8",
+      "fixed": false,
+      "note": "The row is now honest ('or no change'), but Q22 still sits under Dates, not the step 0 gate, so step 0 can go live before anyone knows whether it removes any time. Re-raised as gm-r2-7."
+    },
+    {
+      "id": "gm-r1-9",
+      "fixed": true,
+      "note": "Hypothetical rebook row replaced by show rate on online appointments, baseline unknown (Q28)."
+    },
+    {
+      "id": "gm-r1-10",
+      "fixed": true,
+      "note": "Q9 and Q11 block step 2, new fields are optional, and a per-rooftop off switch is listed."
+    }
+  ],
+  "issues": [
+    {
+      "id": "gm-r2-1",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "the dealer forwards inquiries only; appointment and credit-app leads wait for step 1 (Q23).",
+      "concern": "Step 0 is now only as safe as the dealer's forward rule, and the dealer told us in writing they would send both inquiries and applications. Nobody has confirmed their system can split those apart. If one credit applicant or one online-appointment customer slips through, Ava sends the standard opener and pushes them to book, under my store's name, and nothing on this page tells anyone it happened.",
+      "because": "E9, E5, E6; Q23 (checks our parser, not the dealer's forward rule)",
+      "ask": "Before go-live, the CSM confirms with the dealer's software development manager which rule in their forward excludes appointment and credit-app website leads, and one test lead of each type is sent through that real forward and shown not to arrive. Name who reviews the morning handoff for a mis-forwarded lead and who calls that customer."
+    },
+    {
+      "id": "gm-r2-2",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Those two types keep all follow-up off until reply and follow-up carry the type; reschedule replies become a BDC task (Q27).",
+      "concern": "Turning the follow-up cadence off does not stop the second text. When the customer answers 'thanks, see you Tuesday', the reply turn is whatever agent picks it up, and if it does not see the appointment it pushes them to book again. That is the exact failure the VP Marketing asked us to avoid, one message later. Q12 blocks step 2 only in the sense of being answered; nothing says what happens if the answer is no.",
+      "because": "E6, E5; Q12; `conversational-ai-backend:src/sequence-workflows/services/sequence-task-message-generation.service.ts:389` (shared generic prompt, per r1 resolution)",
+      "ask": "State that step 2 does not ship for appointment and credit-app types unless the reply turn carries the type and appointment (Q12 answered yes), or put carrying it into step 2 scope."
+    },
+    {
+      "id": "gm-r2-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "appointment confirms use date, time and store, or no specifics if one is missing.",
+      "concern": "A missing value is handled. A wrong one is not. If the parse reads the wrong store or the wrong time, Ava confidently confirms it, the customer drives to the wrong rooftop or arrives at the wrong hour, and my store finds out when they are standing at the desk. No detection, no owner.",
+      "because": "E6, E35, E39; Q18, Q23",
+      "ask": "Put every Ava-confirmed appointment (date, time, store) in the morning handoff so the named BDC role checks it against the store's own board before open, and name that role as the one who calls the customer on a mismatch. Count mismatches in the first two weeks as a step 2 acceptance check."
+    },
+    {
+      "id": "gm-r2-4",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "Ask: approve steps 0 to 2; step 3 stays planned, dated once channel (Q10) and size (Q17) are known. Size by judgment: M opener, L full value. Displaces: unknown (Q14).",
+      "concern": "You are asking me to approve an M build whose statement lines before step 3 are all 'unknown', 'or no change', or 'measured after step 2'. The page now admits callbacks and keying do not come off until step 3, which has no date. So what does steps 0 to 2 move on my statement, at this rooftop, and how will we know?",
+      "because": "E8, E6; Q15, Q28 open; What it removes table",
+      "ask": "Approve step 0 now; make the step 2 build commitment conditional on Q15 (after-hours volume by type) and the Q28 show-rate baseline, both CSM asks on the existing thread. Name the one measure step 2 is judged on at this rooftop: show rate on online appointments, before and after, taken from the dealer's own records."
+    },
+    {
+      "id": "gm-r2-5",
+      "severity": "major",
+      "type": "scope",
+      "quote": "- A lead type switched off stops STL at every gate, keyed on external_type; an unset type falls to DEFAULT [E41].",
+      "concern": "This is 980 words for a one-pager meant to be about 600. The point survives in the TL;DR and Decision, but the middle reads like an engineering ticket: gate internals, external_type, DEFAULT fallbacks, bypass env defaults, config writers. I stop reading here, and the step 0 safety checks I care about are buried in a 110-word bullet.",
+      "because": "rubric-onepager Brevity; missing (no reader needs E39 to E41 mechanics at one-pager stage)",
+      "ask": "Concrete cut, about 350 words: (1) delete the Evidence section (lines 21 to 28); fold 'no API at this dealer [E12]' and '3 others raised adjacent jobs, 0 in tickets [E21, E22]' into Problem as one line each. (2) Replace the Problem code-path bullet with 'One shared prompt writes every STL opener; lead type is only an on/off switch [E36].' (3) Drop Decision line 1, which line 2 restates. (4) Move the Risks bullet on four callers, shared lead store and config writers to the PRD. (5) Split step 0 into three short bullets: forward rule, go-live checks, handoff. (6) Collapse Open questions to three rows: blocks step 0, blocks step 2, blocks step 3."
+    },
+    {
+      "id": "gm-r2-6",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "| BDC next-day calls | unknown | none before step 3; booked leads confirmed, not cold-called | [E8], Q26 |",
+      "concern": "I read 'none before step 3' as 'no calls', which is the opposite of what the TL;DR says. And at step 0 no booked leads are forwarded, so 'booked leads confirmed' cannot happen until step 2.",
+      "because": "E8, E9; v2 step 0 forwards inquiries only",
+      "ask": "Reword: 'Today: every after-hours lead called next day. Steps 0 to 2: still called, with Ava's status in hand. Step 3: only leads Ava did not resolve.'"
+    },
+    {
+      "id": "gm-r2-7",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "| Q14 to Q17, Q22, Q28, Q30 | Volume, size, quarter, silent hours, show rate, demand | CSM, Engineering, PM | Dates |",
+      "concern": "Time to first contact is the one thing step 0 delivers, and the page says it may be 'no change'. Q22 is a single settings lookup, yet it sits under Dates, so step 0 can go live without anyone knowing whether it removes a single hour.",
+      "because": "Q22; What it removes row 'before the BDC opens, or no change'",
+      "ask": "Move Q22 into the step 0 row and state the earliest first-text time for a lead forwarded at 11 pm at this rooftop before go-live."
+    },
+    {
+      "id": "gm-r2-8",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Ask: approve steps 0 to 2; step 3 stays planned, dated once channel (Q10) and size (Q17) are known.",
+      "concern": "The dealer's software development manager made write-back the condition for scaling STL. 'Dated once Q10 and Q17 are known' is 'being worked on' with extra steps unless Q10 and Q17 themselves have a date.",
+      "because": "E12, E13, E10, E31; Q10, Q17, Q16",
+      "ask": "Give Q10 and Q17 an internal answer-by date and an owner, so step 3 gets its target quarter (Q16) on a known day, without promising the dealer anything beyond step 0 and step 1."
+    },
+    {
+      "id": "gm-r2-9",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "the STL notification email reaches a named BDC role before open with each lead's status and any appointment time, so the BDC confirms instead of cold-calling (Q26).",
+      "concern": "Until step 3 this email is the only way my store learns Ava set an overnight appointment. If it does not arrive, nobody notices, and the customer walks in to a store that does not know they are coming.",
+      "because": "E12, E13, E43; Q26",
+      "ask": "Name the BDC manager as the receiving owner, and send the email at a fixed time before open even when there are zero leads, so a missing email is itself noticed."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Can the dealer's website lead forward exclude online-appointment and credit-application leads, and by what rule (form type, ADF field, subject line)?",
+      "blocks": "gm-r2-1 (step 0 safety)",
+      "source": "CSM with the dealer's software development manager"
+    },
+    {
+      "question": "After-hours website leads per week by type and BDC hours on next-day callbacks and confirmations (Q15), plus today's show rate on online appointments (Q28).",
+      "blocks": "gm-r2-4 (step 2 commitment)",
+      "source": "CSM with VP Marketing"
+    },
+    {
+      "question": "What is this team's STL silent-hours setting, and when does a lead forwarded at 11 pm get its first text (Q22)?",
+      "blocks": "gm-r2-7",
+      "source": "Engineering, STL owner"
+    }
+  ]
+}

@@ -300,3 +300,10 @@
 - side: system
 - role: engineering
 - text: (R5) STL duplicate suppression sees only Spyne-side signals: last_contacted_at, written by Spyne's own sends, inbound replies and chat mirror (leads.service.ts:114, callers sms.service.ts:753, :1924, chat-v2/mirror/mirror.service.ts:508), with a 15-hour default window when no window is configured (getSuppressionPayload :2261); a scheduled meeting for the lead or an appointmentBooked flag (:2186 to :2310); an active SMS human transfer (:657); and a terminal lead stage. None of these sees the dealer's own after-hours texts or BDC calls at a rooftop with no CRM integration (E12). The same appointment check means an online-appointment lead is suppressed only if the email path creates a meeting or sets appointmentBooked, which is not visible (E39).
+
+### E44
+- source: conversational-ai-backend:src/notifications/conversation-notifications.service.ts:2634
+- date: 2026-10-16
+- side: system
+- role: engineering
+- text: (round 2, bdc-manager request) Both follow-up paths are existing per-team settings, no build: the plain FOLLOW_UP cadence skips any lead whose source is in workflowConfig.followUp.excludeSource (written at :2634, checked at workflow creation, sequence-workflow-creation.service.ts:433, and at execution, sequence-task-execution-orchestrator.service.ts:1956), and the STL silence nudge is a team-level step turned on or off through upsertStlFollowUpConfig (:2408, silenceNudge read at :2158). The nudge switch is per team, not per source or type. Read from the local clone at a2b8754c7 (2026-10-06); prod values for this team not checked.

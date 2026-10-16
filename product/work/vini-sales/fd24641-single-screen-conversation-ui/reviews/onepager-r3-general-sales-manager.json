@@ -1,0 +1,80 @@
+{
+  "persona": "general-sales-manager",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 5,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 4,
+    "Desk control": 5,
+    "Rep handoff": 4,
+    "Inventory truth": 4,
+    "Attribution integrity": 5,
+    "Outcome metric": 3
+  },
+  "previous_issues": [
+    {
+      "id": "general-sales-manager-r2-1",
+      "fixed": true,
+      "note": "The Decision now says it plainly: day one is the team view everywhere, 'mine' turns on per rooftop as its owner source connects, and the requesting rooftop gets 'mine' first once a commercial owner agrees VinSolutions access. That is the condition I asked for. The VinSolutions read being inside the L is still an [ASSUMPTION] for the PM to confirm."
+    },
+    {
+      "id": "general-sales-manager-r2-2",
+      "fixed": true,
+      "note": "One-click clear is 'shown per owner, not stopping the wait clock', and the manager view carries 'clicks per owner'. That is what I asked for."
+    },
+    {
+      "id": "general-sales-manager-r2-3",
+      "fixed": true,
+      "note": "Escalation is now 'a copy to the team view, a text to the manager; the owner keeps it', and console reassignment is in Not building. Nothing in this release can move the up off the rep."
+    },
+    {
+      "id": "general-sales-manager-r2-4",
+      "fixed": true,
+      "note": "One rule for every channel: a customer message after a Vini handoff or action item, or once a human is active. Email no longer has its own rule, so lead-notification email cannot flood the queue on its own."
+    },
+    {
+      "id": "general-sales-manager-r2-5",
+      "fixed": true,
+      "note": "The cuts were made: the command-board line, the lastReadAt bullet and the Judge's case bullet are gone. v3 is about 724 words, and the Decision plus TL;DR carry the point."
+    },
+    {
+      "id": "general-sales-manager-r2-6",
+      "fixed": true,
+      "note": "'Owner texts where connected [E33]' names the channel as a text, not a console badge."
+    }
+  ],
+  "issues": [
+    {
+      "id": "general-sales-manager-r3-1",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Review 30 days after launch, requesting rooftop first; if median wait does not fall, rollout stops. Checks: appointments shown, service bookings or ROs where read, click-clear share, Action Items use [E13, Q15].",
+      "concern": "My guys answer from VinSolutions, not the console (E13), and nobody knows yet whether we read CRM activity there (Q18). A click does not stop the clock either. So at the store you review first, a customer my rep already called back from VinSolutions keeps 'waiting' until somebody answers him in the console. The median there measures whether my reps moved into your console, not whether customers got answered. That is enough to stop the rollout on a number that was wrong from the start, or to call a win that is not real.",
+      "because": "E13; Q18 (CRM activity read unknown); the one-pager's own line 'pre-UI baseline misses CRM-sent replies'",
+      "ask": "Count the rollout-stop review only on departments where CRM activity is read or reps reply in the console. Otherwise read CRM activity at the requesting rooftop before the 30-day clock starts. Say which one in this line. The mechanics can go in the PRD."
+    },
+    {
+      "id": "general-sales-manager-r3-2",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Texts only where we see replies (CRM read, or console-only reps); failures counted.",
+      "concern": "Read with the Decision, my store gets a team list on day one with no 'mine' and no escalation text. My reps reply in VinSolutions, and the CRM activity read is not the salesperson read the L assumption covers. That rule is the right one, because I do not want my manager texted about customers who were already answered. But the Decision should not let me think escalation is live for me when 'mine' arrives.",
+      "because": "E13; Q18; Decision [ASSUMPTION: the VinSolutions read fits inside the L] covers the salesperson read only",
+      "ask": "In Open question 1 or the Decision, say whether the VinSolutions CRM-activity read is inside the L along with the salesperson read. If it is not, say that escalation texts stay off at the requesting rooftop until it is."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does integrations-backend read VinSolutions CRM activity (calls, texts, emails logged by the salesperson) at the requesting rooftop, and is that read inside the L?",
+      "blocks": "general-sales-manager-r3-1, general-sales-manager-r3-2",
+      "source": "integrations-backend owner + PM"
+    }
+  ]
+}

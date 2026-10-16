@@ -1,0 +1,109 @@
+{
+  "persona": "gm",
+  "round": 3,
+  "verdict": "approve",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 4,
+    "Statement impact": 3,
+    "System of record": 3,
+    "Adoption cost": 4,
+    "Failure visibility": 4,
+    "Handoff ownership": 4
+  },
+  "previous_issues": [
+    {
+      "id": "gm-r2-1",
+      "fixed": true,
+      "note": "Step 0 now needs the CSM to confirm the forward excludes appointment and credit-app leads and test one of each through it (Q33). A slip has an owner: the BDC manager calls it, the CSM spot-checks week one."
+    },
+    {
+      "id": "gm-r2-2",
+      "fixed": true,
+      "note": "Step 2 openers 'Both wait for Q12', and step 1 exists to prove the type reaches the reply turn. Follow-up stays off in step 2."
+    },
+    {
+      "id": "gm-r2-3",
+      "fixed": true,
+      "note": "'the BDC manager checks confirmed details before open' names the owner and the check. Counting mismatches as an acceptance check moved to the PRD. That is a legitimate deferral."
+    },
+    {
+      "id": "gm-r2-4",
+      "fixed": true,
+      "note": "Ask is now steps 0 and 1. Step 2 is direction only until Q15 and Q14, and its measure is named: dealer-reported show rate plus our rebook-text count, target 0."
+    },
+    {
+      "id": "gm-r2-5",
+      "fixed": true,
+      "note": "735 words, down from 979. Evidence is cut to 3 bullets, the code path is out of Problem, step 0 is split, and Open questions has 3 rows. Keeping Evidence and Decision line 1 because the template requires them is reasonable."
+    },
+    {
+      "id": "gm-r2-6",
+      "fixed": true,
+      "note": "The row now reads 'called with status in hand; step 3: unresolved only'. That matches the TL;DR."
+    },
+    {
+      "id": "gm-r2-7",
+      "fixed": true,
+      "note": "Q22 is on the step 0 go-live list ('first text before BDC open') and in the step 0 row."
+    },
+    {
+      "id": "gm-r2-8",
+      "fixed": false,
+      "note": "Rejected because it needs a PM date. That is acceptable, and it is not blocking. Carried to the PM at Gate 2: give Q10 and Q17 an internal answer-by date and owner, so step 3 does not stay 'being worked on' for the dealer whose software development manager tied scaling to write-back (E12, E13)."
+    },
+    {
+      "id": "gm-r2-9",
+      "fixed": false,
+      "note": "The 'belongs in PRD' rejection is acceptable. The BDC manager is now the named owner, and at step 0 the BDC still calls every lead, so a missing email does not leave a customer unknown to the store. Not re-raised, but see gm-r3-1 on the Console fallback."
+    }
+  ],
+  "issues": [
+    {
+      "id": "gm-r3-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "**Handoff:** today's STL email with each lead's status goes to the BDC manager (Q26), else Console until a step 2 morning list.",
+      "concern": "The 'else Console' fallback asks my BDC manager to check a separate screen every morning to find out whether Ava booked someone overnight. The dealer's software development manager already turned down Console and notification emails as the record (E13). If Q26 comes back 'the email does not carry status or appointment time', step 0 still goes live on a fallback this store has already rejected. An inquiry lead Ava books at midnight then shows up at the desk while the BDC is cold-calling them.",
+      "because": "E13, E12; Q26; persona Blocks when: asks staff to check a separate dashboard",
+      "ask": "Add to the step 0 go-live checks: the STL email carries each lead's status and any appointment time (Q26). If it does not, the VP Marketing accepts the Console fallback in writing before go-live, the same way as Q24. Do not treat Console as a silent default."
+    },
+    {
+      "id": "gm-r3-2",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "- **Follow-up off:** first text only; silence nudge off, forwarding source excluded from the cadence, both existing settings [E43, E44].",
+      "concern": "E44 says the silence nudge switch is per team, not per source. Turning it off for these forwarded leads turns it off for every STL lead on this team. If the team also runs widget or console STL leads, those quietly lose their nudge, and nobody at the store agreed to that.",
+      "because": "E44",
+      "ask": "State that this team carries only forwarded leads, or name the other STL sources that lose the nudge and have the VP Marketing accept it with the other go-live checks."
+    },
+    {
+      "id": "gm-r3-3",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "Dealer dates: this one and the step 1 answer [E10, E31].",
+      "concern": "I cannot tell what the dealer is told. The store was told separate messaging was 'being worked on' (E10) and has asked 'is this done?' (E31). Now step 2 is direction only, so that promise has to be walked back in plain words. Otherwise the next escalation is about trust, not features.",
+      "because": "E10, E28, E31",
+      "ask": "Reword to: 'CSM tells the dealer in writing: inquiries go live on <date> once checks pass; whether appointment and credit-app texts can be built is answered by <date>; nothing beyond that is committed.'"
+    }
+  ],
+  "requests": [
+    {
+      "question": "For the PM at Gate 2: give Q10 (write-back channel) and Q17 (size) an internal answer-by date and owner, so step 3 gets a target quarter (Q16) on a known day (carried from gm-r2-8).",
+      "blocks": "nothing in step 0 or 1; the dealer's scaling decision (E12, E13)",
+      "source": "PM"
+    },
+    {
+      "question": "For the PM at Gate 2: if Q26 shows today's STL email cannot carry status or appointment time, does step 0 wait, or does the dealer accept Console in writing (gm-r3-1)?",
+      "blocks": "Step 0 go-live handoff",
+      "source": "PM with CSM"
+    }
+  ]
+}

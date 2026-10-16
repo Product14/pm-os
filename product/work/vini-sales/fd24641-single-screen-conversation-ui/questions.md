@@ -183,3 +183,19 @@
 - who: pm
 - how: <confirm or replace with evidence>
 - status: open
+
+### Q24
+- slot: assumption
+- unknown: the VinSolutions read fits inside the L
+- blocks: v3.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q25
+- slot: assumption
+- unknown: 2-week target, 30-day review
+- blocks: v3.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
