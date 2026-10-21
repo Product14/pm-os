@@ -1,5 +1,5 @@
 {
- "stage": "one-pager-review",
+ "stage": "jira-step1-bug",
  "started": "2026-10-21",
  "rubrics": {},
  "lessons_loaded": [],
@@ -29,9 +29,17 @@
     "discarded_generic": 0,
     "requests_raised": 25,
     "note": "gm verdict block with no blocking issue; counted as revise per protocol"
-   }
+   },
+   "note": "round 3 skipped; PM gave plain-language feedback; v4 rewritten in main session"
   }
  },
  "requests": 7,
- "gates": []
+ "gates": [
+  {
+   "gate": 2,
+   "date": "2026-10-21",
+   "choice": "approve; step 1 also as a Bug",
+   "doc": "one-pager/final.md (v4)"
+  }
+ ]
 }
