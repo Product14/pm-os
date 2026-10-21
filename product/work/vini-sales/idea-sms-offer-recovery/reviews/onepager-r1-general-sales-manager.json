@@ -1,0 +1,132 @@
+{
+  "persona": "general-sales-manager",
+  "round": 1,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 3,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 2,
+    "Above the DMS": 2,
+    "Honest unknowns": 3,
+    "Shared scope": 4,
+    "Full value": 3,
+    "Brevity": 3,
+    "Desk control": 3,
+    "Rep handoff": 2,
+    "Inventory truth": 2,
+    "Attribution integrity": 2,
+    "Outcome metric": 2
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "general-sales-manager-r1-1",
+      "severity": "blocking",
+      "type": "missing-evidence",
+      "quote": "Phases 1 and 2 need no DMS or CRM write.",
+      "concern": "The whole point of phase 1 is more visits set by the agent on text. If those visits do not land in my CRM as real appointments on the assigned rep's list, they do not exist on Saturday. Your own Problem section cites a store that lost a lead because the agent's 12PM test drive never reached the CRM, and nothing in phases 1 to 3 fixes or even checks that. The doc proves action items reach six CRMs in six different shapes, but says nothing about how an agent-set meeting lands per CRM, whether a rep is assigned, or how often the sales sync gate holds it back. 'No CRM write needed' only holds if the existing meeting write already works, and the evidence says at least once it did not.",
+      "because": "E33; E45 (sales sync gate can hold a whole conversation from the CRM); E49 (only eLead meetings are shown going through /activities/schedule); meeting push for DriveCentric, PBS, Tekion, VinSolutions, ADF: missing",
+      "ask": "Name the existing meeting write-back path per CRM (appointment object vs note, assigned rep, sync-gate hold rate) as a phase 1 dependency, with whether we have it. Add a phase 1 acceptance line: every agent-set visit in the measured cohort is found as an appointment in the rooftop's CRM before the visit time, and the measure counts only those."
+    },
+    {
+      "id": "general-sales-manager-r1-2",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Lead to show or sale | not measurable today | not claimed | [E66] |",
+      "concern": "Every success line in this table is a process count: repeats, skipped wake-ups, unsent turns. Phase 2 triggers on repeat counts too. I get paid on units and gross, and I judge the BDC on show rate. A wake-up that changes the offer could set more visits that never show, and this doc would call that a win. Honest that it is not measurable today, but there is no plan to make it measurable.",
+      "because": "E66 (CRM-imported appointment rows do carry completed and noshow; ~99% of Spyne meetings stay scheduled)",
+      "ask": "Add a path to show rate for agent-set visits, for example matching Spyne-set meetings to the CRM-imported appointment rows that carry completed or noshow, and make 'show rate on agent-set visits does not drop' a guard on phase 1 and a condition on the phase 2 trigger."
+    },
+    {
+      "id": "general-sales-manager-r1-3",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Live SMS arm: after an untaken pair or a side question, answer, ask the constraint once, then offer a pair that fits it [E17, E7].",
+      "concern": "Your own read says 13 of the 17 live repeats came after a side question, and the side questions include price and out-the-door. 'Answer' with no limit means the agent may text an out-the-door number. Payments and OTD come off my desk. Separately, E30 is a store that says asking about price after a yes ruined the appointment, so the order matters: a price side question should not open a pencil by text.",
+      "because": "E55 (price or out-the-door side questions); E30; desk-approved price source on SMS: missing",
+      "ask": "State that on a price or out-the-door side question the agent gives only the advertised listing price (or the store's configured answer) and never an OTD, payment, rate or trade figure, then moves to the visit, with the desk doing the pencil."
+    },
+    {
+      "id": "general-sales-manager-r1-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Skip rule: an action item that leaves the visit offer open, such as a photo or trade-in follow-up, no longer cancels the nudge (Q15) [E61].",
+      "concern": "A trade-in follow-up or a photo request is usually a task a person on my floor now owns: the used car manager appraising the trade, or a rep sending walkaround photos. Unblocking the nudge on exactly those means the AI texts the customer new times while my rep is working them. That is the double contact a salesperson complains about, and it is the store in E32 asking for a stop button for exactly this. Intent type is not ownership.",
+      "because": "E61 (SEND_VEHICLE_PHOTO, SALES_TRADE_IN_FOLLOW_UP); E32",
+      "ask": "Do not name trade-in follow-up as an example to unblock. Make Q15 answer 'does a human own this task' per intent with a store contact (GSM or BDC manager), and keep the nudge blocked on any intent assigned to a person unless the store turns it on."
+    },
+    {
+      "id": "general-sales-manager-r1-5",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Inventory miss: always end on visit times for a shown unit, or one visit invite, never a goodbye [E10, E24].",
+      "concern": "Two problems for my floor. First, 'a shown unit' is only as good as the listing feed: if the unit is sold, in transit or in recon, the agent just booked a visit for a car we cannot deliver, which is the exact failure a prospect called out in another vendor's AI. The doc never says the shown unit is checked as front-line ready at booking. Second, 'one visit invite' with no matching unit puts an up on my floor for a car we do not have, and the target is 0 dead ends, which pushes every miss into a visit. The rep needs to know before arrival what the customer wanted and what was not in stock.",
+      "because": "E24 ('verified listings', freshness and recon/sold status not defined); E36; E10; front-line status check: missing",
+      "ask": "State what 'verified' checks (sold, in transit, recon, front-line ready) and how fresh it is; book visit times only on a unit that passes it; when no unit passes, the visit invite must carry the requested spec and 'not in stock' into the appointment the rep sees. Change the 0 target to 'no goodbye while the customer is still engaged', not 'always a visit'."
+    },
+    {
+      "id": "general-sales-manager-r1-6",
+      "severity": "major",
+      "type": "scope",
+      "quote": "A sales director wants every agreed visit closed with \"today or tomorrow\" and nothing else [E30, E31].",
+      "concern": "This is the only dealer voice in the Problem section and no line in phases 1 to 3 does anything about it. Worse, the new live rule adds a constraint question, which on a near-yes is one more question between the customer and the appointment, the thing this director said ruined one. A reader will think this release fixes his complaint. It does not.",
+      "because": "E30; E31; E55 (1 live repeat followed a near-yes); decide.md Ladder 3 (E30 is a different failure on the same job)",
+      "ask": "Either add a phase 1 rule (on an agreed or near-yes visit, the next message is a two-option day ask, no other question, no constraint question) or move this line out of Problem and say plainly it is not addressed here."
+    },
+    {
+      "id": "general-sales-manager-r1-7",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Stores do pick some of these leads up: 612 with no agent-set visit got a store-set visit within 30 days, where the CRM feed is visible [E66].",
+      "concern": "If my BDC or a rep is already working the lead and books it in the CRM, phase 1 makes the agent keep nudging with new times on the same customer. Now I have two appointments, a confused customer, and a fight over who owns the up and which lead source gets the credit. Store-set appointments have no conversation id, so a wake-up skip that checks for a meeting on this conversation will not see them.",
+      "because": "E66 (bdc meetings tie by lead_id only, no conversation_id); E20 (wake-up skipped when a meeting exists, keyed per conversation per E61); rep and source assignment on agent-set meetings: missing",
+      "ask": "State that the wake-up and live re-offer stop when a store-set appointment exists for the lead (lead_id match on the CRM-imported feed, where the rooftop has it), name the rooftops without that feed as a known gap, and state which rep and lead source an agent-set visit carries."
+    },
+    {
+      "id": "general-sales-manager-r1-8",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Timed CRM task on DriveCentric and PBS; untimed note on eLead, Tekion, VinSolutions and ADF until task write-back is certified [E47, E48, E49, E52].",
+      "concern": "A sourcing request 'with a visit time' means the customer has a time to come in for a car we do not have yet, and on four of six CRMs nobody gets a timed task, just a note buried in a text block. Locating or dealer-trading a unit is a desk and used car manager decision. On those CRMs the customer shows up, the car is not here, and nobody knew they were coming.",
+      "because": "E49; E50; E51 (VinSolutions folds it into the lead Note field); E52; E33; E36",
+      "ask": "In phase 3, attach a visit time only where the request lands as a timed task assigned to a person (DriveCentric, PBS today); on the other four CRMs, promise a manager follow-up, not a visit time, until task write-back is certified."
+    },
+    {
+      "id": "general-sales-manager-r1-9",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "4 in 5 SMS leads offered two clock times do not book: 99 of 517, 10 to 20 Oct [E5].",
+      "concern": "99 of 517 is the number that booked, not the number that did not. Read fast, it says 99 did not book.",
+      "because": "E5 (517 offered, 99 booked, 19%)",
+      "ask": "Write it as '418 of 517 did not book (99 booked, 19%)'."
+    }
+  ],
+  "requests": [
+    {
+      "question": "For each of the six sales CRMs, how does a meeting created by sales_create_meeting land: appointment object or note, with an assigned rep or not, and what share of agent-set meetings in the 14 to 20 Oct sample reached the CRM before the visit time (or were held by the sales sync gate)?",
+      "blocks": "general-sales-manager-r1-1, general-sales-manager-r1-7",
+      "source": "Engineering: lambdas crm-integrations/*-push meeting paths; dealer-leads-backend start-insertion-process.js:592-628; ClickHouse meetings external CRM sync ids"
+    },
+    {
+      "question": "What does 'verified' mean in inventory_search_vehicles_v3 results: does it exclude sold, in-transit and in-recon units, and how stale can the feed be at booking time?",
+      "blocks": "general-sales-manager-r1-5",
+      "source": "Engineering: inventory search tool and inventory sync service"
+    },
+    {
+      "question": "Can Spyne-set meetings be matched to the CRM-imported appointment rows that carry completed or noshow, for the rooftops that have that feed?",
+      "blocks": "general-sales-manager-r1-2",
+      "source": "Engineering / data: dealer_leads.meetings source bdc vs spyne (E66)"
+    },
+    {
+      "question": "On SMS today, what can the agent say when asked for price or out-the-door: listing price only, a configured store answer, or a computed OTD?",
+      "blocks": "general-sales-manager-r1-3",
+      "source": "Engineering: sales_v2 prompt pricing guardrails and finance tools in the live SMS toolset (Q4)"
+    },
+    {
+      "question": "Is the wake-up 'meeting exists' skip checked per conversation or per lead?",
+      "blocks": "general-sales-manager-r1-7",
+      "source": "Engineering: conversational-ai-backend src/sms/sms-wakeup.service.ts:144-178"
+    }
+  ]
+}

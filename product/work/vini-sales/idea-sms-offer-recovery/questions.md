@@ -119,3 +119,155 @@
 - who: pm, engineering
 - how: list the sales action-item intents in intent-code.enum.ts; PM marks each as "human owns the lead" or "offer still open"; engineering checks the 5 E61 threads against the split.
 - status: open
+
+### Q16
+- slot: request
+- unknown: In the wake-up flow, which tools does the sms-worker lambda keep after stripping booking tools, and does it keep dealership_check_hours?
+- blocks: backend-engineer-r1-10 (different pair from store hours)
+- who: engineering
+- how: raised by the backend-engineer reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q17
+- slot: request
+- unknown: Does our Fortellis eLead subscription allow /activities/schedule for non-appointment activity types? What task or reminder object, and what certification, do Tekion, VinSolutions and ADF offer?
+- blocks: backend-engineer-r1-8 (phase 3 dependency)
+- who: engineering
+- how: raised by the backend-engineer reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q18
+- slot: request
+- unknown: How many sales SMS rooftops have dealership_sales_hours empty?
+- blocks: backend-engineer-r1-10
+- who: engineering
+- how: raised by the backend-engineer reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q19
+- slot: request
+- unknown: What clock does the SMS silent-hours deferral use (rooftop timezone, customer area code, or a fixed UTC send time like the 12:10 UTC batch in E57), what are the quiet-hour bounds, and is STOP or opt-out checked at wake-up dispatch?
+- blocks: bdc-manager-r1-6
+- who: csm
+- how: raised by the bdc-manager reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q20
+- slot: request
+- unknown: Do agent-set SMS visits get a confirmation and a reminder text today, and do spyne-created meetings ever get completed or noshow back from the CRM?
+- blocks: bdc-manager-r1-3
+- who: csm
+- how: raised by the bdc-manager reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q21
+- slot: request
+- unknown: At the two stores carrying 27 of the 47 threads, does a BDC or a salesperson work unbooked SMS leads, and from the CRM task list or the Spyne console?
+- blocks: bdc-manager-r1-4 (Q13)
+- who: csm
+- how: raised by the bdc-manager reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q22
+- slot: request
+- unknown: How many BDC or salesperson touches does an unbooked SMS lead get before a visit is set or the lead is closed (Q6)?
+- blocks: ceo-r1-1; the only cost-removed argument this has
+- who: pm
+- how: raised by the ceo reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q23
+- slot: request
+- unknown: Estimated engineer-days for phase 1, and what on the Sales Inbound roadmap it displaces (including RETCONVAI-5392).
+- blocks: ceo-r1-6; decision readiness
+- who: pm
+- how: raised by the ceo reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q24
+- slot: request
+- unknown: Does the agreed_alternative inventory search rank or filter by days in stock, or only by match to the customer's need?
+- blocks: ceo-r1-8; whether lever 2 can be argued in days in stock
+- who: pm
+- how: raised by the ceo reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q25
+- slot: request
+- unknown: Per-rooftop repeat-pair rate in the 21 Oct sample (repeat threads over sampled threads per rooftop), with the two concentrated stores shown separately.
+- blocks: ceo-r1-7; base versus one-off
+- who: pm
+- how: raised by the ceo reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q26
+- slot: request
+- unknown: What does 'verified' mean in inventory_search_vehicles_v3 results: does it exclude sold, in-transit and in-recon units, and how stale can the feed be at booking time?
+- blocks: general-sales-manager-r1-5
+- who: engineering
+- how: raised by the general-sales-manager reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q27
+- slot: request
+- unknown: Can Spyne-set meetings be matched to the CRM-imported appointment rows that carry completed or noshow, for the rooftops that have that feed?
+- blocks: general-sales-manager-r1-2
+- who: engineering
+- how: raised by the general-sales-manager reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q28
+- slot: request
+- unknown: On SMS today, what can the agent say when asked for price or out-the-door: listing price only, a configured store answer, or a computed OTD?
+- blocks: general-sales-manager-r1-3
+- who: engineering
+- how: raised by the general-sales-manager reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q29
+- slot: request
+- unknown: After the sms-worker strips booking tools on a wake-up, does the wake-up still have dealership_check_hours, or store hours rendered in its prompt?
+- blocks: gm-r1-6, phase 1 wake-up rule
+- who: engineering
+- how: raised by the gm reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q30
+- slot: request
+- unknown: What local time did the 12:10 UTC wake-up batch of 19 Oct land at for each rooftop that received it? Did any text go out before the store opened?
+- blocks: phase 1 overnight-deferral rule; store's name on an early-morning text
+- who: engineering
+- how: raised by the gm reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q31
+- slot: request
+- unknown: What is different at the two stores that carry 27 of the 47 untaken-offer threads (narrow hours, lead source STL vs inbound vs follow_up, assertiveness, lead volume)? Is it a fleet pattern or two stores' setup?
+- blocks: Right decision: generalised build vs per-store config
+- who: engineering
+- how: raised by the gm reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q32
+- slot: request
+- unknown: How do the 47 untaken-offer threads split by source (inbound sms, speed_to_lead, follow_up)?
+- blocks: gm-r1-9, scope of the re-offer rules
+- who: engineering
+- how: raised by the gm reviewer in one-pager round 1; over the 5-request stage cap, so carried as a question
+- status: open
+
+### Q33
+- slot: assumption
+- unknown: the live SMS turn does not see a store-set appointment for the lead
+- blocks: one-pager/v2.md Recommendation, phase 1 lead-level skip on the live turn
+- who: engineering
+- how: read what the SMS reply prompt renders about existing meetings (sms-v2.service.ts getAgentConfig) and whether it reads meetings by lead_id; the wake-up check is per conversation only (E77).
+- status: open
+
+### Q34
+- slot: assumption
+- unknown: phase 1 pilots first at rooftops whose CRM takes the visit as an appointment, not VinSolutions
+- blocks: one-pager/v2.md Risks, pilot choice; VinSolutions writes a visit as a note line (E87), 18 of 319 carry a CRM id (E89)
+- who: pm
+- how: PM decides the pilot list in the PRD; confirm the CRM per pilot rooftop from the integration registry, not the E89 heuristic.
+- status: open

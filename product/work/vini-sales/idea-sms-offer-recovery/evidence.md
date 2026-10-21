@@ -461,3 +461,164 @@
 - side: system
 - role: engineering
 - text: Store-set visits are only partly observable. They arrive as meetings with source bdc imported from the dealer CRM (41,679 schedule_appointment rows at 64 teams since 27 Jul), with no conversation_id, so they tie to the lead by lead_id and cannot be attributed to any conversation. Only 16 of the 18 cohort rooftops have this feed (9,051 of 12,553 leads); at the other 2 a store booking is invisible. Where visible: 612 leads with no Spyne-set visit got a store-set sales appointment within 30 days, median 2.0 days lead to visit, p75 5.0, p90 13.5; of those, 150 had replied in the first thread, median 1.8, p75 4.5. Not observable: who at the store set it (BDC or salesperson), whether the thread prompted it, and whether created_at is booking time or CRM import time. Show and sale are not measurable for Spyne-set visits (about 99% of spyne meetings stay scheduled); CRM rows do carry completed and noshow, so a show comparison across the groups is not possible.
+
+### E67
+- source: conversational-ai-backend:src/agents/agents-v2.service.ts:3416-3500, src/sms/sms-lead-event-handler.service.ts:25-43, src/sms/sms-v2.service.ts:3485-3493 (origin/release e7190a7d9); lambdas:converse/sms-worker/index.js:820-833, 1250-1272 (main 5c851bf0b); clickhouse:dealer_leads.conversations + dealer_leads.teamAgentMappings + dealer_leads.agentTypes (last 30 days, isTest=0)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: A rooftop's sales SMS agent is not a separate teamAgentMapping or agentType from voice. SMS picks its mapping through select-agent: the earliest-created active, onboarded mapping of agentType Sales / inbound / generic that owns one of the team's telephony numbers, which is the same mapping the inbound voice number routes to. The SMS prompt is then built by the same getTransientAgentConfig voice uses, with conversationType sms. Data agrees: of 29 teams with Sales Inbound SMS conversations in the last 30 days, 28 also had calls, and in all 28 the SMS mapping is the call mapping; no team used more than one. A flag placed on the mapping therefore reaches voice too unless the code also checks the channel.
+
+### E68
+- source: conversational-ai-backend:src/agents/team-agent-mapping.schema.ts:141-163, 186-190; src/agents/agents-v2.service.ts:1467-1509, 2905-2910, 3368-3401 (origin/release e7190a7d9); git grep isRolloutFlagEnabled across src
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: The per-mapping fields that steer the prompt today are assertiveness, executionMode, promptVersion and llm.instructions. executionMode acts on voice only (the workflow_v2 default is applied to inbound sales voice calls; src/sms has no workflow_v2 or executionMode reference). promptVersion is in the schema, commented as controlling "the inbound sales voice rollout", but resolvePromptVersion never reads it: the prompt is chosen from the agentType, and the only per-mapping override is llm.instructions ("team_mapping_override"), a whole-prompt replacement that would apply to SMS and voice alike. There is no per-team or percentage rollout mechanism for prompts in this repo; isRolloutFlagEnabled is used only for global telephony flags (telephony_routing_via_new_service, provisioning).
+
+### E69
+- source: conversational-ai-backend:src/notifications/conversation-notifications.schema.ts:74-79, 621-645; src/sms/sms-wakeup.service.ts:70-78; src/agents/agents-v2.service.ts:1511-1535, 2860-2879, 4756-4757; src/conversation/conversation.schema.ts:239 (origin/release e7190a7d9)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: The per-rooftop switches that exist live in conversationNotifications (one document per enterpriseId + teamId), not on the mapping: wakeup.enabled (gates the SMS wake-up), tentativeBooking.enabled, followUpConfigEnabled and outboundCallTransferEnabled. outboundCallTransferEnabled is the working precedent for a per-team, channel-scoped prompt gate: it is read into the template variables (outbound_transfer_config_enabled) and only turns on the prompt variable outbound_transfer_enabled when it is true AND the prompt is sales_v2, the direction is outbound, the mode is voice and the provider is LiveKit. An SMS-only variant could follow the same shape (team flag AND communication_medium sms) and roll back per rooftop by flipping the flag. aiMode is a per-conversation human-takeover field (auto or off), not a rooftop setting.
+
+### E70
+- source: conversational-ai-backend:src/agents/agents-v2.service.ts:2881-2915; src/agents/assertiveness-posture.ts:38-64, 82-90; src/sms/sms-v2.service.ts:3190; src/prompts/base-system-prompts/sales_new/appointment-conversion.xml:8-16, 97-99; sales_new/identity.xml:136-137; sales_new/objections.xml:2 (origin/release e7190a7d9)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Assertiveness already changes the SMS prompt, not just the voice visit-ask limit. SMS runs the same sales block as voice: the level comes from the shared mapping (unset inbound defaults to medium, unset outbound to low; SMS direction is outbound for outbound SMS conversations, else the process type), and it injects the posture and floor text, the persona (sales_centric at medium or high) and the urgency and objection gates. Because visit_ask_gate is set only for voice calls outside workflow mode, SMS gets the prompt-enforced visit limit in appointment-conversion.xml instead: "Visit ask limit: none / two / three" (high renders no limit). The visit_ask_limit number itself feeds the voice gate tool and is not referenced in the sales_new templates. The level cannot be set for SMS separately from voice today.
+
+### E71
+- source: conversational-ai-backend:src/sms/sms-analytics.service.ts:643, src/crm_integration/crm_integration.service.ts:853-881 (origin/release e7190a7d9); lambdas:crm-integrations/drivecentric-push/main.js:645-658, pbs-push/main.js:878-881 (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: No intent is filtered on the way to the CRM. SMS analytics hands every new action item to syncActionItems (only the acquisition department is skipped, lines 615-642), syncActionItems maps all of them with assigned_to SYSTEM (line 867), and the DriveCentric and PBS lambdas push every item that has no external id yet, with no intent check. SALES_LOST_LEAD, CUSTOM, SALES_SCHEDULE_CALLBACK and the scheduling intents all reach the CRM the same way.
+
+### E72
+- source: lambdas:crm-integrations/drivecentric-push/transform.js:647-704, main.js:446, 645-658, 1202-1213 (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: On DriveCentric every sales action item, whatever its intent, becomes a Touchpoint customer task named after the intent and assigned to a person: the CrmId of the first user in the store's user list, or else DriveCentric's AssociatedSalesperson (resolveTaskAssignee, lines 647-658). So on DriveCentric all intents put a task in someone's queue.
+
+### E73
+- source: lambdas:crm-integrations/pbs-push/transform.js:518-540, main.js:758-793, 878-881 (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: On PBS every sales action item, whatever its intent, becomes an Active Workplan reminder. It names a person only when the lead already had a PBS deal with a SalesRep role: UserRefs is set from that deal's SalesRep (transform.js:536-538; repRole read from existingDeal at main.js:758). The code read gives no assignee for a reminder written in the same push that creates the deal. On the other four sales CRMs no intent becomes a task (E49-E52).
+
+### E74
+- source: clickhouse:spyne_dev.integrations + spyne_dev.integrationConfigs (providerType crm), dealer_leads.actionItems (meta.conversationId); query /private/tmp/claude-502/-Users-yash-Documents-claude-code/69f1cb87-8494-46f4-9502-58e7e1be05b4/scratchpad/r7/q1.sql, /private/tmp/claude-502/-Users-yash-Documents-claude-code/69f1cb87-8494-46f4-9502-58e7e1be05b4/scratchpad/r7/q2.sql
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: None of the 5 threads that an action item stopped (E61) is at a DriveCentric or PBS rooftop. 01a13a6b, 01a13c2e and 01a14a1f are at one VinSolutions rooftop (integration status pending), 01a152a8 is at a second VinSolutions rooftop, and 01a14fab is at an email (ADF) rooftop. Per E51 and E52 the blocking items there became note or ADF comment text, not a person's task, so on these 5 the skip did not prevent a bot-and-person double contact.
+
+### E75
+- source: clickhouse:dealer_leads_raw.insertionProcessData, conversation_ai.ci_integration_logs, dealer_leads.smsMessages (direction in); dealer-leads-backend:api/helpers/crm-integrations/start-insertion-process.js:592-628, 1310-1363 (release a1587e2b1); query /private/tmp/claude-502/-Users-yash-Documents-claude-code/69f1cb87-8494-46f4-9502-58e7e1be05b4/scratchpad/r7/q5.sql, /private/tmp/claude-502/-Users-yash-Documents-claude-code/69f1cb87-8494-46f4-9502-58e7e1be05b4/scratchpad/r7/q6.sql, /private/tmp/claude-502/-Users-yash-Documents-claude-code/69f1cb87-8494-46f4-9502-58e7e1be05b4/scratchpad/r7/q7.sql
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: In all 5 threads the item left Spyne before the wake-up would have fired. A push payload carrying the blocking intent was written to insertionProcessData (which happens after the sales sync gate and just before the lambda call) within 1 second of the action item, and that run's integration log closed success within 1 second: 9 to 15 minutes before the wake-up due time (last customer message plus 10 minutes). The lambda is invoked fire-and-forget (InvocationType Event, line 1352), so this proves the hand-off, not that the CRM wrote it.
+
+### E76
+- source: clickhouse:dealer_leads.actionItems (external_crm_action_item_id, external_crm_synced_timestamp); lambdas:crm-integrations/vinsolution-push/handler.js:1853-1856 (release c846c1430); query /private/tmp/claude-502/-Users-yash-Documents-claude-code/69f1cb87-8494-46f4-9502-58e7e1be05b4/scratchpad/r7/q1.sql
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: CRM write-back is visible for only 1 of the 5. The ADF thread's item carries external id sync_done, set 1.5 seconds after it was created. The 4 VinSolutions threads' items have no external id, but the VinSolutions lambda reports action items back with ext_crm_id null by design, so that does not show a failure. external_crm_synced_timestamp is empty on all 10 action-item rows across the 12 threads (E53).
+
+### E77
+- source: conversational-ai-backend:src/sms/sms-wakeup.service.ts:160, 165-177; src/external_crm_integrations/meeting.schema.ts:275-286 (origin/release e7190a7d9)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: The meeting skip is checked per conversation, not per lead. checkWakeupEligibility runs meetingModel.exists({ conversation_id: conversationId }) on the shared meetings collection, with no lead_id, call_id, is_active or source condition (line 166). So a cancelled meeting in the thread still blocks, and a booking for the same lead on a call or in another conversation does not. The only lead-level check in the function is the opt-out (line 160). The skip uses no lead_id plus time window.
+
+### E78
+- source: clickhouse:dealer_leads.meetings FINAL, created_at from 27 Jul 2026, grouped by source; query /private/tmp/claude-502/-Users-yash-Documents-claude-code/69f1cb87-8494-46f4-9502-58e7e1be05b4/scratchpad/r7/q9.sql
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: The skip almost never sees a store-set appointment. Since 27 Jul 2026, 9 of 57,667 source bdc meetings (imported from the dealer CRM) carry any conversation_id, and 2,859 carry a call_id, which the wake-up check does not read. 48,946 of 55,639 source spyne meetings carry a conversation_id. A BDC or salesperson booking made in the CRM after the thread does not stop the wake-up.
+
+### E79
+- source: conversational-ai-backend:src/tools/definitions/sales/sales-create-meeting.tool.ts:465 (origin/release e7190a7d9); crm-core-service:src/appointments/ci-sales-appointment.service.ts:347 (release a5d1d5be5); dealer-leads-backend:services/Meetings.js:70 (release a1587e2b1)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: A sales_create_meeting booking reaches the dealer CRM through one push, fired at creation. The tool posts crm-core /v1/internal/sales/appointments (or dealer-leads /v4/meeting when crm-core is off, line 541). crm-core dual-writes dealer-leads /v4/meeting and its own CRM push is commented out (lines 347-370). Meetings.create then calls start-insertion-process with type 'appointment' for any non-service meeting (Meetings.js:70-85). The auto-pencil uses the same route with status tentative, is_tentative true and tag tentative_appointment (meetings/tentative-booking-sync.service.ts:36-82).
+
+### E80
+- source: crm-core-service:src/appointments/ci-sales-appointment.service.ts:394 (release a5d1d5be5); dealer-leads-backend:api/controllers/v4/meeting/confirm-tentative.js:56 (release a1587e2b1)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Confirming a pencil, a reschedule or a cancel never re-pushes to the CRM. Confirm-tentative sets status scheduled (and a new start time if given) through meetingsService.update (confirm-tentative.js:56-68; crm-core lines 394-428). Only Meetings.create pushes; crm-core keeps its update push off on purpose to match legacy (lines 636-660). So the CRM keeps whatever the pencil looked like at creation, including its original time.
+
+### E81
+- source: dealer-leads-backend:api/helpers/crm-integrations/fetch-data.js:572 (release a1587e2b1)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: What the CRM lambdas get for a meeting: meeting_id, intent, start and end converted to the rooftop timezone, timezone, duration, status and tags (lines 681-708). There is no assignee field and no description or notes, even though the Spyne meeting carries the lead's assigned_to (create-meeting.js:447, 777). Meetings are fetched only for this conversation or call, and ones that already have an external_crm_appointment_id are skipped (lines 595-611). End time defaults to start + 30 minutes (create-meeting.js:463-523).
+
+### E82
+- source: dealer-leads-backend:api/helpers/crm-integrations/start-insertion-process.js:580 (release a1587e2b1); dealer-leads-backend:api/utils/crm-sync-gate/evaluate-sync.js:152, 256 and constants.js:66
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: The sales sync gate (E45) runs on meeting pushes too, before any type check (lines 580-628), but it seldom holds one back. With no conversationEval row it syncs (evaluate-sync.js:256-268), and an SMS push goes out right away instead of waiting for the eval (start-insertion-process.js:198), so a mid-thread booking usually has no row yet. Outcome Appointment is locked to always sync (constants.js:66), and the gate only bites where crmLeadsSync.enforced is true. It holds a meeting only at an enforced rooftop where an eval row already exists for the thread, its outcome is not Appointment or Callback, and nothing selected matches (call type no_signal always holds). A hold returns success with held true and is logged, not retried (lines 608-626).
+
+### E83
+- source: lambdas:crm-integrations/drivecentric-push/transform.js:713 (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: DriveCentric gets a real appointment: POST /api/stores/{store}/customers/{customer}/appointment (insert-data.js:167) with type "Sales", appointmentDate = meeting start, and confirmed true only when status is scheduled (transform.js:754-770). There is no rep: usersList is passed in but never used, and createdBy and scheduledFor are commented out (lines 756-758). A pencil lands unconfirmed.
+
+### E84
+- source: lambdas:crm-integrations/pbs-push/transform.js:477 (release c846c1430); pbs-push/main.js:758, 855
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: PBS gets a real appointment: a Workplan appointment of type SalesAppointment, status Open, DueDate = meeting start (UTC ISO), TimeAllowed = duration, Summary = intent (transform.js:477-512; main.js:855-870). It is assigned (UserRefs) to the SalesRep already on the existing deal (main.js:758, 787-792). When this push creates the deal, the deal gets a default rep (main.js:595-618) but the appointment has no UserRefs and no SourceRef, because the context reads only the pre-existing deal.
+
+### E85
+- source: lambdas:crm-integrations/eleads-push/fortellis.js:768 (release c846c1430); eleads-push/helpers.js:760, 807
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: eLead (Fortellis) gets a scheduled activity: /sales/v1/elead/activities/schedule with activityName "Appointment", the rooftop's Appointment activity type id, dueDate = meeting start in UTC, and comments = the tags as JSON (fortellis.js:768-779; helpers.js:760, 807-817). No rep is sent anywhere in the lambda. A pencil shows only as ["tentative_appointment"] in comments (plus the customer quote tag on the legacy route).
+
+### E86
+- source: lambdas:crm-integrations/tekion-push/transform.js:578 (release c846c1430); tekion-push/insert-data.js:602
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Tekion gets a real appointment: POST /openapi/v4.0.0/leads/{id}/appointments (insert-data.js:602) with type GENERAL_SALES, IN_STORE, a local date and start and end time in the rooftop timezone, status CREATED, and the Spyne meeting_id as externalReference (transform.js:600-686). No rep. A meeting with no end date is dropped (lines 591-594), and tentative maps to CREATED like scheduled (line 652).
+
+### E87
+- source: lambdas:crm-integrations/vinsolution-push/handler.js:1656 (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: VinSolutions gets no appointment object. The meeting becomes one line, intent plus local date and time (e.g. "Schedule Appointment 22 oct 2026 3:00 pm"), in the lead's Note field on a PUT gateway/v1/lead/{id}. The same PUT moves the lead to stage ACTIVE_SET_APPOINTMENT (StageId 16) (lines 1656-1730). UserId is the rooftop's "Spyne" integration user, falling back to an admin (lines 996-1017), not a salesperson. A pencil is not marked as one.
+
+### E88
+- source: lambdas:crm-integrations/adf-push/xml-formats.js:86 (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: ADF (only the promax format is built, XML_FORMAT_BUILDERS) sends a new or resend ADF prospect, by email or API post. It carries an <appointment> block (appointmentdate in UTC ISO, appointmenttype = intent) plus a numbered "--- APPOINTMENTS ---" line in the customer comments (lines 86-92, 126-133, 197-218). No rep. Whether the receiving CRM turns the block into a calendar appointment is outside our code.
+
+### E89
+- source: clickhouse:dealer_leads.meetings.external_crm_appointment_id joined to SMS dealer_leads.conversations; team to CRM from conversation_ai.ci_integration_logs crmName and dealer_leads.leads.crm_type (heuristic); query /private/tmp/claude-502/-Users-yash-Documents-claude-code/69f1cb87-8494-46f4-9502-58e7e1be05b4/scratchpad/r5_land.sql
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Spyne-set sales visits from SMS threads (source spyne, created more than 30s after the thread, 1 Aug to 13 Oct, live rooftops) carrying a CRM appointment id: DriveCentric 208 of 208 (2 rooftops), ADF 179 of 181 (3), eLead 23 of 24 (3), PBS 1 of 1, Tekion 26 of 42 (62%, 6 rooftops), VinSolutions 18 of 319 (6%, 11 rooftops, consistent with note-only), CRM unknown 321 of 327 (8). Pencils are rare: 11 SMS pencils, 2 with an id. The CRM label per rooftop is inferred, not read from the registry; a CRM id proves the push was accepted, not that a rep saw it.

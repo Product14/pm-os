@@ -1,0 +1,136 @@
+{
+  "persona": "backend-engineer",
+  "round": 1,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 3,
+    "Honest unknowns": 3,
+    "Shared scope": 3,
+    "Full value": 3,
+    "Brevity": 4,
+    "Code-cited baseline": 4,
+    "Integration reality": 2,
+    "Failure design": 2,
+    "Observability and rollback": 2,
+    "Scope discipline": 4
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "backend-engineer-r1-1",
+      "severity": "blocking",
+      "type": "feasibility",
+      "quote": "**Per rooftop:** re-offer limit (assertiveness level), offerable times (store hours), wake-up timing and cap, a call offer instead of a third pair (for stores like E35's), sourcing on or off.",
+      "concern": "Phase 1 changes live agent behaviour at every sales SMS rooftop at once (STL and follow_up SMS too) and there is no per-rooftop on/off or rollback for it. The prompt edits ship to all teams on deploy. The skip-rule allowlist is a global constant. The only per-team switch that exists today is wakeup.enabled=false, and that also kills pencil bookings, because the pencil cron only picks threads with wakeup.lastSentAt set. 'Turn it off' is not a rollback plan here.",
+      "because": "`conversational-ai-backend:src/sms/sms-wakeup.constants.ts:15` (global allowlist); `conversational-ai-backend:src/sms/sms-wakeup.constants.ts:74` (enabled is the only per-team key); `conversational-ai-backend:src/meetings/tentative-booking-evaluator.service.ts:79` (pencil requires wakeup.lastSentAt); missing (no phase 1 flag in the doc)",
+      "ask": "Add a per-team flag for phase 1, for example a template var from teamAgentMapping that selects the new wake-up, SMS-arm and miss-ending text, plus a team-scoped skip-rule allowlist. Name the pilot rooftops and the rollback step for each change (prompt, skip rule, concluded rule)."
+    },
+    {
+      "id": "backend-engineer-r1-2",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Skip rule: an action item that leaves the visit offer open, such as a photo or trade-in follow-up, no longer cancels the nudge (Q15) [E61].",
+      "concern": "Unblocking the wake-up also unblocks the pencil. The tentative-booking cron picks any in-progress SMS thread with a wake-up sent and no humanTakenOverAt. It does not check action items. So a thread where a store person owns a photo or trade-in task can now get a wake-up and then a penciled visit synced to the CRM. The doc lists no downstream callers for this change.",
+      "because": "`conversational-ai-backend:src/meetings/tentative-booking-evaluator.service.ts:72-83`; `conversational-ai-backend:src/sms/sms-wakeup.service.ts:164-176`; E22",
+      "ask": "List the downstream effects of the skip-rule change: the pencil cron, tentative meeting CRM sync, and the STL and follow_up sources. State whether the pencil should still fire on threads that hold a non-scheduling action item."
+    },
+    {
+      "id": "backend-engineer-r1-3",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Concluded turns: a \"let me check\" reply with a visit offer open is not concluded. The reply is sent and the wake-up stays armed [E62].",
+      "concern": "The model sets is_concluded, through the SMS branch of sales_new/response-format.xml. sendOutbound suppresses the whole batch on it by design, and that transport is shared by recall, service, receptionist and acquisition SMS. 'The reply is sent' reads like a transport change, and that would hit every SMS agent. Also, phase 1 has no server-side record of an open offer (E18), so 'with a visit offer open' can only be the model's judgement. That makes this a third wording-only rule.",
+      "because": "`conversational-ai-backend:src/sms/sms-v2.service.ts:4076-4090`, `:4157`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_new/response-format.xml:60-62`; `conversational-ai-backend:src/prompts/base-system-prompts/recall/sms-formatting.xml:33`; E18",
+      "ask": "Say that the change goes only in the SMS branch of sales_new/response-format.xml and that sendOutbound is untouched. Define how 'visit offer open' is decided in phase 1, and how a failure would show up."
+    },
+    {
+      "id": "backend-engineer-r1-4",
+      "severity": "major",
+      "type": "scope",
+      "quote": "Every rule sits in the SMS arm or the wake-up path, so voice, chat and outbound do not change [E13] [PM].",
+      "concern": "Not true for the inventory-miss rule. Its ending lives in sales_new/unavailable-vehicle-discovery.xml, and sales_v2.xml includes that file unconditionally for voice, chat and outbound voice. The fragment has no SMS condition. The wake-up path also runs on speed_to_lead and follow_up SMS, and the doc does not name those surfaces.",
+      "because": "`conversational-ai-backend:src/prompts/base-system-prompts/sales_v2.xml:49`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_new/unavailable-vehicle-discovery.xml:40`; E22; E24",
+      "ask": "Put the new miss ending behind a communication_medium == 'sms' guard inside the fragment, or move it to the SMS arm. Name STL and follow_up SMS as landing surfaces, with the test that proves voice and chat render unchanged."
+    },
+    {
+      "id": "backend-engineer-r1-5",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "| Inventory miss with no next step | 10 of 84 | 0 | [E6] |",
+      "concern": "unavailable-vehicle-discovery.xml:40 already tells the agent to 'offer one visit-oriented next step' when the alternative search is empty, and the E10 goodbyes break that rendered rule. This is the same pattern as line 19 on live turns and the self-check on wake-ups. A target of 0 from more wording has nothing behind it. The phase 2 backstop covers repeated pairs only, so there is no backstop for the miss ending or for concluded turns.",
+      "because": "`conversational-ai-backend:src/prompts/base-system-prompts/sales_new/unavailable-vehicle-discovery.xml:40`; E10; E55; E57",
+      "ask": "Set a target the evidence supports. Add a trigger and a non-prompt backstop for the miss ending and for concluded turns, the way phase 2 does for repeats, or say why wording will hold this time."
+    },
+    {
+      "id": "backend-engineer-r1-6",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Same pair repeated after an untaken offer | 20 of 47 threads | under 10, at under 5 rooftops | [E2, E42] |",
+      "concern": "Every success measure comes from a weekly blinded read of about 100 sampled threads across 14 rooftops. 'Under 5 rooftops' in a sample depends on which rooftops get sampled, so it is not comparable week to week. No production query or alert is named, so a regression shows up a week late, if at all. Repeated pairs can be computed in the warehouse from smsMessages.body, createdAt and wakeUpMessage.",
+      "because": "E2; E42; E56; solution-context.md 'Where the outcome is logged'",
+      "ask": "Name a warehouse query over all sales SMS threads, per rooftop and per day, split by wakeUpMessage. Track skipped-wake-up reasons from the new log line as a metric. Keep the transcript read as validation, not as the gate."
+    },
+    {
+      "id": "backend-engineer-r1-7",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Extend the voice-only gate state to SMS, keyed per conversation, and block a repeated pair before send. Spans the backend and the SMS lambda `conversational-ai-backend:src/conversation/conversation.schema.ts:58` [E14, E18, E58].",
+      "concern": "There is no data contract for 'a pair'. SMS model output is free text {text, message_reason, is_concluded}, with no structured offered-times field. Blocking before send therefore means either parsing clock times out of prose or adding a field to the output schema in the lambda and the backend. visitAskState is written by a gate tool call with a rev-checked $set and is keyed by callId, and SMS turns make no such call. Nothing says what happens when a send is blocked: regenerate, strip the times, or drop the message. This is also a wake-up path that cannot book.",
+      "because": "`conversational-ai-backend:src/sms/sms.service.ts:119-123`; `conversational-ai-backend:src/tools/definitions/sales/sales-visit-ask-gate.tool.ts:152`, `:401-403`; E58",
+      "ask": "Name the offered-times field: where it is emitted, its type and timezone, and who writes it. Name the enforcement point (lambda or sendOutbound) and the behaviour on block, including the retry budget and the log line."
+    },
+    {
+      "id": "backend-engineer-r1-8",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "Phases 1 and 2 need no DMS or CRM write. Phase 3 needs certified write-back on four CRMs, a commercial dependency [E49, E50, E51, E52].",
+      "concern": "The evidence does not show four commercial gaps. On eLead we already post scheduled activities with a dueDate for meetings through Fortellis /activities/schedule. A timed task there may be a mapping change inside access we already have, not new certification. Status for Tekion, VinSolutions and ADF is unknown, not proven missing. The untimed fallback is not neutral either: on eLead an action item lands as an already-completed 'Note'. A sourcing request filed as completed is the E33 failure, where nobody knew. Phase 3 also has no failure path: E53 could not prove the push lambdas set external_crm_synced_timestamp, so a failed push would be invisible.",
+      "because": "E49; E50; E51; E52; E53; E33",
+      "ask": "Add a per-provider table: task object available, scope or certification status, and who confirms it. Do not promise 'a visit time attached' on untimed CRMs. Name how a failed sourcing push is detected and alerted."
+    },
+    {
+      "id": "backend-engineer-r1-9",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "Pull back by lowering the re-offer limit `conversational-ai-backend:src/agents/agents-v2.service.ts:2901`.",
+      "concern": "That line sets visit_ask_limit, and only the voice gate tool consumes it. On SMS the limit is prompt text that the model counts (appointment-conversion.xml:10-16), and 'high' renders no limit at all. As a pull-back lever it relies on the same model counting that is already failing.",
+      "because": "`conversational-ai-backend:src/agents/agents-v2.service.ts:2899-2908`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_new/appointment-conversion.xml:8-16`",
+      "ask": "Cite the SMS path and call it a soft, model-counted lever until phase 2 exists."
+    },
+    {
+      "id": "backend-engineer-r1-10",
+      "severity": "minor",
+      "type": "feasibility",
+      "quote": "Wake-up: never resend a pair already offered, including after an overnight deferral. The one nudge offers a different pair from store hours, or asks the constraint [E21, E57].",
+      "concern": "The wake-up prompt already contradicts itself. Line 6 says 'DO NOT re-ask any question you already asked', while line 44 says 'the nudge IS that question asked again', and line 53 is an example that re-offers times. Adding another rule on top keeps the conflict. A different pair also depends on SalesHours being rendered, and it is rendered only when dealership_sales_hours is set.",
+      "because": "`conversational-ai-backend:src/prompts/base-system-prompts/sales_new/sms-wakeup.xml:6`, `:44`, `:53`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_new/context-data.xml:34-35`",
+      "ask": "Rewrite the conflicting wake-up lines rather than adding to them. Say what the nudge does when no sales hours are configured."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Is a rooftop's sales SMS agent on its own teamAgentMapping (its own assertiveness and flags), separate from its voice agent?",
+      "blocks": "backend-engineer-r1-1, backend-engineer-r1-9 (per-rooftop flag and pull-back lever)",
+      "source": "conversational-ai-backend teamAgentMapping schema / Engineering"
+    },
+    {
+      "question": "In the wake-up flow, which tools does the sms-worker lambda keep after stripping booking tools, and does it keep dealership_check_hours?",
+      "blocks": "backend-engineer-r1-10 (different pair from store hours)",
+      "source": "lambdas:converse/sms-worker/index.js:1528-1532"
+    },
+    {
+      "question": "Does our Fortellis eLead subscription allow /activities/schedule for non-appointment activity types? What task or reminder object, and what certification, do Tekion, VinSolutions and ADF offer?",
+      "blocks": "backend-engineer-r1-8 (phase 3 dependency)",
+      "source": "Integrations team / provider agreements"
+    },
+    {
+      "question": "How many sales SMS rooftops have dealership_sales_hours empty?",
+      "blocks": "backend-engineer-r1-10",
+      "source": "ClickHouse / central-config"
+    }
+  ]
+}

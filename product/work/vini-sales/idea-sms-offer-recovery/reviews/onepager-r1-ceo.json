@@ -1,0 +1,123 @@
+{
+  "persona": "ceo",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 3,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 2,
+    "Above the DMS": 3,
+    "Honest unknowns": 4,
+    "Shared scope": 3,
+    "Full value": 4,
+    "Brevity": 4,
+    "Dealer economics": 2,
+    "Base leverage": 3,
+    "Dependency honesty": 3,
+    "Handoff clarity": 2,
+    "Decision readiness": 3
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "ceo-r1-1",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "Agent-set visits land a median 1.6 days from lead when set in the first thread vs 5.8 when set later, a self-selected gap, not a causal estimate; BDC touches are not sized (Q6).",
+      "concern": "The 60-second value line is a days number you tell me not to believe. Your own evidence weakens it further: stores already set a visit for leads who replied in the first thread at a median of 1.8 days (E66). So the days we remove are probably close to zero. What is left is cost removed: BDC re-touches on leads the dealer already paid for. That figure is 'unknown'. Put a 4-day gap in the TL;DR and a CSM will quote it to a dealer as 'Vini cuts 4 days'. That is a Spyne-internal, self-selected figure being passed off as an outcome.",
+      "because": "E64, E65, E66; Q6 missing",
+      "ask": "Take the 1.6 vs 5.8 gap out of the TL;DR, or label it as Spyne internal data that is not for dealer use. State plainly that phase 1 is justified as defect repair on a shared surface, not as a sized days-removed claim. Make sizing Q6 (BDC touches per unbooked SMS lead) a precondition for funding phase 2 or 3, in cost-removed terms for the BDC manager's P&L."
+    },
+    {
+      "id": "ceo-r1-2",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "The follow-up team feels it: one store lost an aged lead whose intended visit never reached the CRM [E33].",
+      "concern": "E33 shows a write-back failure: the visit was intended, but it never landed in the store's system. That is not an untaken offer, and nothing in phase 1 fixes it. Using it as felt pain for a wording and wake-up fix overstates the dealer demand. In front of a dealer it would also invite the question we cannot answer: why did the visit not reach my CRM?",
+      "because": "E33; E40 (no dealer named repeated pairs or silence)",
+      "ask": "Move E33 out of Problem, or relabel it as an adjacent failure on the same job that this release does not fix. If the cause of the CRM miss is unknown, add it as an open question with an owner."
+    },
+    {
+      "id": "ceo-r1-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "A sales director wants every agreed visit closed with \"today or tomorrow\" and nothing else [E30, E31].",
+      "concern": "This is the only dealer ask in the file with a base signal behind it: the CSM says other dealerships gave the same feedback (E37). Phase 1 does not deliver it. The live rule adds a constraint question before a new pair, which is the opposite of 'nothing else'. If we cite the dealer's words and ship something different, the sales director will notice.",
+      "because": "E30, E31, E37",
+      "ask": "Either add a phase 1 rule that an agreed yes goes straight to a two-time ask with no side question, with the store the change lands at named as the proof point, or move this line out of Problem and say this release does not address it. Make sure the constraint-question rule does not fire after a yes."
+    },
+    {
+      "id": "ceo-r1-4",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "Phases 1 and 2 need no DMS or CRM write. Phase 3 needs certified write-back on four CRMs, a commercial dependency [E49, E50, E51, E52].",
+      "concern": "Phase 1's value only shows up if the store sees the visit the agent set. That runs through meeting write-back to each rooftop's CRM, and the page does not give its status per CRM (eLead schedules meetings, E49; the rest are unstated). Phase 3's 'timed CRM task on DriveCentric and PBS' rests on code paths (E47, E48), not on certification. Code that writes is not the same as a certified, negotiated integration. PBS is a DMS as well as a CRM.",
+      "because": "E47, E48, E49; E33; missing (meeting write-back and certification status per CRM)",
+      "ask": "Add a short table for the six CRMs. For each one, list whether an agent-set SMS meeting is written with a time today and whether that write is certified or in production. Change the line to say phases 1 and 2 need no new write, but depend on the existing meeting sync, with its status per CRM."
+    },
+    {
+      "id": "ceo-r1-5",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Skip rule: an action item that leaves the visit offer open, such as a photo or trade-in follow-up, no longer cancels the nudge (Q15) [E61].",
+      "concern": "This is the handoff, and the page never names it as one. An action item is how we hand the lead to a person at the store. A trade-in follow-up goes to the used-car desk, a separate P&L. If the agent keeps nudging after that handoff, we risk double contact, which is the thing dealers ask us to stop (E32). Q15 lists PM and Engineering as the ones who answer, but when a human owns a lead is the dealer's call. The page also never says who benefits (BDC or internet sales manager), who signs (GM) and who may block.",
+      "because": "E61, E32; missing (no dealer voice on which action items mean a human owns the lead)",
+      "ask": "Name the handoff explicitly: agent to BDC or salesperson, and to the used-car desk for a trade-in. Add who benefits, who signs and who may block. Change Q15's owner to the CSM with two or three BDC or internet sales managers, and get the answer before the skip-rule change ships. Until then, keep SALES_TRADE_IN_FOLLOW_UP blocking."
+    },
+    {
+      "id": "ceo-r1-6",
+      "severity": "major",
+      "type": "scope",
+      "quote": "Phase 1 is mostly defect repair. If one PRD would delay it, file phase 1 as a Bug first [PM].",
+      "concern": "I cannot tell what you are asking me for. A conditional 'if' is not a decision. The page also never says what this displaces. The sibling regression on voice is larger: proposals fell to 8% on workflow_v2 against 58% inline (E12). I am not reopening the SMS-only scope. I need the sequencing and the cost in engineering time so I can say yes knowing what it pushes back.",
+      "because": "E12; missing (phase 1 size, displaced work)",
+      "ask": "Put one ask on top. For example: approve phase 1 as a Bug this sprint at an estimated N engineer-days, write the PRD in parallel, and fund nothing for phases 2 and 3 until their triggers fire. Say what phase 1 delays, including where it sits against RETCONVAI-5392."
+    },
+    {
+      "id": "ceo-r1-7",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "Trigger: two weekly reads after phase 1 still show 10 or more repeat threads at 5 or more rooftops [E2, E42].",
+      "concern": "Two stores carry 27 of the 47 threads (E42). On raw counts, those two stores plus three stores with one thread each meet this trigger. That would fund server-side work for what is really a two-store pattern. Base leverage needs a rate, not a count.",
+      "because": "E42",
+      "ask": "Express the trigger as a per-rooftop rate (repeat threads over threads sampled at that rooftop), met at 5 or more rooftops, and report it with the two concentrated stores excluded as well."
+    },
+    {
+      "id": "ceo-r1-8",
+      "severity": "minor",
+      "type": "five-facts",
+      "quote": "Inventory miss: always end on visit times for a shown unit, or one visit invite, never a goodbye [E10, E24].",
+      "concern": "This is the one place in the document that touches turn speed, and the page does not say so. A customer redirected to a unit already on the lot is days in stock removed on that unit. Decide made this argument; the one-pager dropped it, so lever 2 reads as a wording fix rather than an inventory lever.",
+      "because": "E24; decide.md Outcome (days in stock on a miss)",
+      "ask": "Add one line under What it removes linking the similar-unit ending to days in stock. Say whether the alternative search favours units already on the ground (see request). Do not claim a number."
+    }
+  ],
+  "requests": [
+    {
+      "question": "For each of the six sales CRM push paths (adf, drivecentric, eleads, pbs, tekion, vinsolution), is an agent-set SMS meeting written to the dealer system with a time today, and is that integration certified or in production per provider?",
+      "blocks": "ceo-r1-4; Above the DMS score; whether phase 1 value reaches the store",
+      "source": "Engineering (crm integrations lambdas, meeting push path) and integrations/partnerships"
+    },
+    {
+      "question": "How many BDC or salesperson touches does an unbooked SMS lead get before a visit is set or the lead is closed (Q6)?",
+      "blocks": "ceo-r1-1; the only cost-removed argument this has",
+      "source": "CSM with 2 to 3 rooftops' BDC managers, or CRM activity counts where the feed exists"
+    },
+    {
+      "question": "Estimated engineer-days for phase 1, and what on the Sales Inbound roadmap it displaces (including RETCONVAI-5392).",
+      "blocks": "ceo-r1-6; decision readiness",
+      "source": "Engineering lead and PM"
+    },
+    {
+      "question": "Does the agreed_alternative inventory search rank or filter by days in stock, or only by match to the customer's need?",
+      "blocks": "ceo-r1-8; whether lever 2 can be argued in days in stock",
+      "source": "Code: inventory_search_vehicles_v3 and sales_new/unavailable-vehicle-discovery.xml"
+    },
+    {
+      "question": "Per-rooftop repeat-pair rate in the 21 Oct sample (repeat threads over sampled threads per rooftop), with the two concentrated stores shown separately.",
+      "blocks": "ceo-r1-7; base versus one-off",
+      "source": "Transcript read results joined to blind-key (E42)"
+    }
+  ]
+}

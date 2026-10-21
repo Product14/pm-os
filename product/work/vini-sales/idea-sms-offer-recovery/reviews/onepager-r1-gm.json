@@ -1,0 +1,146 @@
+{
+  "persona": "gm",
+  "round": 1,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 3,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 2,
+    "Above the DMS": 3,
+    "Honest unknowns": 3,
+    "Shared scope": 3,
+    "Full value": 3,
+    "Brevity": 4,
+    "Statement impact": 2,
+    "System of record": 3,
+    "Adoption cost": 4,
+    "Failure visibility": 2,
+    "Handoff ownership": 2
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "gm-r1-1",
+      "severity": "blocking",
+      "type": "wrong-for-dealers",
+      "quote": "Timed CRM task on DriveCentric and PBS; untimed note on eLead, Tekion, VinSolutions and ADF until task write-back is certified [E47, E48, E49, E52].",
+      "concern": "My store just told a customer, in the store's name, that we will go find him a car. On eLead that request lands as an activity that is already marked complete, and on Tekion, VinSolutions and ADF it is a line of text on the lead. Nobody's task list shows it and nobody is alerted. That is a promise the store cannot keep, and nobody finds out until the customer calls back angry. The setting is off by default, but any store on those four CRMs that turns it on gets exactly this.",
+      "because": "E49 (eLead writes action items as completed \"Note\" activities with no due date), E50, E51, E52 (notes or comment text, no task object); E33 (a visit nobody saw lost the lead)",
+      "ask": "In phase 3, only allow sourcing at a rooftop whose CRM gets a timed task with an owner (DriveCentric and PBS today). On the other four, keep it unavailable until task write-back is certified, or name the alert and owner that replaces the task. State this in the doc as a precondition for turning the setting on."
+    },
+    {
+      "id": "gm-r1-2",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "Agent-set visits land a median 1.6 days from lead when set in the first thread vs 5.8 when set later, a self-selected gap, not a causal estimate; BDC touches are not sized (Q6).",
+      "concern": "The TL;DR is the only part I read, and it leaves me thinking we win 4 days. But the comparison I care about is the agent versus my own BDC. When my store sets the visit after a reply, it already lands at a median 1.8 days. The risks section admits the days gap may not move, and the TL;DR hides that.",
+      "because": "E66 (store-set visits after a first-thread reply: median 1.8 days, at 16 of 18 rooftops); E64, E65 (self-selected groups, n=36 recovery subset)",
+      "ask": "Put the 1.8-day store-set figure next to the 1.6 and 5.8 in the TL;DR, or drop the days claim from the TL;DR. Add the lead-to-visit days assumption back as an open question (decide.md carried it as Q7; the one-pager drops it)."
+    },
+    {
+      "id": "gm-r1-3",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "| BDC follow-up touches per unbooked SMS lead | unknown | fewer | Q6 |",
+      "concern": "Every target I could check on my statement is unknown, fewer or not claimed. The ones with numbers (repeat pairs, skipped wake-ups, unsent turns) are vendor quality measures, not my gross, expense or days. There is also nothing I could measure at one rooftop: the repeat target is a fleet-wide sample read. And the doc drops the one line that actually touches turn, a similar unit already on my lot being shown and booked on an inventory miss, even though decide.md names it.",
+      "because": "missing (Q6 unanswered); E24 (similar-unit search shows on-lot units); decide.md Outcome (\"on a miss, on-lot units shown, so days in stock\")",
+      "ask": "Add a per-rooftop measure a GM could read: for example, visits set in the first thread per 100 engaged SMS leads, and on an inventory miss, visits set on a shown on-lot unit. Add the days-in-stock angle for lever 2a as a named, unsized line. Say how Q6 gets answered at one rooftop."
+    },
+    {
+      "id": "gm-r1-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Skip rule: an action item that leaves the visit offer open, such as a photo or trade-in follow-up, no longer cancels the nudge (Q15) [E61].",
+      "concern": "A trade-in follow-up is work for my used car manager or appraiser. On DriveCentric and PBS it lands as a timed task on someone's list. If the agent then texts the same customer new visit times, the customer is hearing from two of my people with two different agendas. That handoff (sales agent to used-car desk) is exactly where nobody owns the result. One store already asked for a stop button so a salesperson can take over from the AI.",
+      "because": "E61 (SALES_TRADE_IN_FOLLOW_UP and SEND_VEHICLE_PHOTO blocked the nudge); E47, E48 (action items become timed CRM tasks on DriveCentric and PBS); E32 (store wants to stop AI follow-up when a salesperson takes over)",
+      "ask": "Unblock the nudge only for action items the agent itself completes in the thread (for example a photo it sends), not for ones pushed to the CRM as a person's task. Name who owns the lead once a CRM task exists, and answer Q15 before phase 1 ships, not during it."
+    },
+    {
+      "id": "gm-r1-5",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Live SMS arm: after an untaken pair or a side question, answer, ask the constraint once, then offer a pair that fits it [E17, E7].",
+      "concern": "Most live repeats follow a side question like the address, price or photos. That is not a no. Answering and then asking what is standing in the way adds the extra question my sales director complained ruined an appointment. After a side question the move is: answer, then offer a fresh pair. Save the constraint question for when the customer actually turns the times down.",
+      "because": "E55 (13 of 17 live repeats came right after a side question); E31 (\"Does today or tomorrow work better for you? Instead of asking any other questions\"); E16 (the existing prompt asks the open question only after both times are turned down)",
+      "ask": "Split the rule. After a side question: answer, then offer a different pair, with no extra question. After a declined pair: ask the constraint once, then offer a pair that fits it."
+    },
+    {
+      "id": "gm-r1-6",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Wake-up: never resend a pair already offered, including after an overnight deferral. The one nudge offers a different pair from store hours, or asks the constraint [E21, E57].",
+      "concern": "The wake-up runs with its booking tools stripped, and nobody has shown it can still read my hours. If it cannot, it makes up a new pair, and the customer shows up when the showroom is closed or the desk is empty. That is a promise in my store's name. The open question that would settle this, the live tool list on SMS, is filed as a phase 3 question when it blocks phase 1.",
+      "because": "E58 (sms-worker strips booking tools on a wake-up, lines 1528-1532); E27 (dealership_check_hours is in the canonical toolset, but the live tool list per rooftop is not proven); Q4 labelled \"Phase 3 size\"",
+      "ask": "Confirm the wake-up has store hours (tool or rendered into the prompt) before phase 1, and move Q4 to block phase 1. If it has no hours, the wake-up asks the constraint instead of inventing a pair."
+    },
+    {
+      "id": "gm-r1-7",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Inventory miss: always end on visit times for a shown unit, or one visit invite, never a goodbye [E10, E24].",
+      "concern": "If we have nothing close (the under-10,000 SUV), a visit invite brings a customer in to look at nothing. My salesperson gets a walk-in we cannot sell to, and the store looks like the other vendor's AI the prospect complained about, which books appointments for cars that are not on the ground. A target of 0 dead ends pushes the agent to invite every miss.",
+      "because": "E10 (\"I do not see a used SUV under $10,000 right now.\"); E36 (prospect: vendor AI \"creating appointments for a car that we don't have\"); E24 (the visit step fires even when the alternatives search returns empty)",
+      "ask": "When no unit was shown, the ending is a reason to come in that the store can deliver (a unit near the stated budget, or a salesperson calling about what is coming in), not a bare visit invite. Change the \"0\" target to \"0 goodbyes\", not \"every miss gets a visit invite\"."
+    },
+    {
+      "id": "gm-r1-8",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Pull back by lowering the re-offer limit `conversational-ai-backend:src/agents/agents-v2.service.ts:2901`.",
+      "concern": "That limit sets the voice visit-ask gate, and SMS has no gate. Nothing here shows it limits anything on SMS. So if my used car manager says the texts got pushy, there may be no knob to turn except a code change. And phase 1 ships to every SMS rooftop with no per-rooftop switch to turn the new behaviour off for one store.",
+      "because": "E14 (visit_ask_gate is voice-only; the gate tool never reaches SMS); E34, E35 (dealers already push back on appointment-only text pressure); E11 (close per attempt sliding, unexplained)",
+      "ask": "Show that the assertiveness level renders into the SMS arm and wake-up, or name the SMS pull-back control phase 1 adds. Add a per-rooftop off switch for the phase 1 re-offer rules, and say how a dealer's \"too pushy\" complaint reaches the PM (CSM, ticket, weekly read)."
+    },
+    {
+      "id": "gm-r1-9",
+      "severity": "major",
+      "type": "scope",
+      "quote": "Every rule sits in the SMS arm or the wake-up path, so voice, chat and outbound do not change [E13] [PM].",
+      "concern": "The doc does not say what does change. Speed-to-lead and follow-up SMS threads (my aged-lead texting) render the same root and get the same wake-ups. The used car manager who said the aged-lead follow-up pushes the appointment too hard, and the store that lost an aged lead, are both on those threads. More re-offers will land there too.",
+      "because": "E13 (every sales agent type renders sales_v2); E22 (pencil and wake-up sources: speed_to_lead, sms, follow_up); E34 (aged-lead text follow-ups); E33 (aged sales lead); decide.md Ladder rung 6 (STL and follow_up get it by design)",
+      "ask": "Name Sales STL and follow-up SMS as surfaces that change. Say whether the re-offer rules apply to aged-lead follow-up threads or only to fresh inbound, and give aged-lead campaigns their own setting."
+    },
+    {
+      "id": "gm-r1-10",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "The follow-up team feels it: one store lost an aged lead whose intended visit never reached the CRM [E33].",
+      "concern": "That store's problem was a visit that was never written to the CRM and never alerted anyone. It was not an untaken offer or a repeated pair, and nothing in phase 1 fixes it. Citing it as the pain this solves oversells what the doc delivers. When the one nudge ends with no visit, my BDC still learns only from the idle summary note.",
+      "because": "E33; E29 (the CRM gets the thread only as an idle-time summary note); decide.md Prior decisions (hand-back deferred to RETCONVAI-5165)",
+      "ask": "Either drop E33 from Problem or move it to a line that says hand-back of unbooked SMS leads is out of scope and tracked in RETCONVAI-5165."
+    }
+  ],
+  "requests": [
+    {
+      "question": "After the sms-worker strips booking tools on a wake-up, does the wake-up still have dealership_check_hours, or store hours rendered in its prompt?",
+      "blocks": "gm-r1-6, phase 1 wake-up rule",
+      "source": "lambdas:converse/sms-worker/index.js:1528-1532; agent config tool lists (Q4)"
+    },
+    {
+      "question": "Does the assertiveness level change anything in the SMS prompt or SMS behaviour today, or only the voice visit-ask limit?",
+      "blocks": "gm-r1-8, the pull-back lever",
+      "source": "conversational-ai-backend:src/agents/agents-v2.service.ts:2901 and the SMS template vars"
+    },
+    {
+      "question": "What local time did the 12:10 UTC wake-up batch of 19 Oct land at for each rooftop that received it? Did any text go out before the store opened?",
+      "blocks": "phase 1 overnight-deferral rule; store's name on an early-morning text",
+      "source": "clickhouse:dealer_leads.smsMessages joined to rooftop time zone (E57)"
+    },
+    {
+      "question": "What is different at the two stores that carry 27 of the 47 untaken-offer threads (narrow hours, lead source STL vs inbound vs follow_up, assertiveness, lead volume)? Is it a fleet pattern or two stores' setup?",
+      "blocks": "Right decision: generalised build vs per-store config",
+      "source": "E42 blind key joined to conversations source and team config"
+    },
+    {
+      "question": "For the 5 threads stopped by an action item, had that item already synced to the dealer CRM as a task before the wake-up would have fired?",
+      "blocks": "gm-r1-4, Q15",
+      "source": "clickhouse:dealer_leads.actionItems external_crm_synced_timestamp vs wake-up due time"
+    },
+    {
+      "question": "How do the 47 untaken-offer threads split by source (inbound sms, speed_to_lead, follow_up)?",
+      "blocks": "gm-r1-9, scope of the re-offer rules",
+      "source": "transcript read results joined to conversations.source"
+    }
+  ]
+}

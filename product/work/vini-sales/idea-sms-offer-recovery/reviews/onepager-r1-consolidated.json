@@ -1,0 +1,801 @@
+{
+ "verdicts": {
+  "backend-engineer": "block",
+  "bdc-manager": "block",
+  "ceo": "revise",
+  "general-sales-manager": "block",
+  "gm": "block"
+ },
+ "scores": {
+  "backend-engineer": {
+   "Real problem": 4,
+   "Right decision": 4,
+   "Evidence": 4,
+   "P&L": 3,
+   "Above the DMS": 3,
+   "Honest unknowns": 3,
+   "Shared scope": 3,
+   "Full value": 3,
+   "Brevity": 4,
+   "Code-cited baseline": 4,
+   "Integration reality": 2,
+   "Failure design": 2,
+   "Observability and rollback": 2,
+   "Scope discipline": 4
+  },
+  "bdc-manager": {
+   "Real problem": 3,
+   "Right decision": 4,
+   "Evidence": 4,
+   "P&L": 3,
+   "Above the DMS": 4,
+   "Honest unknowns": 3,
+   "Shared scope": 4,
+   "Full value": 3,
+   "Brevity": 4,
+   "CRM completeness": 2,
+   "Human reach": 2,
+   "Show discipline": 1,
+   "Workload effect": 3,
+   "Contact compliance": 1
+  },
+  "ceo": {
+   "Real problem": 3,
+   "Right decision": 4,
+   "Evidence": 4,
+   "P&L": 2,
+   "Above the DMS": 3,
+   "Honest unknowns": 4,
+   "Shared scope": 3,
+   "Full value": 4,
+   "Brevity": 4,
+   "Dealer economics": 2,
+   "Base leverage": 3,
+   "Dependency honesty": 3,
+   "Handoff clarity": 2,
+   "Decision readiness": 3
+  },
+  "general-sales-manager": {
+   "Real problem": 3,
+   "Right decision": 4,
+   "Evidence": 4,
+   "P&L": 2,
+   "Above the DMS": 2,
+   "Honest unknowns": 3,
+   "Shared scope": 4,
+   "Full value": 3,
+   "Brevity": 3,
+   "Desk control": 3,
+   "Rep handoff": 2,
+   "Inventory truth": 2,
+   "Attribution integrity": 2,
+   "Outcome metric": 2
+  },
+  "gm": {
+   "Real problem": 3,
+   "Right decision": 4,
+   "Evidence": 4,
+   "P&L": 2,
+   "Above the DMS": 3,
+   "Honest unknowns": 3,
+   "Shared scope": 3,
+   "Full value": 3,
+   "Brevity": 4,
+   "Statement impact": 2,
+   "System of record": 3,
+   "Adoption cost": 4,
+   "Failure visibility": 2,
+   "Handoff ownership": 2
+  }
+ },
+ "discarded_generic": 0,
+ "dropped_ids": [],
+ "requests": [
+  {
+   "question": "Is a rooftop's sales SMS agent on its own teamAgentMapping (its own assertiveness and flags), separate from its voice agent?",
+   "blocks": "backend-engineer-r1-1, backend-engineer-r1-9 (per-rooftop flag and pull-back lever)",
+   "source": "conversational-ai-backend teamAgentMapping schema / Engineering",
+   "persona": "backend-engineer"
+  },
+  {
+   "question": "In the wake-up flow, which tools does the sms-worker lambda keep after stripping booking tools, and does it keep dealership_check_hours?",
+   "blocks": "backend-engineer-r1-10 (different pair from store hours)",
+   "source": "lambdas:converse/sms-worker/index.js:1528-1532",
+   "persona": "backend-engineer"
+  },
+  {
+   "question": "Does our Fortellis eLead subscription allow /activities/schedule for non-appointment activity types? What task or reminder object, and what certification, do Tekion, VinSolutions and ADF offer?",
+   "blocks": "backend-engineer-r1-8 (phase 3 dependency)",
+   "source": "Integrations team / provider agreements",
+   "persona": "backend-engineer"
+  },
+  {
+   "question": "How many sales SMS rooftops have dealership_sales_hours empty?",
+   "blocks": "backend-engineer-r1-10",
+   "source": "ClickHouse / central-config",
+   "persona": "backend-engineer"
+  },
+  {
+   "question": "Does the wake-up 'meeting exists' skip (sms-wakeup.service.ts:177) and the live SMS turn see store-set meetings imported from the CRM for the same lead (source bdc, lead_id only, no conversation_id), or only meetings on this conversation?",
+   "blocks": "bdc-manager-r1-2",
+   "source": "Engineering (conversational-ai-backend sms-wakeup.service.ts)",
+   "persona": "bdc-manager"
+  },
+  {
+   "question": "What clock does the SMS silent-hours deferral use (rooftop timezone, customer area code, or a fixed UTC send time like the 12:10 UTC batch in E57), what are the quiet-hour bounds, and is STOP or opt-out checked at wake-up dispatch?",
+   "blocks": "bdc-manager-r1-6",
+   "source": "Engineering (sms-wakeup.service.ts, sms-worker lambda)",
+   "persona": "bdc-manager"
+  },
+  {
+   "question": "Do agent-set SMS visits get a confirmation and a reminder text today, and do spyne-created meetings ever get completed or noshow back from the CRM?",
+   "blocks": "bdc-manager-r1-3",
+   "source": "Engineering, CSM",
+   "persona": "bdc-manager"
+  },
+  {
+   "question": "Which sales action-item intents are created after a human handover or are assigned to a person in the CRM (for example SEND_VEHICLE_PHOTO after the media handover in E60, SALES_TRADE_IN_FOLLOW_UP), and which are agent-only bookkeeping?",
+   "blocks": "bdc-manager-r1-1 (Q15)",
+   "source": "Engineering",
+   "persona": "bdc-manager"
+  },
+  {
+   "question": "At the two stores carrying 27 of the 47 threads, does a BDC or a salesperson work unbooked SMS leads, and from the CRM task list or the Spyne console?",
+   "blocks": "bdc-manager-r1-4 (Q13)",
+   "source": "CSM",
+   "persona": "bdc-manager"
+  },
+  {
+   "question": "For each of the six sales CRM push paths (adf, drivecentric, eleads, pbs, tekion, vinsolution), is an agent-set SMS meeting written to the dealer system with a time today, and is that integration certified or in production per provider?",
+   "blocks": "ceo-r1-4; Above the DMS score; whether phase 1 value reaches the store",
+   "source": "Engineering (crm integrations lambdas, meeting push path) and integrations/partnerships",
+   "persona": "ceo"
+  },
+  {
+   "question": "How many BDC or salesperson touches does an unbooked SMS lead get before a visit is set or the lead is closed (Q6)?",
+   "blocks": "ceo-r1-1; the only cost-removed argument this has",
+   "source": "CSM with 2 to 3 rooftops' BDC managers, or CRM activity counts where the feed exists",
+   "persona": "ceo"
+  },
+  {
+   "question": "Estimated engineer-days for phase 1, and what on the Sales Inbound roadmap it displaces (including RETCONVAI-5392).",
+   "blocks": "ceo-r1-6; decision readiness",
+   "source": "Engineering lead and PM",
+   "persona": "ceo"
+  },
+  {
+   "question": "Does the agreed_alternative inventory search rank or filter by days in stock, or only by match to the customer's need?",
+   "blocks": "ceo-r1-8; whether lever 2 can be argued in days in stock",
+   "source": "Code: inventory_search_vehicles_v3 and sales_new/unavailable-vehicle-discovery.xml",
+   "persona": "ceo"
+  },
+  {
+   "question": "Per-rooftop repeat-pair rate in the 21 Oct sample (repeat threads over sampled threads per rooftop), with the two concentrated stores shown separately.",
+   "blocks": "ceo-r1-7; base versus one-off",
+   "source": "Transcript read results joined to blind-key (E42)",
+   "persona": "ceo"
+  },
+  {
+   "question": "For each of the six sales CRMs, how does a meeting created by sales_create_meeting land: appointment object or note, with an assigned rep or not, and what share of agent-set meetings in the 14 to 20 Oct sample reached the CRM before the visit time (or were held by the sales sync gate)?",
+   "blocks": "general-sales-manager-r1-1, general-sales-manager-r1-7",
+   "source": "Engineering: lambdas crm-integrations/*-push meeting paths; dealer-leads-backend start-insertion-process.js:592-628; ClickHouse meetings external CRM sync ids",
+   "persona": "general-sales-manager"
+  },
+  {
+   "question": "What does 'verified' mean in inventory_search_vehicles_v3 results: does it exclude sold, in-transit and in-recon units, and how stale can the feed be at booking time?",
+   "blocks": "general-sales-manager-r1-5",
+   "source": "Engineering: inventory search tool and inventory sync service",
+   "persona": "general-sales-manager"
+  },
+  {
+   "question": "Can Spyne-set meetings be matched to the CRM-imported appointment rows that carry completed or noshow, for the rooftops that have that feed?",
+   "blocks": "general-sales-manager-r1-2",
+   "source": "Engineering / data: dealer_leads.meetings source bdc vs spyne (E66)",
+   "persona": "general-sales-manager"
+  },
+  {
+   "question": "On SMS today, what can the agent say when asked for price or out-the-door: listing price only, a configured store answer, or a computed OTD?",
+   "blocks": "general-sales-manager-r1-3",
+   "source": "Engineering: sales_v2 prompt pricing guardrails and finance tools in the live SMS toolset (Q4)",
+   "persona": "general-sales-manager"
+  },
+  {
+   "question": "Is the wake-up 'meeting exists' skip checked per conversation or per lead?",
+   "blocks": "general-sales-manager-r1-7",
+   "source": "Engineering: conversational-ai-backend src/sms/sms-wakeup.service.ts:144-178",
+   "persona": "general-sales-manager"
+  },
+  {
+   "question": "After the sms-worker strips booking tools on a wake-up, does the wake-up still have dealership_check_hours, or store hours rendered in its prompt?",
+   "blocks": "gm-r1-6, phase 1 wake-up rule",
+   "source": "lambdas:converse/sms-worker/index.js:1528-1532; agent config tool lists (Q4)",
+   "persona": "gm"
+  },
+  {
+   "question": "Does the assertiveness level change anything in the SMS prompt or SMS behaviour today, or only the voice visit-ask limit?",
+   "blocks": "gm-r1-8, the pull-back lever",
+   "source": "conversational-ai-backend:src/agents/agents-v2.service.ts:2901 and the SMS template vars",
+   "persona": "gm"
+  },
+  {
+   "question": "What local time did the 12:10 UTC wake-up batch of 19 Oct land at for each rooftop that received it? Did any text go out before the store opened?",
+   "blocks": "phase 1 overnight-deferral rule; store's name on an early-morning text",
+   "source": "clickhouse:dealer_leads.smsMessages joined to rooftop time zone (E57)",
+   "persona": "gm"
+  },
+  {
+   "question": "What is different at the two stores that carry 27 of the 47 untaken-offer threads (narrow hours, lead source STL vs inbound vs follow_up, assertiveness, lead volume)? Is it a fleet pattern or two stores' setup?",
+   "blocks": "Right decision: generalised build vs per-store config",
+   "source": "E42 blind key joined to conversations source and team config",
+   "persona": "gm"
+  },
+  {
+   "question": "For the 5 threads stopped by an action item, had that item already synced to the dealer CRM as a task before the wake-up would have fired?",
+   "blocks": "gm-r1-4, Q15",
+   "source": "clickhouse:dealer_leads.actionItems external_crm_synced_timestamp vs wake-up due time",
+   "persona": "gm"
+  },
+  {
+   "question": "How do the 47 untaken-offer threads split by source (inbound sms, speed_to_lead, follow_up)?",
+   "blocks": "gm-r1-9, scope of the re-offer rules",
+   "source": "transcript read results joined to conversations.source",
+   "persona": "gm"
+  }
+ ],
+ "issues": [
+  {
+   "id": "backend-engineer-r1-1",
+   "severity": "blocking",
+   "type": "feasibility",
+   "quote": "**Per rooftop:** re-offer limit (assertiveness level), offerable times (store hours), wake-up timing and cap, a call offer instead of a third pair (for stores like E35's), sourcing on or off.",
+   "concern": "Phase 1 changes live agent behaviour at every sales SMS rooftop at once (STL and follow_up SMS too) and there is no per-rooftop on/off or rollback for it. The prompt edits ship to all teams on deploy. The skip-rule allowlist is a global constant. The only per-team switch that exists today is wakeup.enabled=false, and that also kills pencil bookings, because the pencil cron only picks threads with wakeup.lastSentAt set. 'Turn it off' is not a rollback plan here.",
+   "because": "`conversational-ai-backend:src/sms/sms-wakeup.constants.ts:15` (global allowlist); `conversational-ai-backend:src/sms/sms-wakeup.constants.ts:74` (enabled is the only per-team key); `conversational-ai-backend:src/meetings/tentative-booking-evaluator.service.ts:79` (pencil requires wakeup.lastSentAt); missing (no phase 1 flag in the doc)",
+   "ask": "Add a per-team flag for phase 1, for example a template var from teamAgentMapping that selects the new wake-up, SMS-arm and miss-ending text, plus a team-scoped skip-rule allowlist. Name the pilot rooftops and the rollback step for each change (prompt, skip rule, concluded rule).",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer",
+    "bdc-manager"
+   ],
+   "ids": [
+    "backend-engineer-r1-1",
+    "bdc-manager-r1-9"
+   ],
+   "asks": [
+    "Add a per-team flag for phase 1, for example a template var from teamAgentMapping that selects the new wake-up, SMS-arm and miss-ending text, plus a team-scoped skip-rule allowlist. Name the pilot rooftops and the rollback step for each change (prompt, skip rule, concluded rule).",
+    "Specify the call path. Either Vini voice places it at an agreed time, or it goes to a named BDC queue as a timed task, with a fallback when it is not worked by a set time (for example, it goes back to the BDC manager's queue). Keep the setting off on CRMs that cannot carry a timed callback, until they can."
+   ]
+  },
+  {
+   "id": "backend-engineer-r1-2",
+   "severity": "major",
+   "type": "feasibility",
+   "quote": "Skip rule: an action item that leaves the visit offer open, such as a photo or trade-in follow-up, no longer cancels the nudge (Q15) [E61].",
+   "concern": "Unblocking the wake-up also unblocks the pencil. The tentative-booking cron picks any in-progress SMS thread with a wake-up sent and no humanTakenOverAt. It does not check action items. So a thread where a store person owns a photo or trade-in task can now get a wake-up and then a penciled visit synced to the CRM. The doc lists no downstream callers for this change.",
+   "because": "`conversational-ai-backend:src/meetings/tentative-booking-evaluator.service.ts:72-83`; `conversational-ai-backend:src/sms/sms-wakeup.service.ts:164-176`; E22",
+   "ask": "List the downstream effects of the skip-rule change: the pencil cron, tentative meeting CRM sync, and the STL and follow_up sources. State whether the pencil should still fire on threads that hold a non-scheduling action item.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer",
+    "bdc-manager",
+    "ceo",
+    "general-sales-manager",
+    "gm"
+   ],
+   "ids": [
+    "backend-engineer-r1-2",
+    "bdc-manager-r1-1",
+    "ceo-r1-5",
+    "general-sales-manager-r1-4",
+    "gm-r1-4"
+   ],
+   "asks": [
+    "List the downstream effects of the skip-rule change: the pencil cron, tentative meeting CRM sync, and the STL and follow_up sources. State whether the pencil should still fire on threads that hold a non-scheduling action item.",
+    "Turn the default around. Any action item that syncs to the CRM as a human task keeps blocking the nudge, unless Q15 shows it is created by the agent with no human assignee and no human touch planned. Answer Q15 before phase 1 ships, not during the PRD. Name trade-in follow-up as blocking unless Q15 proves otherwise.",
+    "Name the handoff explicitly: agent to BDC or salesperson, and to the used-car desk for a trade-in. Add who benefits, who signs and who may block. Change Q15's owner to the CSM with two or three BDC or internet sales managers, and get the answer before the skip-rule change ships. Until then, keep SALES_TRADE_IN_FOLLOW_UP blocking.",
+    "Do not name trade-in follow-up as an example to unblock. Make Q15 answer 'does a human own this task' per intent with a store contact (GSM or BDC manager), and keep the nudge blocked on any intent assigned to a person unless the store turns it on.",
+    "Unblock the nudge only for action items the agent itself completes in the thread (for example a photo it sends), not for ones pushed to the CRM as a person's task. Name who owns the lead once a CRM task exists, and answer Q15 before phase 1 ships, not during it."
+   ]
+  },
+  {
+   "id": "backend-engineer-r1-3",
+   "severity": "major",
+   "type": "feasibility",
+   "quote": "Concluded turns: a \"let me check\" reply with a visit offer open is not concluded. The reply is sent and the wake-up stays armed [E62].",
+   "concern": "The model sets is_concluded, through the SMS branch of sales_new/response-format.xml. sendOutbound suppresses the whole batch on it by design, and that transport is shared by recall, service, receptionist and acquisition SMS. 'The reply is sent' reads like a transport change, and that would hit every SMS agent. Also, phase 1 has no server-side record of an open offer (E18), so 'with a visit offer open' can only be the model's judgement. That makes this a third wording-only rule.",
+   "because": "`conversational-ai-backend:src/sms/sms-v2.service.ts:4076-4090`, `:4157`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_new/response-format.xml:60-62`; `conversational-ai-backend:src/prompts/base-system-prompts/recall/sms-formatting.xml:33`; E18",
+   "ask": "Say that the change goes only in the SMS branch of sales_new/response-format.xml and that sendOutbound is untouched. Define how 'visit offer open' is decided in phase 1, and how a failure would show up.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer",
+    "bdc-manager"
+   ],
+   "ids": [
+    "backend-engineer-r1-3",
+    "bdc-manager-r1-5"
+   ],
+   "asks": [
+    "Say that the change goes only in the SMS branch of sales_new/response-format.xml and that sendOutbound is untouched. Define how 'visit offer open' is decided in phase 1, and how a failure would show up.",
+    "Split the two. Always send the closing line. When the customer defers, schedule the next touch for the window they named, or the next business morning, not the default 10 minutes. Count these threads apart in the measures."
+   ]
+  },
+  {
+   "id": "backend-engineer-r1-4",
+   "severity": "major",
+   "type": "scope",
+   "quote": "Every rule sits in the SMS arm or the wake-up path, so voice, chat and outbound do not change [E13] [PM].",
+   "concern": "Not true for the inventory-miss rule. Its ending lives in sales_new/unavailable-vehicle-discovery.xml, and sales_v2.xml includes that file unconditionally for voice, chat and outbound voice. The fragment has no SMS condition. The wake-up path also runs on speed_to_lead and follow_up SMS, and the doc does not name those surfaces.",
+   "because": "`conversational-ai-backend:src/prompts/base-system-prompts/sales_v2.xml:49`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_new/unavailable-vehicle-discovery.xml:40`; E22; E24",
+   "ask": "Put the new miss ending behind a communication_medium == 'sms' guard inside the fragment, or move it to the SMS arm. Name STL and follow_up SMS as landing surfaces, with the test that proves voice and chat render unchanged.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer",
+    "gm"
+   ],
+   "ids": [
+    "backend-engineer-r1-4",
+    "gm-r1-9"
+   ],
+   "asks": [
+    "Put the new miss ending behind a communication_medium == 'sms' guard inside the fragment, or move it to the SMS arm. Name STL and follow_up SMS as landing surfaces, with the test that proves voice and chat render unchanged.",
+    "Name Sales STL and follow-up SMS as surfaces that change. Say whether the re-offer rules apply to aged-lead follow-up threads or only to fresh inbound, and give aged-lead campaigns their own setting."
+   ]
+  },
+  {
+   "id": "backend-engineer-r1-5",
+   "severity": "major",
+   "type": "unsupported-claim",
+   "quote": "| Inventory miss with no next step | 10 of 84 | 0 | [E6] |",
+   "concern": "unavailable-vehicle-discovery.xml:40 already tells the agent to 'offer one visit-oriented next step' when the alternative search is empty, and the E10 goodbyes break that rendered rule. This is the same pattern as line 19 on live turns and the self-check on wake-ups. A target of 0 from more wording has nothing behind it. The phase 2 backstop covers repeated pairs only, so there is no backstop for the miss ending or for concluded turns.",
+   "because": "`conversational-ai-backend:src/prompts/base-system-prompts/sales_new/unavailable-vehicle-discovery.xml:40`; E10; E55; E57",
+   "ask": "Set a target the evidence supports. Add a trigger and a non-prompt backstop for the miss ending and for concluded turns, the way phase 2 does for repeats, or say why wording will hold this time.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer"
+   ],
+   "ids": [
+    "backend-engineer-r1-5"
+   ],
+   "asks": [
+    "Set a target the evidence supports. Add a trigger and a non-prompt backstop for the miss ending and for concluded turns, the way phase 2 does for repeats, or say why wording will hold this time."
+   ]
+  },
+  {
+   "id": "backend-engineer-r1-6",
+   "severity": "major",
+   "type": "acceptance-gap",
+   "quote": "| Same pair repeated after an untaken offer | 20 of 47 threads | under 10, at under 5 rooftops | [E2, E42] |",
+   "concern": "Every success measure comes from a weekly blinded read of about 100 sampled threads across 14 rooftops. 'Under 5 rooftops' in a sample depends on which rooftops get sampled, so it is not comparable week to week. No production query or alert is named, so a regression shows up a week late, if at all. Repeated pairs can be computed in the warehouse from smsMessages.body, createdAt and wakeUpMessage.",
+   "because": "E2; E42; E56; solution-context.md 'Where the outcome is logged'",
+   "ask": "Name a warehouse query over all sales SMS threads, per rooftop and per day, split by wakeUpMessage. Track skipped-wake-up reasons from the new log line as a metric. Keep the transcript read as validation, not as the gate.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer"
+   ],
+   "ids": [
+    "backend-engineer-r1-6"
+   ],
+   "asks": [
+    "Name a warehouse query over all sales SMS threads, per rooftop and per day, split by wakeUpMessage. Track skipped-wake-up reasons from the new log line as a metric. Keep the transcript read as validation, not as the gate."
+   ]
+  },
+  {
+   "id": "backend-engineer-r1-7",
+   "severity": "major",
+   "type": "feasibility",
+   "quote": "Extend the voice-only gate state to SMS, keyed per conversation, and block a repeated pair before send. Spans the backend and the SMS lambda `conversational-ai-backend:src/conversation/conversation.schema.ts:58` [E14, E18, E58].",
+   "concern": "There is no data contract for 'a pair'. SMS model output is free text {text, message_reason, is_concluded}, with no structured offered-times field. Blocking before send therefore means either parsing clock times out of prose or adding a field to the output schema in the lambda and the backend. visitAskState is written by a gate tool call with a rev-checked $set and is keyed by callId, and SMS turns make no such call. Nothing says what happens when a send is blocked: regenerate, strip the times, or drop the message. This is also a wake-up path that cannot book.",
+   "because": "`conversational-ai-backend:src/sms/sms.service.ts:119-123`; `conversational-ai-backend:src/tools/definitions/sales/sales-visit-ask-gate.tool.ts:152`, `:401-403`; E58",
+   "ask": "Name the offered-times field: where it is emitted, its type and timezone, and who writes it. Name the enforcement point (lambda or sendOutbound) and the behaviour on block, including the retry budget and the log line.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer"
+   ],
+   "ids": [
+    "backend-engineer-r1-7"
+   ],
+   "asks": [
+    "Name the offered-times field: where it is emitted, its type and timezone, and who writes it. Name the enforcement point (lambda or sendOutbound) and the behaviour on block, including the retry budget and the log line."
+   ]
+  },
+  {
+   "id": "backend-engineer-r1-8",
+   "severity": "major",
+   "type": "unsupported-claim",
+   "quote": "Phases 1 and 2 need no DMS or CRM write. Phase 3 needs certified write-back on four CRMs, a commercial dependency [E49, E50, E51, E52].",
+   "concern": "The evidence does not show four commercial gaps. On eLead we already post scheduled activities with a dueDate for meetings through Fortellis /activities/schedule. A timed task there may be a mapping change inside access we already have, not new certification. Status for Tekion, VinSolutions and ADF is unknown, not proven missing. The untimed fallback is not neutral either: on eLead an action item lands as an already-completed 'Note'. A sourcing request filed as completed is the E33 failure, where nobody knew. Phase 3 also has no failure path: E53 could not prove the push lambdas set external_crm_synced_timestamp, so a failed push would be invisible.",
+   "because": "E49; E50; E51; E52; E53; E33",
+   "ask": "Add a per-provider table: task object available, scope or certification status, and who confirms it. Do not promise 'a visit time attached' on untimed CRMs. Name how a failed sourcing push is detected and alerted.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer",
+    "ceo"
+   ],
+   "ids": [
+    "backend-engineer-r1-8",
+    "ceo-r1-4"
+   ],
+   "asks": [
+    "Add a per-provider table: task object available, scope or certification status, and who confirms it. Do not promise 'a visit time attached' on untimed CRMs. Name how a failed sourcing push is detected and alerted.",
+    "Add a short table for the six CRMs. For each one, list whether an agent-set SMS meeting is written with a time today and whether that write is certified or in production. Change the line to say phases 1 and 2 need no new write, but depend on the existing meeting sync, with its status per CRM."
+   ]
+  },
+  {
+   "id": "backend-engineer-r1-9",
+   "severity": "minor",
+   "type": "unsupported-claim",
+   "quote": "Pull back by lowering the re-offer limit `conversational-ai-backend:src/agents/agents-v2.service.ts:2901`.",
+   "concern": "That line sets visit_ask_limit, and only the voice gate tool consumes it. On SMS the limit is prompt text that the model counts (appointment-conversion.xml:10-16), and 'high' renders no limit at all. As a pull-back lever it relies on the same model counting that is already failing.",
+   "because": "`conversational-ai-backend:src/agents/agents-v2.service.ts:2899-2908`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_new/appointment-conversion.xml:8-16`",
+   "ask": "Cite the SMS path and call it a soft, model-counted lever until phase 2 exists.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer",
+    "gm"
+   ],
+   "ids": [
+    "backend-engineer-r1-9",
+    "gm-r1-8"
+   ],
+   "asks": [
+    "Cite the SMS path and call it a soft, model-counted lever until phase 2 exists.",
+    "Show that the assertiveness level renders into the SMS arm and wake-up, or name the SMS pull-back control phase 1 adds. Add a per-rooftop off switch for the phase 1 re-offer rules, and say how a dealer's \"too pushy\" complaint reaches the PM (CSM, ticket, weekly read)."
+   ]
+  },
+  {
+   "id": "backend-engineer-r1-10",
+   "severity": "minor",
+   "type": "feasibility",
+   "quote": "Wake-up: never resend a pair already offered, including after an overnight deferral. The one nudge offers a different pair from store hours, or asks the constraint [E21, E57].",
+   "concern": "The wake-up prompt already contradicts itself. Line 6 says 'DO NOT re-ask any question you already asked', while line 44 says 'the nudge IS that question asked again', and line 53 is an example that re-offers times. Adding another rule on top keeps the conflict. A different pair also depends on SalesHours being rendered, and it is rendered only when dealership_sales_hours is set.",
+   "because": "`conversational-ai-backend:src/prompts/base-system-prompts/sales_new/sms-wakeup.xml:6`, `:44`, `:53`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_new/context-data.xml:34-35`",
+   "ask": "Rewrite the conflicting wake-up lines rather than adding to them. Say what the nudge does when no sales hours are configured.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer",
+    "bdc-manager",
+    "gm"
+   ],
+   "ids": [
+    "backend-engineer-r1-10",
+    "bdc-manager-r1-6",
+    "gm-r1-6"
+   ],
+   "asks": [
+    "Rewrite the conflicting wake-up lines rather than adding to them. Say what the nudge does when no sales hours are configured.",
+    "Add a contact-compliance line to phase 1. Deferred nudges send only inside quiet hours in the rooftop's local time (or the customer's, if known), and an opt-out or STOP on the thread or the CRM record cancels every pending nudge. If the 12:10 UTC batch is the same send time for every rooftop, fix that in phase 1.",
+    "Confirm the wake-up has store hours (tool or rendered into the prompt) before phase 1, and move Q4 to block phase 1. If it has no hours, the wake-up asks the constraint instead of inventing a pair."
+   ]
+  },
+  {
+   "id": "bdc-manager-r1-2",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "Double contact: a nudge on a lead a salesperson already owns. Callback, lost lead and Human Requested keep blocking it [E61].",
+   "concern": "This suppression only looks at what Vini itself wrote. When my agent books the customer off the CRM, that appointment comes into Spyne as a bdc-source meeting matched on lead_id, with no conversation id. If the meeting-exists check reads meetings on this conversation only, the bot can text fresh times to a customer my team already set. Phase 1 sends more nudges, so it makes this more likely. Nothing here reads CRM lead ownership or an active salesperson either, and one store asked for a stop button for exactly that reason.",
+   "because": "E66, E20, E32",
+   "ask": "State that the wake-up and the live re-offer are suppressed when the same lead has a store-set appointment from the CRM feed, or has been taken over by a human. Where the feed does not exist (2 of 18 cohort rooftops), say what stands in for it. See request 1.",
+   "persona": "bdc-manager",
+   "personas": [
+    "bdc-manager"
+   ],
+   "ids": [
+    "bdc-manager-r1-2"
+   ],
+   "asks": [
+    "State that the wake-up and the live re-offer are suppressed when the same lead has a store-set appointment from the CRM feed, or has been taken over by a human. Where the feed does not exist (2 of 18 cohort rooftops), say what stands in for it. See request 1."
+   ]
+  },
+  {
+   "id": "bdc-manager-r1-3",
+   "severity": "major",
+   "type": "acceptance-gap",
+   "quote": "Lead to show or sale | not measurable today | not claimed",
+   "concern": "My GM credits shows, not sets. This doc's success measures are repeat-pair counts and how many nudges were not cancelled, which neither the BDC nor the GM will ever see. Spyne meetings stay scheduled about 99% of the time, so nobody knows whether these visits show, yet the CRM rows carry completed and noshow. Phase 1 pushes more visit times out by text and never says whether a confirmation and a reminder follow, so show rate is left to chance. That is on my block list.",
+   "because": "E66, missing (no confirmation or reminder path named)",
+   "ask": "Make sets per engaged SMS lead the phase 1 primary outcome, and keep repeat counts as a diagnostic. Name the confirmation and reminder path for agent-set SMS visits, or say it is missing and log it as a dependency. Add a show-rate read that uses the CRM's completed and noshow status for leads with an agent-set visit, even if it covers only the rooftops with the feed.",
+   "persona": "bdc-manager",
+   "personas": [
+    "bdc-manager"
+   ],
+   "ids": [
+    "bdc-manager-r1-3"
+   ],
+   "asks": [
+    "Make sets per engaged SMS lead the phase 1 primary outcome, and keep repeat counts as a diagnostic. Name the confirmation and reminder path for agent-set SMS visits, or say it is missing and log it as a dependency. Add a show-rate read that uses the CRM's completed and noshow status for leads with an agent-set visit, even if it covers only the rooftops with the feed."
+   ]
+  },
+  {
+   "id": "bdc-manager-r1-4",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "**Flywheel stage:** lead to appointment, on SMS, before the lead goes back to the BDC",
+   "concern": "The doc names the moment the lead comes back to my team, then never says what that moment looks like. When the bot hits its cap or the customer goes quiet, my CRM gets only an idle-time free-text summary note. My agents work off status and tasks, so that note is invisible. That is how E33's store lost a visit nobody knew about. The agent also says \"I'll note that\" as its last act in 10 of 84 winnable threads with nothing behind it, and phase 1 leaves that alone. More nudges without a clean hand-back just delays the same cleanup.",
+   "because": "E29, E33, E6, E32",
+   "ask": "Say what the BDC receives for an SMS thread that ends unbooked after phase 1: a lead status, or a timed task with the reason and the customer's stated constraint. Or say plainly that phase 1 changes nothing here and point to the owner (RETCONVAI-5165). Either way, stop the agent saying \"I'll note that\" on SMS when no task is written.",
+   "persona": "bdc-manager",
+   "personas": [
+    "bdc-manager"
+   ],
+   "ids": [
+    "bdc-manager-r1-4"
+   ],
+   "asks": [
+    "Say what the BDC receives for an SMS thread that ends unbooked after phase 1: a lead status, or a timed task with the reason and the customer's stated constraint. Or say plainly that phase 1 changes nothing here and point to the owner (RETCONVAI-5165). Either way, stop the agent saying \"I'll note that\" on SMS when no task is written."
+   ]
+  },
+  {
+   "id": "bdc-manager-r1-7",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "Inventory miss: always end on visit times for a shown unit, or one visit invite, never a goodbye [E10, E24].",
+   "concern": "\"Always\" plus a target of 0 dead ends means the bot invites a customer in even when nothing on the lot fits, like the used SUV under $10,000 in E10. That walk-in has nothing to see, and when it no-shows it counts against my board. Dealers already complain about AI booking visits for cars that are not on the ground. A dead end is better than a wasted visit. The better ending is a handoff to my team with the customer's spec.",
+   "because": "E10, E36, E24",
+   "ask": "Allow visit times only when a verified unit was shown or the customer agreed to look at alternatives. Otherwise end on a clear handoff: tell the customer someone will follow up, and write the spec to the CRM as a task. Change the target from 0 to 'no thread ends without a next step for either the customer or the BDC'.",
+   "persona": "bdc-manager",
+   "personas": [
+    "bdc-manager",
+    "ceo",
+    "general-sales-manager",
+    "gm"
+   ],
+   "ids": [
+    "bdc-manager-r1-7",
+    "ceo-r1-8",
+    "general-sales-manager-r1-5",
+    "gm-r1-7"
+   ],
+   "asks": [
+    "Allow visit times only when a verified unit was shown or the customer agreed to look at alternatives. Otherwise end on a clear handoff: tell the customer someone will follow up, and write the spec to the CRM as a task. Change the target from 0 to 'no thread ends without a next step for either the customer or the BDC'.",
+    "Add one line under What it removes linking the similar-unit ending to days in stock. Say whether the alternative search favours units already on the ground (see request). Do not claim a number.",
+    "State what 'verified' checks (sold, in transit, recon, front-line ready) and how fresh it is; book visit times only on a unit that passes it; when no unit passes, the visit invite must carry the requested spec and 'not in stock' into the appointment the rep sees. Change the 0 target to 'no goodbye while the customer is still engaged', not 'always a visit'.",
+    "When no unit was shown, the ending is a reason to come in that the store can deliver (a unit near the stated budget, or a salesperson calling about what is coming in), not a bare visit invite. Change the \"0\" target to \"0 goodbyes\", not \"every miss gets a visit invite\"."
+   ]
+  },
+  {
+   "id": "bdc-manager-r1-8",
+   "severity": "major",
+   "type": "scope",
+   "quote": "Timed CRM task on DriveCentric and PBS; untimed note on eLead, Tekion, VinSolutions and ADF until task write-back is certified [E47, E48, E49, E52].",
+   "concern": "A promise to locate a car is a commitment the customer will hold my team to. On VinSolutions it gets folded into one block of text in the lead Note field, and on Tekion and eLead it lands as a note or an already-completed activity. Nobody filters on that, so nobody works it, and the customer then arrives for a visit on a car nobody went looking for. That is worse than today's dead end. Per the rubric, CRM-first full value means a task with an owner and a due time.",
+   "because": "E49, E50, E51, E52",
+   "ask": "On the four untimed-note CRMs, either keep the sourcing setting unavailable, or write the visit as a real meeting (eLead already takes meetings with a dueDate through /activities/schedule) and raise a console alert to the BDC for the sourcing request. State which in the one-pager.",
+   "persona": "bdc-manager",
+   "personas": [
+    "bdc-manager",
+    "general-sales-manager",
+    "gm"
+   ],
+   "ids": [
+    "bdc-manager-r1-8",
+    "general-sales-manager-r1-8",
+    "gm-r1-1"
+   ],
+   "asks": [
+    "On the four untimed-note CRMs, either keep the sourcing setting unavailable, or write the visit as a real meeting (eLead already takes meetings with a dueDate through /activities/schedule) and raise a console alert to the BDC for the sourcing request. State which in the one-pager.",
+    "In phase 3, attach a visit time only where the request lands as a timed task assigned to a person (DriveCentric, PBS today); on the other four CRMs, promise a manager follow-up, not a visit time, until task write-back is certified.",
+    "In phase 3, only allow sourcing at a rooftop whose CRM gets a timed task with an owner (DriveCentric and PBS today). On the other four, keep it unavailable until task write-back is certified, or name the alert and owner that replaces the task. State this in the doc as a precondition for turning the setting on."
+   ]
+  },
+  {
+   "id": "ceo-r1-1",
+   "severity": "major",
+   "type": "five-facts",
+   "quote": "Agent-set visits land a median 1.6 days from lead when set in the first thread vs 5.8 when set later, a self-selected gap, not a causal estimate; BDC touches are not sized (Q6).",
+   "concern": "The 60-second value line is a days number you tell me not to believe. Your own evidence weakens it further: stores already set a visit for leads who replied in the first thread at a median of 1.8 days (E66). So the days we remove are probably close to zero. What is left is cost removed: BDC re-touches on leads the dealer already paid for. That figure is 'unknown'. Put a 4-day gap in the TL;DR and a CSM will quote it to a dealer as 'Vini cuts 4 days'. That is a Spyne-internal, self-selected figure being passed off as an outcome.",
+   "because": "E64, E65, E66; Q6 missing",
+   "ask": "Take the 1.6 vs 5.8 gap out of the TL;DR, or label it as Spyne internal data that is not for dealer use. State plainly that phase 1 is justified as defect repair on a shared surface, not as a sized days-removed claim. Make sizing Q6 (BDC touches per unbooked SMS lead) a precondition for funding phase 2 or 3, in cost-removed terms for the BDC manager's P&L.",
+   "persona": "ceo",
+   "personas": [
+    "ceo",
+    "gm"
+   ],
+   "ids": [
+    "ceo-r1-1",
+    "gm-r1-2"
+   ],
+   "asks": [
+    "Take the 1.6 vs 5.8 gap out of the TL;DR, or label it as Spyne internal data that is not for dealer use. State plainly that phase 1 is justified as defect repair on a shared surface, not as a sized days-removed claim. Make sizing Q6 (BDC touches per unbooked SMS lead) a precondition for funding phase 2 or 3, in cost-removed terms for the BDC manager's P&L.",
+    "Put the 1.8-day store-set figure next to the 1.6 and 5.8 in the TL;DR, or drop the days claim from the TL;DR. Add the lead-to-visit days assumption back as an open question (decide.md carried it as Q7; the one-pager drops it)."
+   ]
+  },
+  {
+   "id": "ceo-r1-2",
+   "severity": "major",
+   "type": "unsupported-claim",
+   "quote": "The follow-up team feels it: one store lost an aged lead whose intended visit never reached the CRM [E33].",
+   "concern": "E33 shows a write-back failure: the visit was intended, but it never landed in the store's system. That is not an untaken offer, and nothing in phase 1 fixes it. Using it as felt pain for a wording and wake-up fix overstates the dealer demand. In front of a dealer it would also invite the question we cannot answer: why did the visit not reach my CRM?",
+   "because": "E33; E40 (no dealer named repeated pairs or silence)",
+   "ask": "Move E33 out of Problem, or relabel it as an adjacent failure on the same job that this release does not fix. If the cause of the CRM miss is unknown, add it as an open question with an owner.",
+   "persona": "ceo",
+   "personas": [
+    "ceo",
+    "gm"
+   ],
+   "ids": [
+    "ceo-r1-2",
+    "gm-r1-10"
+   ],
+   "asks": [
+    "Move E33 out of Problem, or relabel it as an adjacent failure on the same job that this release does not fix. If the cause of the CRM miss is unknown, add it as an open question with an owner.",
+    "Either drop E33 from Problem or move it to a line that says hand-back of unbooked SMS leads is out of scope and tracked in RETCONVAI-5165."
+   ]
+  },
+  {
+   "id": "ceo-r1-3",
+   "severity": "major",
+   "type": "acceptance-gap",
+   "quote": "A sales director wants every agreed visit closed with \"today or tomorrow\" and nothing else [E30, E31].",
+   "concern": "This is the only dealer ask in the file with a base signal behind it: the CSM says other dealerships gave the same feedback (E37). Phase 1 does not deliver it. The live rule adds a constraint question before a new pair, which is the opposite of 'nothing else'. If we cite the dealer's words and ship something different, the sales director will notice.",
+   "because": "E30, E31, E37",
+   "ask": "Either add a phase 1 rule that an agreed yes goes straight to a two-time ask with no side question, with the store the change lands at named as the proof point, or move this line out of Problem and say this release does not address it. Make sure the constraint-question rule does not fire after a yes.",
+   "persona": "ceo",
+   "personas": [
+    "ceo",
+    "general-sales-manager"
+   ],
+   "ids": [
+    "ceo-r1-3",
+    "general-sales-manager-r1-6"
+   ],
+   "asks": [
+    "Either add a phase 1 rule that an agreed yes goes straight to a two-time ask with no side question, with the store the change lands at named as the proof point, or move this line out of Problem and say this release does not address it. Make sure the constraint-question rule does not fire after a yes.",
+    "Either add a phase 1 rule (on an agreed or near-yes visit, the next message is a two-option day ask, no other question, no constraint question) or move this line out of Problem and say plainly it is not addressed here."
+   ]
+  },
+  {
+   "id": "ceo-r1-6",
+   "severity": "major",
+   "type": "scope",
+   "quote": "Phase 1 is mostly defect repair. If one PRD would delay it, file phase 1 as a Bug first [PM].",
+   "concern": "I cannot tell what you are asking me for. A conditional 'if' is not a decision. The page also never says what this displaces. The sibling regression on voice is larger: proposals fell to 8% on workflow_v2 against 58% inline (E12). I am not reopening the SMS-only scope. I need the sequencing and the cost in engineering time so I can say yes knowing what it pushes back.",
+   "because": "E12; missing (phase 1 size, displaced work)",
+   "ask": "Put one ask on top. For example: approve phase 1 as a Bug this sprint at an estimated N engineer-days, write the PRD in parallel, and fund nothing for phases 2 and 3 until their triggers fire. Say what phase 1 delays, including where it sits against RETCONVAI-5392.",
+   "persona": "ceo",
+   "personas": [
+    "ceo"
+   ],
+   "ids": [
+    "ceo-r1-6"
+   ],
+   "asks": [
+    "Put one ask on top. For example: approve phase 1 as a Bug this sprint at an estimated N engineer-days, write the PRD in parallel, and fund nothing for phases 2 and 3 until their triggers fire. Say what phase 1 delays, including where it sits against RETCONVAI-5392."
+   ]
+  },
+  {
+   "id": "ceo-r1-7",
+   "severity": "minor",
+   "type": "missing-evidence",
+   "quote": "Trigger: two weekly reads after phase 1 still show 10 or more repeat threads at 5 or more rooftops [E2, E42].",
+   "concern": "Two stores carry 27 of the 47 threads (E42). On raw counts, those two stores plus three stores with one thread each meet this trigger. That would fund server-side work for what is really a two-store pattern. Base leverage needs a rate, not a count.",
+   "because": "E42",
+   "ask": "Express the trigger as a per-rooftop rate (repeat threads over threads sampled at that rooftop), met at 5 or more rooftops, and report it with the two concentrated stores excluded as well.",
+   "persona": "ceo",
+   "personas": [
+    "ceo"
+   ],
+   "ids": [
+    "ceo-r1-7"
+   ],
+   "asks": [
+    "Express the trigger as a per-rooftop rate (repeat threads over threads sampled at that rooftop), met at 5 or more rooftops, and report it with the two concentrated stores excluded as well."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r1-1",
+   "severity": "blocking",
+   "type": "missing-evidence",
+   "quote": "Phases 1 and 2 need no DMS or CRM write.",
+   "concern": "The whole point of phase 1 is more visits set by the agent on text. If those visits do not land in my CRM as real appointments on the assigned rep's list, they do not exist on Saturday. Your own Problem section cites a store that lost a lead because the agent's 12PM test drive never reached the CRM, and nothing in phases 1 to 3 fixes or even checks that. The doc proves action items reach six CRMs in six different shapes, but says nothing about how an agent-set meeting lands per CRM, whether a rep is assigned, or how often the sales sync gate holds it back. 'No CRM write needed' only holds if the existing meeting write already works, and the evidence says at least once it did not.",
+   "because": "E33; E45 (sales sync gate can hold a whole conversation from the CRM); E49 (only eLead meetings are shown going through /activities/schedule); meeting push for DriveCentric, PBS, Tekion, VinSolutions, ADF: missing",
+   "ask": "Name the existing meeting write-back path per CRM (appointment object vs note, assigned rep, sync-gate hold rate) as a phase 1 dependency, with whether we have it. Add a phase 1 acceptance line: every agent-set visit in the measured cohort is found as an appointment in the rooftop's CRM before the visit time, and the measure counts only those.",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager"
+   ],
+   "ids": [
+    "general-sales-manager-r1-1"
+   ],
+   "asks": [
+    "Name the existing meeting write-back path per CRM (appointment object vs note, assigned rep, sync-gate hold rate) as a phase 1 dependency, with whether we have it. Add a phase 1 acceptance line: every agent-set visit in the measured cohort is found as an appointment in the rooftop's CRM before the visit time, and the measure counts only those."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r1-2",
+   "severity": "major",
+   "type": "acceptance-gap",
+   "quote": "| Lead to show or sale | not measurable today | not claimed | [E66] |",
+   "concern": "Every success line in this table is a process count: repeats, skipped wake-ups, unsent turns. Phase 2 triggers on repeat counts too. I get paid on units and gross, and I judge the BDC on show rate. A wake-up that changes the offer could set more visits that never show, and this doc would call that a win. Honest that it is not measurable today, but there is no plan to make it measurable.",
+   "because": "E66 (CRM-imported appointment rows do carry completed and noshow; ~99% of Spyne meetings stay scheduled)",
+   "ask": "Add a path to show rate for agent-set visits, for example matching Spyne-set meetings to the CRM-imported appointment rows that carry completed or noshow, and make 'show rate on agent-set visits does not drop' a guard on phase 1 and a condition on the phase 2 trigger.",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager"
+   ],
+   "ids": [
+    "general-sales-manager-r1-2"
+   ],
+   "asks": [
+    "Add a path to show rate for agent-set visits, for example matching Spyne-set meetings to the CRM-imported appointment rows that carry completed or noshow, and make 'show rate on agent-set visits does not drop' a guard on phase 1 and a condition on the phase 2 trigger."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r1-3",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "Live SMS arm: after an untaken pair or a side question, answer, ask the constraint once, then offer a pair that fits it [E17, E7].",
+   "concern": "Your own read says 13 of the 17 live repeats came after a side question, and the side questions include price and out-the-door. 'Answer' with no limit means the agent may text an out-the-door number. Payments and OTD come off my desk. Separately, E30 is a store that says asking about price after a yes ruined the appointment, so the order matters: a price side question should not open a pencil by text.",
+   "because": "E55 (price or out-the-door side questions); E30; desk-approved price source on SMS: missing",
+   "ask": "State that on a price or out-the-door side question the agent gives only the advertised listing price (or the store's configured answer) and never an OTD, payment, rate or trade figure, then moves to the visit, with the desk doing the pencil.",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager",
+    "gm"
+   ],
+   "ids": [
+    "general-sales-manager-r1-3",
+    "gm-r1-5"
+   ],
+   "asks": [
+    "State that on a price or out-the-door side question the agent gives only the advertised listing price (or the store's configured answer) and never an OTD, payment, rate or trade figure, then moves to the visit, with the desk doing the pencil.",
+    "Split the rule. After a side question: answer, then offer a different pair, with no extra question. After a declined pair: ask the constraint once, then offer a pair that fits it."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r1-7",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "Stores do pick some of these leads up: 612 with no agent-set visit got a store-set visit within 30 days, where the CRM feed is visible [E66].",
+   "concern": "If my BDC or a rep is already working the lead and books it in the CRM, phase 1 makes the agent keep nudging with new times on the same customer. Now I have two appointments, a confused customer, and a fight over who owns the up and which lead source gets the credit. Store-set appointments have no conversation id, so a wake-up skip that checks for a meeting on this conversation will not see them.",
+   "because": "E66 (bdc meetings tie by lead_id only, no conversation_id); E20 (wake-up skipped when a meeting exists, keyed per conversation per E61); rep and source assignment on agent-set meetings: missing",
+   "ask": "State that the wake-up and live re-offer stop when a store-set appointment exists for the lead (lead_id match on the CRM-imported feed, where the rooftop has it), name the rooftops without that feed as a known gap, and state which rep and lead source an agent-set visit carries.",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager"
+   ],
+   "ids": [
+    "general-sales-manager-r1-7"
+   ],
+   "asks": [
+    "State that the wake-up and live re-offer stop when a store-set appointment exists for the lead (lead_id match on the CRM-imported feed, where the rooftop has it), name the rooftops without that feed as a known gap, and state which rep and lead source an agent-set visit carries."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r1-9",
+   "severity": "minor",
+   "type": "unsupported-claim",
+   "quote": "4 in 5 SMS leads offered two clock times do not book: 99 of 517, 10 to 20 Oct [E5].",
+   "concern": "99 of 517 is the number that booked, not the number that did not. Read fast, it says 99 did not book.",
+   "because": "E5 (517 offered, 99 booked, 19%)",
+   "ask": "Write it as '418 of 517 did not book (99 booked, 19%)'.",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager"
+   ],
+   "ids": [
+    "general-sales-manager-r1-9"
+   ],
+   "asks": [
+    "Write it as '418 of 517 did not book (99 booked, 19%)'."
+   ]
+  },
+  {
+   "id": "gm-r1-3",
+   "severity": "major",
+   "type": "five-facts",
+   "quote": "| BDC follow-up touches per unbooked SMS lead | unknown | fewer | Q6 |",
+   "concern": "Every target I could check on my statement is unknown, fewer or not claimed. The ones with numbers (repeat pairs, skipped wake-ups, unsent turns) are vendor quality measures, not my gross, expense or days. There is also nothing I could measure at one rooftop: the repeat target is a fleet-wide sample read. And the doc drops the one line that actually touches turn, a similar unit already on my lot being shown and booked on an inventory miss, even though decide.md names it.",
+   "because": "missing (Q6 unanswered); E24 (similar-unit search shows on-lot units); decide.md Outcome (\"on a miss, on-lot units shown, so days in stock\")",
+   "ask": "Add a per-rooftop measure a GM could read: for example, visits set in the first thread per 100 engaged SMS leads, and on an inventory miss, visits set on a shown on-lot unit. Add the days-in-stock angle for lever 2a as a named, unsized line. Say how Q6 gets answered at one rooftop.",
+   "persona": "gm",
+   "personas": [
+    "gm"
+   ],
+   "ids": [
+    "gm-r1-3"
+   ],
+   "asks": [
+    "Add a per-rooftop measure a GM could read: for example, visits set in the first thread per 100 engaged SMS leads, and on an inventory miss, visits set on a shown on-lot unit. Add the days-in-stock angle for lever 2a as a named, unsized line. Say how Q6 gets answered at one rooftop."
+   ]
+  }
+ ]
+}

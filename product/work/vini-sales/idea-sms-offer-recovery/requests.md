@@ -27,3 +27,24 @@
 - why: days removed is the P&L claim and it is unmeasured
 - source: clickhouse
 - status: answered (E64, E65, E66)
+
+### R5
+- question: For each of the six sales CRM push paths (DriveCentric, PBS, eLead/Fortellis, Tekion, VinSolutions, ADF), how does a meeting created by sales_create_meeting (or a confirmed pencil) land in the dealer's CRM: an appointment object or a note, with an assigned rep or not, with the visit time or not? And does the sales sync gate (E45) ever hold it back?
+- blocks: one-pager line "Phases 1 and 2 need no DMS or CRM write." (GSM blocking issue; CEO major)
+- why: phase 1 sets more visits on text; if they do not land as real appointments, the BDC never sees them
+- source: bluebrain
+- status: answered (E79-E89)
+
+### R6
+- question: Is a rooftop's sales SMS agent on its own teamAgentMapping or config (so a per-rooftop flag can turn phase 1 on or off for SMS without touching voice), what per-team flags exist today that could gate an SMS prompt variant, and does the assertiveness level change anything in the SMS prompt or behaviour today, or only the voice visit-ask limit (agents-v2.service.ts:2901)?
+- blocks: one-pager per-rooftop line (backend-engineer and BDC blocking issue: no per-rooftop on/off or rollback) and the pull-back line
+- why: decides whether phase 1 can ship behind a per-rooftop flag and roll back
+- source: bluebrain
+- status: answered (E67 E68 E69 E70)
+
+### R7
+- question: Which sales action-item intents become a task assigned to a person in the dealer CRM (on DriveCentric and PBS, E47 E48), and for the 5 threads stopped by an action item (E61), had the item already synced before the wake-up would have fired? Separately, is the wake-up "meeting exists" skip (sms-wakeup.service.ts:177) checked per conversation or per lead, and does it see store-set meetings imported from the CRM (source bdc)?
+- blocks: one-pager skip-rule line (BDC blocking issue: double contact; all five reviewers major)
+- why: decides which action items may let the nudge fire without the customer getting both the bot and a person
+- source: clickhouse
+- status: answered (E71-E78)

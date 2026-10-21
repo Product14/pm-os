@@ -1,0 +1,132 @@
+{
+  "persona": "bdc-manager",
+  "round": 1,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 3,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 3,
+    "Shared scope": 4,
+    "Full value": 3,
+    "Brevity": 4,
+    "CRM completeness": 2,
+    "Human reach": 2,
+    "Show discipline": 1,
+    "Workload effect": 3,
+    "Contact compliance": 1
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "bdc-manager-r1-1",
+      "severity": "blocking",
+      "type": "wrong-for-dealers",
+      "quote": "Skip rule: an action item that leaves the visit offer open, such as a photo or trade-in follow-up, no longer cancels the nudge (Q15) [E61].",
+      "concern": "A trade-in follow-up or photo item is not the bot's private bookkeeping. It syncs to my CRM, and on DriveCentric it becomes a Touchpoint task in a salesperson's queue, on PBS a Workplan reminder. So the moment that task exists, a human owns the next touch. Under this rule my salesperson calls about the trade while the bot texts the customer a new pair of times. That is the double contact I block on. In E60 the photo item came right after a media handover, so a person was already in that thread. Today both intents block by design, and the doc turns that off before Q15 says which intents mean a human owns the lead.",
+      "because": "E61, E47, E48, E60, E43",
+      "ask": "Turn the default around. Any action item that syncs to the CRM as a human task keeps blocking the nudge, unless Q15 shows it is created by the agent with no human assignee and no human touch planned. Answer Q15 before phase 1 ships, not during the PRD. Name trade-in follow-up as blocking unless Q15 proves otherwise."
+    },
+    {
+      "id": "bdc-manager-r1-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Double contact: a nudge on a lead a salesperson already owns. Callback, lost lead and Human Requested keep blocking it [E61].",
+      "concern": "This suppression only looks at what Vini itself wrote. When my agent books the customer off the CRM, that appointment comes into Spyne as a bdc-source meeting matched on lead_id, with no conversation id. If the meeting-exists check reads meetings on this conversation only, the bot can text fresh times to a customer my team already set. Phase 1 sends more nudges, so it makes this more likely. Nothing here reads CRM lead ownership or an active salesperson either, and one store asked for a stop button for exactly that reason.",
+      "because": "E66, E20, E32",
+      "ask": "State that the wake-up and the live re-offer are suppressed when the same lead has a store-set appointment from the CRM feed, or has been taken over by a human. Where the feed does not exist (2 of 18 cohort rooftops), say what stands in for it. See request 1."
+    },
+    {
+      "id": "bdc-manager-r1-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Lead to show or sale | not measurable today | not claimed",
+      "concern": "My GM credits shows, not sets. This doc's success measures are repeat-pair counts and how many nudges were not cancelled, which neither the BDC nor the GM will ever see. Spyne meetings stay scheduled about 99% of the time, so nobody knows whether these visits show, yet the CRM rows carry completed and noshow. Phase 1 pushes more visit times out by text and never says whether a confirmation and a reminder follow, so show rate is left to chance. That is on my block list.",
+      "because": "E66, missing (no confirmation or reminder path named)",
+      "ask": "Make sets per engaged SMS lead the phase 1 primary outcome, and keep repeat counts as a diagnostic. Name the confirmation and reminder path for agent-set SMS visits, or say it is missing and log it as a dependency. Add a show-rate read that uses the CRM's completed and noshow status for leads with an agent-set visit, even if it covers only the rooftops with the feed."
+    },
+    {
+      "id": "bdc-manager-r1-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "**Flywheel stage:** lead to appointment, on SMS, before the lead goes back to the BDC",
+      "concern": "The doc names the moment the lead comes back to my team, then never says what that moment looks like. When the bot hits its cap or the customer goes quiet, my CRM gets only an idle-time free-text summary note. My agents work off status and tasks, so that note is invisible. That is how E33's store lost a visit nobody knew about. The agent also says \"I'll note that\" as its last act in 10 of 84 winnable threads with nothing behind it, and phase 1 leaves that alone. More nudges without a clean hand-back just delays the same cleanup.",
+      "because": "E29, E33, E6, E32",
+      "ask": "Say what the BDC receives for an SMS thread that ends unbooked after phase 1: a lead status, or a timed task with the reason and the customer's stated constraint. Or say plainly that phase 1 changes nothing here and point to the owner (RETCONVAI-5165). Either way, stop the agent saying \"I'll note that\" on SMS when no task is written."
+    },
+    {
+      "id": "bdc-manager-r1-5",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Concluded turns: a \"let me check\" reply with a visit offer open is not concluded. The reply is sent and the wake-up stays armed [E62].",
+      "concern": "Sending the closing line that was saved and never sent is a real bug fix, and I want it. Re-arming the 10-minute nudge after a customer said \"I'll check and let you know\" is not. My agents are trained to give that customer until the time they named, or the next business day. A bot texting new times ten minutes later is the pushy behaviour dealers already complain about.",
+      "because": "E62, E19, E34, E35",
+      "ask": "Split the two. Always send the closing line. When the customer defers, schedule the next touch for the window they named, or the next business morning, not the default 10 minutes. Count these threads apart in the measures."
+    },
+    {
+      "id": "bdc-manager-r1-6",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Wake-up: never resend a pair already offered, including after an overnight deferral. The one nudge offers a different pair from store hours, or asks the constraint [E21, E57].",
+      "concern": "The overnight deferrals in E57 went out together in one 12:10 UTC batch. That is 8:10 AM Eastern, and before 6 AM on the West Coast. The store carries the TCPA risk on texts outside quiet hours, not Spyne. Phase 1 sends more nudges: it relaxes the skip rule and re-arms after concluded turns. Yet the doc never says whose clock the deferral uses, or that STOP and opt-out are checked before each nudge. Contact compliance is missing from the recommendation entirely.",
+      "because": "E57, E59, missing (quiet hours and opt-out not specified)",
+      "ask": "Add a contact-compliance line to phase 1. Deferred nudges send only inside quiet hours in the rooftop's local time (or the customer's, if known), and an opt-out or STOP on the thread or the CRM record cancels every pending nudge. If the 12:10 UTC batch is the same send time for every rooftop, fix that in phase 1."
+    },
+    {
+      "id": "bdc-manager-r1-7",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Inventory miss: always end on visit times for a shown unit, or one visit invite, never a goodbye [E10, E24].",
+      "concern": "\"Always\" plus a target of 0 dead ends means the bot invites a customer in even when nothing on the lot fits, like the used SUV under $10,000 in E10. That walk-in has nothing to see, and when it no-shows it counts against my board. Dealers already complain about AI booking visits for cars that are not on the ground. A dead end is better than a wasted visit. The better ending is a handoff to my team with the customer's spec.",
+      "because": "E10, E36, E24",
+      "ask": "Allow visit times only when a verified unit was shown or the customer agreed to look at alternatives. Otherwise end on a clear handoff: tell the customer someone will follow up, and write the spec to the CRM as a task. Change the target from 0 to 'no thread ends without a next step for either the customer or the BDC'."
+    },
+    {
+      "id": "bdc-manager-r1-8",
+      "severity": "major",
+      "type": "scope",
+      "quote": "Timed CRM task on DriveCentric and PBS; untimed note on eLead, Tekion, VinSolutions and ADF until task write-back is certified [E47, E48, E49, E52].",
+      "concern": "A promise to locate a car is a commitment the customer will hold my team to. On VinSolutions it gets folded into one block of text in the lead Note field, and on Tekion and eLead it lands as a note or an already-completed activity. Nobody filters on that, so nobody works it, and the customer then arrives for a visit on a car nobody went looking for. That is worse than today's dead end. Per the rubric, CRM-first full value means a task with an owner and a due time.",
+      "because": "E49, E50, E51, E52",
+      "ask": "On the four untimed-note CRMs, either keep the sourcing setting unavailable, or write the visit as a real meeting (eLead already takes meetings with a dueDate through /activities/schedule) and raise a console alert to the BDC for the sourcing request. State which in the one-pager."
+    },
+    {
+      "id": "bdc-manager-r1-9",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "**Per rooftop:** re-offer limit (assertiveness level), offerable times (store hours), wake-up timing and cap, a call offer instead of a third pair (for stores like E35's), sourcing on or off.",
+      "concern": "\"A call offer\" is the line where the bot hands the customer to a person, and it does not say who makes the call, how fast, or what happens when nobody does. On four of six CRMs a callback request lands as an untimed note, so a customer who said yes to a call can wait forever. A call offer nobody returns is worse than a third pair of times.",
+      "because": "E61 (SALES_SCHEDULE_CALLBACK), E49, E50, E51, E52, missing (owner and fallback not specified)",
+      "ask": "Specify the call path. Either Vini voice places it at an agreed time, or it goes to a named BDC queue as a timed task, with a fallback when it is not worked by a set time (for example, it goes back to the BDC manager's queue). Keep the setting off on CRMs that cannot carry a timed callback, until they can."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does the wake-up 'meeting exists' skip (sms-wakeup.service.ts:177) and the live SMS turn see store-set meetings imported from the CRM for the same lead (source bdc, lead_id only, no conversation_id), or only meetings on this conversation?",
+      "blocks": "bdc-manager-r1-2",
+      "source": "Engineering (conversational-ai-backend sms-wakeup.service.ts)"
+    },
+    {
+      "question": "What clock does the SMS silent-hours deferral use (rooftop timezone, customer area code, or a fixed UTC send time like the 12:10 UTC batch in E57), what are the quiet-hour bounds, and is STOP or opt-out checked at wake-up dispatch?",
+      "blocks": "bdc-manager-r1-6",
+      "source": "Engineering (sms-wakeup.service.ts, sms-worker lambda)"
+    },
+    {
+      "question": "Do agent-set SMS visits get a confirmation and a reminder text today, and do spyne-created meetings ever get completed or noshow back from the CRM?",
+      "blocks": "bdc-manager-r1-3",
+      "source": "Engineering, CSM"
+    },
+    {
+      "question": "Which sales action-item intents are created after a human handover or are assigned to a person in the CRM (for example SEND_VEHICLE_PHOTO after the media handover in E60, SALES_TRADE_IN_FOLLOW_UP), and which are agent-only bookkeeping?",
+      "blocks": "bdc-manager-r1-1 (Q15)",
+      "source": "Engineering"
+    },
+    {
+      "question": "At the two stores carrying 27 of the 47 threads, does a BDC or a salesperson work unbooked SMS leads, and from the CRM task list or the Spyne console?",
+      "blocks": "bdc-manager-r1-4 (Q13)",
+      "source": "CSM"
+    }
+  ]
+}

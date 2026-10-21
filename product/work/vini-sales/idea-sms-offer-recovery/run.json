@@ -10,7 +10,19 @@
   "general-sales-manager": [],
   "bdc-manager": []
  },
- "rounds": {},
- "requests": 4,
+ "rounds": {
+  "onepager": {
+   "r1": {
+    "issues": 26,
+    "accepted": 25,
+    "rejected": 0,
+    "escalated": 1,
+    "discarded_generic": 0,
+    "requests_raised": 25,
+    "requests_sent": 3
+   }
+  }
+ },
+ "requests": 7,
  "gates": []
 }
