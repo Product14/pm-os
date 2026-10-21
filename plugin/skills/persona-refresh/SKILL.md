@@ -20,7 +20,7 @@ Personas review every one-pager and PRD. They stay useful only if they track wha
 1. **Setup.** Read `repo_path` from `~/.pm-os/profile.json` (for a scheduled run, use the repo the run started in). `git pull --ff-only`.
 2. **Window.** Default: the last 7 days. First run, or if the last report is more than 14 days old: 30 days. The last report is the newest `product/triage/persona-refresh-*.md`.
 3. **Pull, by search not by dump.** For each persona in `gm, general-sales-manager, bdc-manager, service-manager, service-advisor`, run 3 to 5 `search-transcripts` and `search-ticket-messages` queries on that role's concerns (from its `core.md` > What they protect and How they judge a proposal), within the window, with no company filter. Add `get-interaction-timeline` with `kind: meeting`, paged, to catch recent customer meetings. At most 60 Arali calls in total.
-4. **Extract, one subagent per persona, in parallel.** Give each: its persona `core.md`, its existing observation files, its `watchlist.md`, `reference/in-or-out.md`, and the cached excerpts for its queries. Each returns a JSON list of signals:
+4. **Extract, one subagent per persona (`model: sonnet`), at most 3 at a time.** Give each: its persona `core.md`, its existing observation files, its `watchlist.md`, `reference/in-or-out.md`, and the cached excerpts for its queries. Each returns a JSON list of signals:
    `{ "quote", "date", "interaction", "company", "speaker_side", "role", "route", "pattern", "predicts", "matches_existing" }`
    The subagent may read a full interaction with `get-interaction` when an excerpt is ambiguous about who is speaking, at most 5 times.
 5. **Route (you, deterministic):**

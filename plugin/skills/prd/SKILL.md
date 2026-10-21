@@ -26,6 +26,24 @@ You orchestrate. Subagents draft, review, research and judge, each in a fresh co
 3. Create or load `run.json` in the folder: `{ "stage", "started", "rubrics": {...versions}, "lessons_loaded": [], "observations_loaded": {}, "rounds": {}, "requests": 0, "gates": [] }`. If a run is in progress, resume from its `stage`.
 4. Load lessons: from `context/INDEX.md`, take the lesson lines whose target is `prd-drafting`, `decide` or `fit-check` and whose area matches, newest first, at most 15 per target. Record their paths in `run.json`. Pass the file paths to subagents, not the text.
 
+## Models, parallelism and sessions
+
+Pass `model` on every subagent you start:
+
+| Step | Model |
+|---|---|
+| Freshness and sufficiency research, context requests, solution research | sonnet |
+| Decide: ladder writer, advocate, skeptic | sonnet |
+| Decide: judge | opus |
+| Drafter: one-pager and PRD first drafts, resolution and revision | opus |
+| Persona reviewers, including the engineer | sonnet |
+| Fit checker | sonnet |
+| Gate edits, reformatting, publishing, ledger and CSM drafts | haiku |
+
+- Run at most 3 subagents at a time. A 5-person panel runs as 3, then 2.
+- Ask every subagent for a reply of 3 lines or fewer. Its work goes in files.
+- **One ticket per session.** Everything lives in the work folder and `run.json`, so a run resumes from its `stage` in a fresh conversation. After each PM gate, tell the PM they can start a new conversation and type `/pm-os:prd <folder>` to continue. Long sessions re-read their whole history on every turn.
+
 ## Stages
 
 Each stage writes its files, updates `run.json` > `stage`, and commits. Read `reference/` files only when you hand them to a subagent.

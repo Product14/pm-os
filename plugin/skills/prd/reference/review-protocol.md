@@ -15,7 +15,7 @@ Run `node scripts/index.mjs persona <role> <area> <tags>`, where the tags are 3 
 
 ## One round
 
-Run every reviewer in parallel, each a fresh subagent. They never see each other's reviews. Each gets:
+Run reviewers as fresh subagents with `model: sonnet`, at most 3 at a time. They never see each other's reviews. Each gets:
 1. The persona text (core plus observations) and its calibration lessons.
 2. The rubric for this document (`rubric-onepager.md` or `rubric-prd.md`) plus the persona's own "Review lens" criteria.
 3. The document to review.

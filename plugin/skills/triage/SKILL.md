@@ -32,7 +32,7 @@ You produce one **case file** per ticket. The case file is the only thing the PR
 
 1. **Fetch the queue.** Call `mcp__plugin_pm-os_freshdesk__search_tickets` with `freshdesk.queue.query`. Page until all results are in (at most 10 pages). Map each ticket to `vini-sales` or `vini-service` with `area_field` and `area_values`; a pod not in either list goes to the PM at Gate 1. Apply any skip list the PM gives for this run.
 2. **Skip what is current.** For each ticket, look for `product/work/<area>/fd<id>-*/case.md`. Skip it when its `ticket_updated_at` equals the ticket's `updated_at`. Say how many you skipped.
-3. **Research, one subagent per ticket, at most 4 at a time.** Use the Agent tool (general-purpose). Give each subagent:
+3. **Research, one subagent per ticket, at most 3 at a time.** Use the Agent tool (general-purpose) with `model: sonnet`. Give each subagent:
    - the ticket id, area and the work folder path it must write to: `product/work/<area>/fd<id>-<topic-slug>/`. The slug describes the topic, never the rooftop.
    - the full text of `reference/researcher.md` from this skill folder, and the path to `reference/case-template.md`
    - the matching decision and trap lines from the index, and the feature-index lines for that area
@@ -55,6 +55,10 @@ You produce one **case file** per ticket. The case file is the only thing the PR
 ## When the ledger already has an answer
 
 If a researcher reports a `ledger_match`, the case is pre-filled with the prior outcome. At Gate 1, show the prior decision and its revisit trigger. If the trigger is met, say so plainly: "This was deferred on <date> until <trigger>. That is now met (<count> rooftops)." The PM decides whether to reopen it.
+
+## Sessions
+
+State lives in the work folders. After Gate 1, tell the PM to start a new conversation for each PRD (`/pm-os:prd <folder>`) rather than continuing in this one. Refreshing a case later uses `model: sonnet`; formatting or lint fixes use `model: haiku`.
 
 ## Output files (per ticket)
 
