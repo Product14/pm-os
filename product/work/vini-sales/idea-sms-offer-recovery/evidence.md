@@ -370,3 +370,38 @@
 - side: system
 - role: engineering
 - text: external_crm_synced_timestamp is set by crm-core PATCH /v1/sales/external-crm-sync (user-auth guard, synced_by system or user; controller lines 47-54), which writes the legacy action item (action-item-legacy.mongo.repository.ts:105-112). Push lambdas report CRM ids back via /v1/internal/sales/sync-external-crm-ids (eleads-push/spyne.js:65). This pass did not prove the lambda path also sets the timestamp.
+
+### E54
+- source: search:transcript-read:sales-inbound-weekly-2026-10-21 (results/sms-b1..b4.json, after_unaccepted_offer = same_times_repeated, 20 ids) joined to clickhouse:dealer_leads.smsMessages.wakeUpMessage
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Of the 20 threads where the same time pair was repeated after an untaken offer, 9 repeated it only in a wake-up nudge, 7 only in live replies to a customer message, and 4 in both. By message: 30 repeated-pair messages, 13 wake-ups and 17 live replies. Every agent message that followed another agent message with no customer turn between carried wakeUpMessage = 1, so the transcript rule and the warehouse flag agree on all 20 threads.
+
+### E55
+- source: search:transcript-read:sales-inbound-weekly-2026-10-21 (same 20 threads); conversational-ai-backend:src/prompts/base-system-prompts/sales_new/appointment-conversion.xml:19 (origin/release e7190a7d9)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: 13 of the 17 live repeats came right after a side question (address or location, price or out-the-door, photos or link, trade-in, website listing); 2 followed a customer constraint (a different day, a budget), 1 an objection, 1 a near-yes. The rendered live rule forbids all of these: "Each new ask uses different days and times from every earlier ask; a pair the customer declined is never offered again, even after a side question" (line 19). Outcomes: 4 of 7 live-only threads booked (2 on a time the customer proposed), 0 of 9 wake-up-only threads booked, and 8 of those 9 got no customer reply after the nudge.
+
+### E56
+- source: conversational-ai-backend:src/sms/sms-v2.service.ts:4142 (origin/release e7190a7d9); clickhouse:dealer_leads.smsMessages
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Wake-ups are identifiable per message: sendOutbound saves wakeUpMessage = true on each SmsMessage when the lambda passes wakeUp (line 4142; field at conversation/sms-message.schema.ts:129, added in ffa97f355 on 2026-08-27), and the flag is in ClickHouse as dealer_leads.smsMessages.wakeUpMessage (Nullable UInt8). messageReason is not a reliable marker: 5 of the 16 wake-ups in these 20 threads carry a reply-style reason (question_or_new_info) instead of wakeup_follow_up.
+
+### E57
+- source: clickhouse:dealer_leads.smsMessages (20 conversation ids, 14 to 20 Oct 2026); conversational-ai-backend:src/prompts/base-system-prompts/sales_new/sms-wakeup.xml:13 (origin/release e7190a7d9)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: 5 of the 16 wake-ups repeated the previous agent message word for word (3 of them carrying the time pair), although the wake-up prompt tells the model to check for and discard a draft that repeats the last message (lines 13-14). 11 of 16 wake-ups fired 10 to 21 minutes after the last agent message; 4 were deferred 11 to 25 hours, three of them sent in one 12:10 UTC batch on 19 Oct, still carrying the pair offered the night before.
+
+### E58
+- source: lambdas:converse/sms-worker/index.js:1522 (release c846c1430); conversational-ai-backend:src/sms/sms-v2.service.ts:3851, src/sms/sms-wakeup.service.ts:268, src/sms/sms.service.ts:2545 (origin/release e7190a7d9)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: The SMS turn is generated in the sms-worker lambda, not the backend: it requests the prompt with flowType "wakeup" or "reply" (line 1522), strips booking tools on a wake-up (lines 1528-1532), calls the model, and posts to /internal/sms/v2/messages/outbound with wakeUp (lines 1576-1582). The wake-up sees the whole thread: the dispatch passes Date.now() as the window start (sms-wakeup.service.ts:268) and getMessagesInWindow returns every chat-completion message before it (sms-v2.service.ts:3851-3873). The window is re-armed only by an inbound customer reply (sms.service.ts:2545), so a thread gets at most one wake-up per customer silence.
