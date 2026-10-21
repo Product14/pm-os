@@ -20,6 +20,15 @@
     "discarded_generic": 0,
     "requests_raised": 25,
     "requests_sent": 3
+   },
+   "r2": {
+    "issues": 32,
+    "blocking": 0,
+    "major": 20,
+    "minor": 12,
+    "discarded_generic": 0,
+    "requests_raised": 25,
+    "note": "gm verdict block with no blocking issue; counted as revise per protocol"
    }
   }
  },

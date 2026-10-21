@@ -1,0 +1,882 @@
+{
+ "verdicts": {
+  "backend-engineer": "revise",
+  "bdc-manager": "revise",
+  "ceo": "revise",
+  "general-sales-manager": "revise",
+  "gm": "block"
+ },
+ "scores": {
+  "backend-engineer": {
+   "Real problem": 4,
+   "Right decision": 4,
+   "Evidence": 4,
+   "P&L": 3,
+   "Above the DMS": 4,
+   "Honest unknowns": 4,
+   "Shared scope": 3,
+   "Full value": 3,
+   "Brevity": 3,
+   "Code-cited baseline": 4,
+   "Integration reality": 3,
+   "Failure design": 3,
+   "Observability and rollback": 4,
+   "Scope discipline": 4
+  },
+  "bdc-manager": {
+   "Real problem": 3,
+   "Right decision": 4,
+   "Evidence": 4,
+   "P&L": 3,
+   "Above the DMS": 4,
+   "Honest unknowns": 4,
+   "Shared scope": 4,
+   "Full value": 3,
+   "Brevity": 3,
+   "CRM completeness": 3,
+   "Human reach": 3,
+   "Show discipline": 2,
+   "Workload effect": 3,
+   "Contact compliance": 3
+  },
+  "ceo": {
+   "Real problem": 4,
+   "Right decision": 4,
+   "Evidence": 3,
+   "P&L": 3,
+   "Above the DMS": 4,
+   "Honest unknowns": 4,
+   "Shared scope": 4,
+   "Full value": 4,
+   "Brevity": 3,
+   "Dealer economics": 3,
+   "Base leverage": 3,
+   "Dependency honesty": 4,
+   "Handoff clarity": 2,
+   "Decision readiness": 3
+  },
+  "general-sales-manager": {
+   "Real problem": 4,
+   "Right decision": 4,
+   "Evidence": 4,
+   "P&L": 3,
+   "Above the DMS": 3,
+   "Honest unknowns": 4,
+   "Shared scope": 4,
+   "Full value": 3,
+   "Brevity": 3,
+   "Desk control": 4,
+   "Rep handoff": 2,
+   "Inventory truth": 2,
+   "Attribution integrity": 2,
+   "Outcome metric": 3
+  },
+  "gm": {
+   "Real problem": 3,
+   "Right decision": 4,
+   "Evidence": 4,
+   "P&L": 3,
+   "Above the DMS": 4,
+   "Honest unknowns": 4,
+   "Shared scope": 4,
+   "Full value": 4,
+   "Brevity": 3,
+   "Statement impact": 3,
+   "System of record": 3,
+   "Adoption cost": 4,
+   "Failure visibility": 2,
+   "Handoff ownership": 3
+  }
+ },
+ "discarded_generic": 0,
+ "dropped_ids": [],
+ "requests": [
+  {
+   "question": "Which service and collection can conversational-ai-backend read at wake-up time to learn a team's CRM provider (integrationConfigs providerType crm?), and how many sales SMS teams have more than one CRM config?",
+   "blocks": "backend-engineer-r2-1 (per-CRM skip branch)",
+   "source": "Integrations team / spyne_dev.integrationConfigs",
+   "persona": "backend-engineer"
+  },
+  {
+   "question": "How long after a store books in the CRM does the source bdc meeting land in the meetings collection (batch cadence per CRM)?",
+   "blocks": "backend-engineer-r2-8 (store-set meeting skip)",
+   "source": "dealer-leads-backend CRM import jobs / Engineering",
+   "persona": "backend-engineer"
+  },
+  {
+   "question": "Why do 16 of 42 Tekion SMS visits have no CRM appointment id?",
+   "blocks": "backend-engineer-r2-5 (primary counts only visits with a CRM id)",
+   "source": "conversation_ai.ci_integration_logs for tekion-push",
+   "persona": "backend-engineer"
+  },
+  {
+   "question": "How many sales SMS rooftops set additional_fees_list or ShowMsrp, which an 'advertised price only' rule would override?",
+   "blocks": "backend-engineer-r2-3 (price rule)",
+   "source": "ClickHouse / central-config",
+   "persona": "backend-engineer"
+  },
+  {
+   "question": "Does checkWakeupEligibility, or the live SMS turn, read the per-conversation aiMode (human takeover = off), so a salesperson who took the thread over stops both the nudge and the re-offer?",
+   "blocks": "bdc-manager-r2-2",
+   "source": "Engineering (sms-wakeup.service.ts, conversation.schema.ts aiMode)",
+   "persona": "bdc-manager"
+  },
+  {
+   "question": "For source bdc meetings imported from the CRM, is created_at the booking time or the import time, and what is the typical lag between a booking in the CRM and the row appearing in Spyne?",
+   "blocks": "bdc-manager-r2-2",
+   "source": "Engineering (CRM import job), CSM",
+   "persona": "bdc-manager"
+  },
+  {
+   "question": "On DriveCentric rooftops, who is the first user in the store's user list that resolveTaskAssignee picks: a BDC agent, a salesperson, a manager or an admin?",
+   "blocks": "bdc-manager-r2-4",
+   "source": "Engineering (drivecentric-push/transform.js:647-658), CSM",
+   "persona": "bdc-manager"
+  },
+  {
+   "question": "Which CRM do the two stores carrying 14 and 13 of the 47 untaken-offer threads run, and which CRM does each of the 10 lever-1 rooftops run?",
+   "blocks": "bdc-manager-r2-5",
+   "source": "Engineering (ci_integration_logs, integrations registry)",
+   "persona": "bdc-manager"
+  },
+  {
+   "question": "At candidate pilot rooftops, does the store's BDC make a confirmation call or send a reminder from the CRM appointment that the Spyne push created, or does nothing confirm a bot-set visit?",
+   "blocks": "bdc-manager-r2-3 (Q20)",
+   "source": "CSM",
+   "persona": "bdc-manager"
+  },
+  {
+   "question": "How many rooftops do the 20 same-pair repeat threads and the 12 silent threads span, with the two concentrated stores shown separately?",
+   "blocks": "ceo-r2-1; base leverage in the Decision",
+   "source": "Transcript read results joined to blind-key (E42)",
+   "persona": "ceo"
+  },
+  {
+   "question": "At the 2 DriveCentric rooftops, who is the first user in the store's user list that resolveTaskAssignee picks: a salesperson, a BDC agent or an admin?",
+   "blocks": "ceo-r2-4; whether 'a person holds the task' is true on DriveCentric",
+   "source": "Engineering (drivecentric-push resolveTaskAssignee) with the CSM for those rooftops",
+   "persona": "ceo"
+  },
+  {
+   "question": "Is an opt-out or STOP reply after an agent message countable per SMS thread and rooftop in the warehouse?",
+   "blocks": "ceo-r2-2; a guard against pushy re-offers we can measure",
+   "source": "Engineering, dealer_leads.smsMessages and the opt-out record checked at sms-wakeup.service.ts:160",
+   "persona": "ceo"
+  },
+  {
+   "question": "Does VinSolutions expose an appointment write we are not using, and if so is it covered by our current integration agreement?",
+   "blocks": "ceo-r2-5; the plan for 11 VinSolutions rooftops",
+   "source": "Integrations or partnerships, plus Engineering (vinsolution-push)",
+   "persona": "ceo"
+  },
+  {
+   "question": "Per CRM push path, is the integration certified by the provider or only live in production?",
+   "blocks": "ceo-r1-4 residual; phase 3 on DriveCentric and PBS",
+   "source": "Integrations or partnerships",
+   "persona": "ceo"
+  },
+  {
+   "question": "For the E33 lead: was a Spyne meeting row created, which CRM is the rooftop on, and was the push held, failed or never re-sent?",
+   "blocks": "ceo-r2-6",
+   "source": "Engineering (dealer_leads.meetings, insertionProcessData, ci_integration_logs)",
+   "persona": "ceo"
+  },
+  {
+   "question": "Per pilot CRM (DriveCentric, eLead, Tekion, ADF, PBS), does the meeting push leave the lead's assigned salesperson and lead source unchanged? In particular, does the VinSolutions lead PUT that sets StageId 16 with the integration UserId change the lead owner or source?",
+   "blocks": "general-sales-manager-r2-5",
+   "source": "Engineering: lambdas crm-integrations/*-push meeting paths; vinsolution-push/handler.js:996-1017, 1656-1730",
+   "persona": "general-sales-manager"
+  },
+  {
+   "question": "On DriveCentric, Tekion and eLead, does an appointment pushed with no assignee appear on the lead owner's appointment list or task queue in the CRM UI?",
+   "blocks": "general-sales-manager-r2-1",
+   "source": "CSM with 2 GSMs at DriveCentric and Tekion rooftops",
+   "persona": "general-sales-manager"
+  },
+  {
+   "question": "Could the existing meeting push carry the Spyne meeting's assigned_to and a short description to the CRMs whose APIs accept them, and at what cost?",
+   "blocks": "general-sales-manager-r2-1",
+   "source": "Engineering: dealer-leads-backend fetch-data.js:681-708; create-meeting.js:447, 777",
+   "persona": "general-sales-manager"
+  },
+  {
+   "question": "What does 'verified' mean in the inventory search results (excludes sold, in transit, in recon?), and how stale can the inventory feed be at send time?",
+   "blocks": "general-sales-manager-r2-3",
+   "source": "Engineering: inventory search tool and inventory sync service (Q26)",
+   "persona": "general-sales-manager"
+  },
+  {
+   "question": "How long after a booking in the dealer CRM does the source bdc meeting land in dealer_leads.meetings?",
+   "blocks": "general-sales-manager-r2-7",
+   "source": "Engineering / data: CRM import jobs; dealer_leads.meetings created_at vs CRM booking timestamp",
+   "persona": "general-sales-manager"
+  },
+  {
+   "question": "Why do 16 of 42 agent-set SMS visits at Tekion rooftops have no CRM appointment id: dropped for no end date, push failed, or id not reported back?",
+   "blocks": "gm-r2-1, pilot rooftop selection",
+   "source": "clickhouse:dealer_leads.meetings (Tekion rooftops, external_crm_appointment_id null) joined to conversation_ai.ci_integration_logs; lambdas:crm-integrations/tekion-push/transform.js:591-594",
+   "persona": "gm"
+  },
+  {
+   "question": "How long after a BDC or salesperson books in the CRM does the source='bdc' meeting appear in dealer_leads.meetings, and is created_at the booking time or the import time?",
+   "blocks": "gm-r2-2, the store-set skip claim",
+   "source": "dealer-leads-backend CRM appointment import job; clickhouse:dealer_leads.meetings source bdc",
+   "persona": "gm"
+  },
+  {
+   "question": "At the candidate pilot rooftops, how does an appointment with no rep reach a salesperson today (round robin, BDC manager assigns, nobody)?",
+   "blocks": "gm-r2-5, Q34 pilot criteria",
+   "source": "CSM with the store's BDC manager",
+   "persona": "gm"
+  },
+  {
+   "question": "Is there any feed of CRM activity (calls, texts, tasks worked) per lead in the warehouse for any SMS rooftop, or must BDC touches come from the dealer's own CRM report?",
+   "blocks": "gm-r2-6, the cost-removed line",
+   "source": "clickhouse dealer_leads_raw / crm import tables; CSM",
+   "persona": "gm"
+  },
+  {
+   "question": "At VinSolutions, Tekion, eLead and ADF rooftops, does anyone act on a SALES_SCHEDULE_CALLBACK item that lands as note text, and how soon?",
+   "blocks": "gm-r2-3, ownership of blocked threads",
+   "source": "CSM with 2 to 3 BDC managers (same call as Q15)",
+   "persona": "gm"
+  }
+ ],
+ "issues": [
+  {
+   "id": "backend-engineer-r2-1",
+   "severity": "major",
+   "type": "feasibility",
+   "quote": "Action items keep blocking on DriveCentric and PBS, and everywhere on callback, lost lead, trade-in and Human Requested; elsewhere a photo or quote item stops cancelling the nudge. Q15 settles the list before ship [E61, E72, E73].",
+   "concern": "This makes the wake-up skip branch on the rooftop's CRM provider. checkWakeupEligibility has no way to know that today. It checks a global intent allowlist on the conversation and nothing else. conversational-ai-backend has no CRM-provider lookup: crm_type is an opaque id, and the only provider read is service-scheduler. Our own landing table had to infer the CRM per rooftop heuristically (E89). The rule also treats PBS as 'a person holds it', but a PBS reminder names a person only when a deal with a SalesRep already exists (E73, and line 31 says so). On DriveCentric the assignee is the first user in the store's user list (E72), which is not necessarily the person working the lead.",
+   "because": "`conversational-ai-backend:src/sms/sms-wakeup.service.ts:165-177`; E89; E72; E73; missing (no provider source of truth named)",
+   "ask": "Name the source of truth the wake-up reads for the rooftop's CRM (for example integrationConfigs providerType crm, through which service), when it is read, and the fallback when it is unknown or stale. The fallback should be today's behaviour, block. Make the PBS branch 'a rep on an existing deal', not 'PBS'. Log the branch taken in the skip-reason line.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer",
+    "bdc-manager",
+    "ceo"
+   ],
+   "ids": [
+    "backend-engineer-r2-1",
+    "bdc-manager-r2-7",
+    "ceo-r2-4"
+   ],
+   "asks": [
+    "Name the source of truth the wake-up reads for the rooftop's CRM (for example integrationConfigs providerType crm, through which service), when it is read, and the fallback when it is unknown or stale. The fallback should be today's behaviour, block. Make the PBS branch 'a rep on an existing deal', not 'PBS'. Log the branch taken in the skip-reason line.",
+    "Put SALES_FOLLOW_UP_WITH_QUOTE and SEND_VEHICLE_PHOTO after a media handover on Q15's list explicitly. If they stop blocking, the nudge must acknowledge the open request without promising a callback that nobody is tasked with.",
+    "On PBS, keep blocking only when the deal has a named SalesRep, and treat PBS without a rep like the note-only CRMs. On DriveCentric, confirm who 'first user in the store's user list' is at the 2 live DriveCentric rooftops before relying on it (see request), and add that to Q15."
+   ]
+  },
+  {
+   "id": "backend-engineer-r2-2",
+   "severity": "major",
+   "type": "scope",
+   "quote": "Live arm: after a side question, answer, then a different pair. After a declined pair, ask the constraint once, then a fitting pair. After a yes or near-yes, a two-day ask and nothing else [E55, E7, E31].",
+   "concern": "Some of the live repeats after a side question are instructed by fragments other than appointment-conversion. guardrails.xml tells the agent that when a price or MSRP cannot be quoted it should 'propose a visit with two concrete times, an earlier and a later time on the next open weekday' (lines 72 and 74). escalation.xml carries the same missing-price path (lines 46 and 74). That is a fixed recipe, so every price question that turn answers produces the same next-weekday pair. Price and out-the-door are among the 13 of 17 (E55). These fragments render on every channel (sales_v2.xml:37), and the doc does not list them as files to change or guard.",
+   "because": "`conversational-ai-backend:src/prompts/base-system-prompts/sales_new/guardrails.xml:72`, `:74`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_new/escalation.xml:46`, `:74`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_v2.xml:37`; E55",
+   "ask": "List every fragment line that hard-codes a pair recipe (guardrails 72 and 74, escalation 46 and 74, appointment-conversion 19 and 57). Under an SMS guard, change each one to 'a pair not already offered'. Add a render test showing that voice and chat still render the original text.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer"
+   ],
+   "ids": [
+    "backend-engineer-r2-2"
+   ],
+   "asks": [
+    "List every fragment line that hard-codes a pair recipe (guardrails 72 and 74, escalation 46 and 74, appointment-conversion 19 and 57). Under an SMS guard, change each one to 'a pair not already offered'. Add a render test showing that voice and chat still render the original text."
+   ]
+  },
+  {
+   "id": "backend-engineer-r2-3",
+   "severity": "major",
+   "type": "feasibility",
+   "quote": "Price: the advertised price only, never an out-the-door, payment, rate or trade figure (Q28) [E30, E55].",
+   "concern": "Price disclosure is already governed by CRITICAL rules in the shared guardrails fragment, and they depend on rooftop data. VerifiedPriceDisclosure lets the agent share exact verified values. DealerFeePriceDisclosure requires a verified combined price, fees included, when applicable. MSRP depends on ShowMsrp, and additional_fees_list is per rooftop. 'Advertised price only' conflicts with the combined-price rule at rooftops that configure fees. The doc does not say whether this is SMS-guarded, which rule it overrides, or what a rooftop's fee and MSRP settings mean afterwards. Q28 (what the SMS price answer is today) is still open, and it is the baseline for this rule.",
+   "because": "`conversational-ai-backend:src/prompts/base-system-prompts/sales_new/guardrails.xml:64-80`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_v2.xml:37`; Q28",
+   "ask": "Say where the rule lives (SMS guard inside guardrails.xml, or the SMS arm) and which existing rule it replaces, and keep verified combined price with fees where a rooftop sets fees. Alternatively, move the price rule out of phase 1 until Q28 is answered.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer"
+   ],
+   "ids": [
+    "backend-engineer-r2-3"
+   ],
+   "asks": [
+    "Say where the rule lives (SMS guard inside guardrails.xml, or the SMS arm) and which existing rule it replaces, and keep verified combined price with fees where a rooftop sets fees. Alternatively, move the price rule out of phase 1 until Q28 is answered."
+   ]
+  },
+  {
+   "id": "backend-engineer-r2-4",
+   "severity": "major",
+   "type": "acceptance-gap",
+   "quote": "Trigger: two weekly reads where the per-rooftop repeat rate has not halved at 5 or more rooftops, concentrated stores excluded (Q25), or miss goodbyes and unsent turns persist; show rate not down; BDC touches sized (Q6) [E2, E42] [PM].",
+   "concern": "This is r1-5, not fixed. If miss goodbyes or unsent concluded turns persist, the trigger fires phase 2. Phase 2 (line 64) is only an offered-times record on visitAskState, and nothing in it changes the miss ending or the concluded flag. The fallback for those two failures is therefore still more wording. Line 83 keeps 'target 0 goodbyes' on top of a rule (unavailable-vehicle-discovery.xml:40) that already says this and does not hold.",
+   "because": "`conversational-ai-backend:src/prompts/base-system-prompts/sales_new/unavailable-vehicle-discovery.xml:40`; E10; E62; E57",
+   "ask": "Either give phase 2 a non-prompt check for each failure (for example, block or regenerate an SMS send that has requested_vehicle_unavailable, no alternatives and no question; and log or flag a concluded batch that carries an offer and stays unsent), or take them out of this trigger and name their own backstop.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer"
+   ],
+   "ids": [
+    "backend-engineer-r2-4"
+   ],
+   "asks": [
+    "Either give phase 2 a non-prompt check for each failure (for example, block or regenerate an SMS send that has requested_vehicle_unavailable, no alternatives and no question; and log or flag a concluded batch that carries an offer and stays unsent), or take them out of this trigger and name their own backstop."
+   ]
+  },
+  {
+   "id": "backend-engineer-r2-5",
+   "severity": "major",
+   "type": "acceptance-gap",
+   "quote": "| Agent-set visits per 100 engaged SMS leads, per rooftop (primary) | 19 of 100 offered two times | up, counting only visits with a CRM id | [E5, E89] |",
+   "concern": "Counting only visits with a CRM id makes the primary measure track push acceptance, not agent behaviour. VinSolutions has no appointment object and ids are null by design: 18 of 319 (E87, E89), across 11 rooftops. Tekion is 26 of 42 for reasons nobody has traced (a meeting with no end date is dropped, E86). The CRM is unknown at 8 rooftops. Per rooftop, the primary would read near zero at VinSolutions stores whatever phase 1 does, and a push regression would look like an agent regression.",
+   "because": "E89; E87; E86; E76",
+   "ask": "Make the primary Spyne meetings (source spyne, joined by conversation_id, per E89's definition). Report the CRM-id landing rate as a separate per-CRM guard. Either exclude VinSolutions rooftops from the per-rooftop gate or use the stage change as their landing signal.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer",
+    "ceo"
+   ],
+   "ids": [
+    "backend-engineer-r2-5",
+    "ceo-r2-2"
+   ],
+   "asks": [
+    "Make the primary Spyne meetings (source spyne, joined by conversation_id, per E89's definition). Report the CRM-id landing rate as a separate per-CRM guard. Either exclude VinSolutions rooftops from the per-rooftop gate or use the stage change as their landing signal.",
+    "Restate the baseline on the same definition as the after: same denominator, CRM-id visits only, per rooftop, over a pre-period. Set a minimum lift and a read date that decide pilot-to-base, and a kill line. Add one guard you can measure now, such as opt-out or STOP replies after a re-offer per rooftop (see request), next to show rate."
+   ]
+  },
+  {
+   "id": "backend-engineer-r2-6",
+   "severity": "minor",
+   "type": "unsupported-claim",
+   "quote": "Thin, concentrated demand (Q31) [E38, E42]. Phase 3 needs task write-back on four CRMs, a provider negotiation [E49, E52].",
+   "concern": "This is the rest of r1-8. eLead already gets scheduled activities with a dueDate through Fortellis /activities/schedule (E85), so a timed task there may be a mapping change inside access we already have. Tekion, VinSolutions and ADF are unknown, which is not the same as missing. Line 68 already says 'until write-back is confirmed elsewhere (Q17)', and this line contradicts it.",
+   "because": "E85; E49; E52; Q17",
+   "ask": "Reword to: 'phase 3 beyond DriveCentric and PBS depends on per-provider task access, unknown (Q17); eLead may be in existing Fortellis scope.'",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer"
+   ],
+   "ids": [
+    "backend-engineer-r2-6"
+   ],
+   "asks": [
+    "Reword to: 'phase 3 beyond DriveCentric and PBS depends on per-provider task access, unknown (Q17); eLead may be in existing Fortellis scope.'"
+   ]
+  },
+  {
+   "id": "backend-engineer-r2-7",
+   "severity": "minor",
+   "type": "feasibility",
+   "quote": "Gate: team flag AND SMS medium, on the outboundCallTransferEnabled pattern; rollback is flipping it. Pilot rooftops picked in the PRD [E69] [PM].",
+   "concern": "The cited precedent turns a team flag into a prompt template variable (E69). Half of phase 1 is server code that never touches the template: the meeting skip and the per-CRM action-item skip in checkWakeupEligibility, and the action-item check in the pencil cron. Unless those read the same conversationNotifications flag, flipping it rolls back the prompts but leaves the skip and pencil changes live at every rooftop.",
+   "because": "E69; `conversational-ai-backend:src/sms/sms-wakeup.service.ts:165-177`; `conversational-ai-backend:src/meetings/tentative-booking-evaluator.service.ts:79`",
+   "ask": "State that every phase 1 server change reads the same flag and that flag off means today's behaviour. Add a render test showing the SMS prompt is byte-identical with the flag off, and put the flag state on the skip-reason log line.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer",
+    "gm"
+   ],
+   "ids": [
+    "backend-engineer-r2-7",
+    "gm-r2-8"
+   ],
+   "asks": [
+    "State that every phase 1 server change reads the same flag and that flag off means today's behaviour. Add a render test showing the SMS prompt is byte-identical with the flag off, and put the flag state on the skip-reason log line.",
+    "Put only the behaviour changes (live re-offer rules, wake-up pair change, skip-rule changes) behind the flag, and ship the defect fixes to every SMS rooftop, as decision line 10 already allows. Name the complaint path for pilot stores (CSM to PM, reviewed in the weekly read)."
+   ]
+  },
+  {
+   "id": "backend-engineer-r2-8",
+   "severity": "minor",
+   "type": "feasibility",
+   "quote": "Skips: any active meeting for the lead, store-set CRM imports included, stops the nudge [E77, E78]; the live turn needs the same view [ASSUMPTION: the live SMS turn does not see a store-set appointment for the lead].",
+   "concern": "This is feasible: meetings carry lead_id (indexed), is_active and status, and the schema already exports CANCELLED_MEETING_STATUSES. It is still a behaviour change in both directions. Today any meeting in the thread blocks, cancelled ones included. After the change a cancelled meeting stops blocking, and the lead starts getting nudges again. A store-set appointment can also only block once the CRM import has landed, and E66 cannot tell whether created_at is booking time or import time.",
+   "because": "`conversational-ai-backend:src/external_crm_integrations/meeting.schema.ts:18`, `:35`, `:62`, `:286`; E77; E66",
+   "ask": "Name the query (lead_id, is_active true, status not in CANCELLED_MEETING_STATUSES, any source). State that a cancelled meeting no longer blocks. Add the bdc import latency to the open questions.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer",
+    "bdc-manager"
+   ],
+   "ids": [
+    "backend-engineer-r2-8",
+    "bdc-manager-r2-2"
+   ],
+   "asks": [
+    "Name the query (lead_id, is_active true, status not in CANCELLED_MEETING_STATUSES, any source). State that a cancelled meeting no longer blocks. Add the bdc import latency to the open questions.",
+    "Add three lines. Human takeover (aiMode off) suppresses both the nudge and the live re-offer. The 2 no-feed rooftops are a named gap, kept out of the pilot or accepted in writing. Q33, whether the live turn sees store-set visits, is answered before the pilot, not in the PRD."
+   ]
+  },
+  {
+   "id": "backend-engineer-r2-9",
+   "severity": "minor",
+   "type": "acceptance-gap",
+   "quote": "| Concluded turn with an offer open, never sent | 4 threads | fewer, else phase 2 | [E62] |",
+   "concern": "No query in the doc can produce this number. smsMessages.isConcluded is not mirrored to ClickHouse (E63), so E62 had to read smsChatCompletions by hand. The suppression happens in sendOutbound (sms-v2.service.ts:4157), not in the wake-up skip check, so the skip-reason log on line 60 will not capture it. 'With an offer open' is also the model's judgement in phase 1, and the doc does not say so.",
+   "because": "E63; E62; `conversational-ai-backend:src/sms/sms-v2.service.ts:4157`",
+   "ask": "Log the suppressed-concluded batch in sendOutbound, with the batch text, or mirror isConcluded to ClickHouse. State that 'offer open' is decided by the model in phase 1.",
+   "persona": "backend-engineer",
+   "personas": [
+    "backend-engineer"
+   ],
+   "ids": [
+    "backend-engineer-r2-9"
+   ],
+   "asks": [
+    "Log the suppressed-concluded batch in sendOutbound, with the batch text, or mirror isConcluded to ClickHouse. State that 'offer open' is decided by the model in phase 1."
+   ]
+  },
+  {
+   "id": "bdc-manager-r2-1",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "Concluded: change only the SMS branch of `conversational-ai-backend:src/prompts/base-system-prompts/sales_new/response-format.xml:60` so a \"let me check\" reply with an offer open is sent; sendOutbound is untouched [E62].",
+   "concern": "This fixes the unsent closing line by no longer marking the turn concluded. The concluded flag is what stops the wake-up (sms-wakeup.service.ts:177), and the customer's \"I'll check\" reply is what armed it. So the same change means a customer who just told us they will get back to us receives fresh times 10 minutes later. My agents give that customer until the time they named or the next business morning. v1 said the wake-up stays armed. v2 deleted that sentence but did not change the behaviour, so a dealer reading it will not know the nudge is coming. Dealers already call this pushy, and close per attempt is sliding with no explanation.",
+   "because": "E62, E58, E34, E35, E11",
+   "ask": "State the side effect in the one-pager. Phase 1 either suppresses the 10-minute wake-up on a deferral turn, so the thread goes quiet with the closing line sent and the 5165 hand-back owns it, or the PRD sends the nudge at the customer-named window or the next business morning. Count deferral threads separately in the measures and in the pull-back read.",
+   "persona": "bdc-manager",
+   "personas": [
+    "bdc-manager"
+   ],
+   "ids": [
+    "bdc-manager-r2-1"
+   ],
+   "asks": [
+    "State the side effect in the one-pager. Phase 1 either suppresses the 10-minute wake-up on a deferral turn, so the thread goes quiet with the closing line sent and the 5165 hand-back owns it, or the PRD sends the nudge at the customer-named window or the next business morning. Count deferral threads separately in the measures and in the pull-back read."
+   ]
+  },
+  {
+   "id": "bdc-manager-r2-3",
+   "severity": "major",
+   "type": "acceptance-gap",
+   "quote": "No confirmation or reminder path is known for agent-set SMS visits (Q20).",
+   "concern": "Phase 1 is built to set more visits, and the doc admits nobody knows whether those visits get a confirmation or a reminder. Booking with no reminder path is on my block list. The only protection is a show-rate guard the measures table calls 'not measurable', and phase 2's trigger leans on 'show rate not down', which nobody can read. A rescheduled or confirmed visit never re-pushes to the CRM, so my team's confirmation call can go out for the wrong time. More sets with no show discipline just move my no-show count. Q20 blocks only the 'Show guard', not the pilot.",
+   "because": "E66, E80, Q20, Q27",
+   "ask": "Make Q20 block the pilot. Pilot only where we know who confirms the visit: the store's BDC confirmation call off the CRM appointment, or a Spyne reminder text. Name that owner per pilot rooftop. If Q27 cannot match shows, say the guard is a manual check of CRM completed and noshow at the pilot rooftops, and remove 'show rate not down' from the phase 2 trigger until it can be read.",
+   "persona": "bdc-manager",
+   "personas": [
+    "bdc-manager"
+   ],
+   "ids": [
+    "bdc-manager-r2-3"
+   ],
+   "asks": [
+    "Make Q20 block the pilot. Pilot only where we know who confirms the visit: the store's BDC confirmation call off the CRM appointment, or a Spyne reminder text. Name that owner per pilot rooftop. If Q27 cannot match shows, say the guard is a manual check of CRM completed and noshow at the pilot rooftops, and remove 'show rate not down' from the phase 2 trigger until it can be read."
+   ]
+  },
+  {
+   "id": "bdc-manager-r2-4",
+   "severity": "major",
+   "type": "unsupported-claim",
+   "quote": "Sourcing intent, rooftop setting default off, only where it lands as a person's timed task (DriveCentric; PBS with a rep on the deal) until write-back is confirmed elsewhere (Q17) [E26, E72, E73].",
+   "concern": "On DriveCentric the task goes to the first user in the store's user list, and to the associated salesperson only when there is no such user. That is whoever sorts first, often an admin or the GM, not my BDC queue or the lead's salesperson. Saying 'a person's timed task' makes it sound owned, but a sourcing promise sitting in a random user's queue gets worked by nobody, and the customer shows up for a car nobody went looking for. Line 31 makes the same claim about items in general.",
+   "because": "E72, E47, missing (which user is first in the list)",
+   "ask": "Say 'assigned to the first user in the store's DriveCentric list (often not the BDC or the lead's salesperson)'. Make phase 3 depend on routing the sourcing task to the lead's assigned salesperson or a named BDC queue, with a fallback when it is not worked by its due time.",
+   "persona": "bdc-manager",
+   "personas": [
+    "bdc-manager"
+   ],
+   "ids": [
+    "bdc-manager-r2-4"
+   ],
+   "asks": [
+    "Say 'assigned to the first user in the store's DriveCentric list (often not the BDC or the lead's salesperson)'. Make phase 3 depend on routing the sourcing task to the lead's assigned salesperson or a named BDC queue, with a fallback when it is not worked by its due time."
+   ]
+  },
+  {
+   "id": "bdc-manager-r2-5",
+   "severity": "major",
+   "type": "acceptance-gap",
+   "quote": "No new CRM write, but phase 1 rides the existing meeting push: VinSolutions gets a note line, no CRM gets a rep, confirmed pencils keep their first time [E80, E81, E87]. [ASSUMPTION: phase 1 pilots first at rooftops whose CRM takes the visit as an appointment, not VinSolutions]",
+   "concern": "The skip-rule fix only does anything where items are notes: all 5 cancelled wake-ups were at VinSolutions (4) and ADF (1) rooftops. If the pilot leaves out VinSolutions, the measure 'Wake-up cancelled by an item no person holds, 5 of 12 to 0' has almost nothing to read at the pilot rooftops. Meanwhile the DriveCentric and PBS pilots keep every item blocking. The pilot choice and the measures point at different stores, and nobody knows which CRM the two stores carrying 27 of 47 threads run.",
+   "because": "E74, E61, E87, E89, E42",
+   "ask": "List each phase 1 change with the CRMs where it can show an effect. Choose pilot rooftops that cover both halves: an appointment CRM for the offer change, and an ADF or VinSolutions store for the skip-rule change, with VinSolutions read on its ACTIVE_SET_APPOINTMENT stage instead of a CRM id. Name the CRM of the two concentrated stores.",
+   "persona": "bdc-manager",
+   "personas": [
+    "bdc-manager"
+   ],
+   "ids": [
+    "bdc-manager-r2-5"
+   ],
+   "asks": [
+    "List each phase 1 change with the CRMs where it can show an effect. Choose pilot rooftops that cover both halves: an appointment CRM for the offer change, and an ADF or VinSolutions store for the skip-rule change, with VinSolutions read on its ACTIVE_SET_APPOINTMENT stage instead of a CRM id. Name the CRM of the two concentrated stores."
+   ]
+  },
+  {
+   "id": "bdc-manager-r2-6",
+   "severity": "minor",
+   "type": "acceptance-gap",
+   "quote": "Agent-set visits per 100 engaged SMS leads, per rooftop (primary) | 19 of 100 offered two times | up, counting only visits with a CRM id | [E5, E89]",
+   "concern": "The baseline counts leads offered two times. The measure counts engaged leads. Those are different denominators. 'Counting only visits with a CRM id' also drops about 94% of VinSolutions visits and 38% of Tekion visits, so the number moves with the pilot's CRM mix, not with the agent. 'Up' gives no target and no read window.",
+   "because": "E5, E89",
+   "ask": "Use one denominator for today and after. Give a target and a read window per rooftop. For VinSolutions, count by the stage change rather than the CRM id.",
+   "persona": "bdc-manager",
+   "personas": [
+    "bdc-manager"
+   ],
+   "ids": [
+    "bdc-manager-r2-6"
+   ],
+   "asks": [
+    "Use one denominator for today and after. Give a target and a read window per rooftop. For VinSolutions, count by the stage change rather than the CRM id."
+   ]
+  },
+  {
+   "id": "bdc-manager-r2-8",
+   "severity": "minor",
+   "type": "acceptance-gap",
+   "quote": "Wake-up: rewrite the conflicting lines. One nudge offers an unoffered pair from store hours, or asks the constraint when no hours are set (Q18). Never the last message's text or last night's pair; sent in rooftop local hours (Q19) [E21, E57].",
+   "concern": "Phase 1 sends nudges on threads that went silent before, including aged follow_up leads, and the store carries the TCPA risk. The doc covers send hours but never says that opt-out is checked before each nudge, even though the code already does it per lead. A dealer reading this cannot tell.",
+   "because": "E77 (sms-wakeup.service.ts:160), E59",
+   "ask": "Add half a line: an opt-out on the lead cancels every pending nudge (already checked at dispatch, E77). Say whether a STOP that arrives in the CRM, not on the thread, reaches that flag.",
+   "persona": "bdc-manager",
+   "personas": [
+    "bdc-manager"
+   ],
+   "ids": [
+    "bdc-manager-r2-8"
+   ],
+   "asks": [
+    "Add half a line: an opt-out on the lead cancels every pending nudge (already checked at dispatch, E77). Say whether a STOP that arrives in the CRM, not on the thread, reaches that flag."
+   ]
+  },
+  {
+   "id": "ceo-r2-1",
+   "severity": "major",
+   "type": "unsupported-claim",
+   "quote": "Why: the same time pair repeats in 20 of 47 untaken-offer threads across 10 of 14 sampled rooftops, and the written rule against it is not holding [E2, E42, E15].",
+   "concern": "This is the base-versus-one-off sentence in the Decision, and it merges two numbers. E42 says the 47 untaken-offer threads span 10 rooftops. It does not say how many rooftops the 20 repeats span. Two stores carry 27 of the 47. For all I know the 20 repeats sit mostly at those two stores. If a CSM tells a dealer group 'this happens at 10 of 14 stores', we are quoting a figure we never measured.",
+   "because": "E42, E2; missing (rooftop spread of the 20 repeat threads and of the 12 silent threads)",
+   "ask": "Reword it as: '47 untaken-offer threads across 10 of 14 sampled rooftops; of these, 20 repeated the same pair'. Or add the rooftop count for the 20 repeats, with the two concentrated stores shown apart. Make the same fix to the Breadth line (line 45).",
+   "persona": "ceo",
+   "personas": [
+    "ceo"
+   ],
+   "ids": [
+    "ceo-r2-1"
+   ],
+   "asks": [
+    "Reword it as: '47 untaken-offer threads across 10 of 14 sampled rooftops; of these, 20 repeated the same pair'. Or add the rooftop count for the 20 repeats, with the two concentrated stores shown apart. Make the same fix to the Breadth line (line 45)."
+   ]
+  },
+  {
+   "id": "ceo-r2-3",
+   "severity": "major",
+   "type": "five-facts",
+   "quote": "**Flywheel stage:** lead to appointment, on SMS, before the lead goes back to the BDC",
+   "concern": "Unfixed from ceo-r1-5. This is the handoff fact five is about, and the page still never names it as one. When Vini does not set the visit, the lead passes to the BDC or a salesperson, and a trade-in goes to the used-car desk. Phase 1 also leaves that handoff exactly as it is: an idle summary note, deferred to RETCONVAI-5165 (line 61). What phase 1 changes is when Vini stops talking. I still cannot tell who at the store benefits, who signs and who can kill it. The GM in E35 wants these leads on the phone, and the used car manager in E34 thinks the goal is too appointment-fixed. Either of them could pull the flag.",
+   "because": "E29, E33, E34, E35, E61; decide.md Inputs, Strategic fit (fact 5)",
+   "ask": "Add one line under Decision. Handoff: Vini to the BDC or internet sales on an unbooked lead, and to the used-car desk on a trade-in. Phase 1 changes when Vini stops, not what the person receives. Benefits: BDC manager (fewer re-touches, Q6). Signs: GM. May block: GSM or used car manager, on pushiness (E34, E35).",
+   "persona": "ceo",
+   "personas": [
+    "ceo"
+   ],
+   "ids": [
+    "ceo-r2-3"
+   ],
+   "asks": [
+    "Add one line under Decision. Handoff: Vini to the BDC or internet sales on an unbooked lead, and to the used-car desk on a trade-in. Phase 1 changes when Vini stops, not what the person receives. Benefits: BDC manager (fewer re-touches, Q6). Signs: GM. May block: GSM or used car manager, on pushiness (E34, E35)."
+   ]
+  },
+  {
+   "id": "ceo-r2-5",
+   "severity": "major",
+   "type": "five-facts",
+   "quote": "[ASSUMPTION: phase 1 pilots first at rooftops whose CRM takes the visit as an appointment, not VinSolutions]",
+   "concern": "VinSolutions is the largest CRM in the SMS base by rooftop count: 11 rooftops and 319 SMS visits (E89). There the visit lands as one note line plus a stage change, under the Spyne integration user (E87). Line 9 says we build this for every SMS rooftop. This line quietly drops a third of the base from the pilot, and the page gives no plan for those stores. The table also leaves out the 8 rooftops whose CRM is unknown (321 visits, E89). For fact four I need the list, plus the plan for the rest.",
+   "because": "E87, E89; Q34; missing (whether a VinSolutions appointment write exists and its commercial status)",
+   "ask": "Add a 'CRM unknown, 8 rooftops' row to the table. Say what phase 1 does at VinSolutions rooftops: ships with the note-and-stage landing, waits, or waits on a negotiated appointment write with that provider, with an owner. Change line 9 to 'every SMS rooftop whose CRM takes the visit as an appointment' until then.",
+   "persona": "ceo",
+   "personas": [
+    "ceo"
+   ],
+   "ids": [
+    "ceo-r2-5"
+   ],
+   "asks": [
+    "Add a 'CRM unknown, 8 rooftops' row to the table. Say what phase 1 does at VinSolutions rooftops: ships with the note-and-stage landing, waits, or waits on a negotiated appointment write with that provider, with an owner. Change line 9 to 'every SMS rooftop whose CRM takes the visit as an appointment' until then."
+   ]
+  },
+  {
+   "id": "ceo-r2-6",
+   "severity": "minor",
+   "type": "unsupported-claim",
+   "quote": "Adjacent, not fixed here: one store lost an aged lead whose agent-set visit never reached its CRM; cause not traced [E33].",
+   "concern": "E33 says Spyne 'tried to schedule' a 12PM test drive. That does not show a meeting row was created. 'Agent-set visit' says more than E33 does. The new evidence also offers causes we could check: confirming a pencil never re-pushes (E80), VinSolutions takes only a note (E87), and a sync-gate hold is logged but not retried (E82). 'Cause not traced' with no question and no owner means nobody will trace it.",
+   "because": "E33, E80, E82, E87",
+   "ask": "Change it to 'intended visit'. Add an open question with an Engineering owner: was a meeting row created for that lead, which CRM does the rooftop use, and was the push held or never re-sent?",
+   "persona": "ceo",
+   "personas": [
+    "ceo",
+    "gm"
+   ],
+   "ids": [
+    "ceo-r2-6",
+    "gm-r2-1"
+   ],
+   "asks": [
+    "Change it to 'intended visit'. Add an open question with an Engineering owner: was a meeting row created for that lead, which CRM does the rooftop use, and was the push held or never re-sent?",
+    "Before the flag goes on anywhere, trace the 16 Tekion visits with no id. Keep Tekion and unknown-CRM rooftops out of the pilot until that trace is done. Add a daily per-rooftop count of agent-set visits with no CRM id after N minutes, routed to the CSM and the store's BDC manager, and report that count beside the primary measure instead of excluding it."
+   ]
+  },
+  {
+   "id": "ceo-r2-7",
+   "severity": "minor",
+   "type": "acceptance-gap",
+   "quote": "Pushing: re-offers can read as pushy [E34, E35]; close per attempt slid 1.73 to 1.43, unexplained [E11]. Pull back with the flag [E69].",
+   "concern": "Decide named when to pull back: close per attempt keeps sliding after phase 1, or a dealer names pushy re-offers. The one-pager keeps the switch and drops the trigger, so nobody knows when to flip it.",
+   "because": "E11, E34, E35; decide.md Outcome (Pull back)",
+   "ask": "Restore the trigger in one line. Pull back at a rooftop when close per attempt falls below its pre-period, or when the dealer names pushy re-offers. Name who flips the flag.",
+   "persona": "ceo",
+   "personas": [
+    "ceo"
+   ],
+   "ids": [
+    "ceo-r2-7"
+   ],
+   "asks": [
+    "Restore the trigger in one line. Pull back at a rooftop when close per attempt falls below its pre-period, or when the dealer names pushy re-offers. Name who flips the flag."
+   ]
+  },
+  {
+   "id": "ceo-r2-8",
+   "severity": "minor",
+   "type": "missing-evidence",
+   "quote": "| BDC touches per unbooked SMS lead | unknown | fewer, read at one rooftop from CRM activity | Q6 |",
+   "concern": "This is the only cost-removed line on the page, and it gates phases 2 and 3. A read at one rooftop is an anecdote, not a base case, and one CRM's activity model will not carry over to the others.",
+   "because": "E66, E49, E50, E51, E52; Q6",
+   "ask": "Read it at 2 to 3 rooftops on different CRMs that have an activity feed. State the figure phases 2 and 3 must clear to be funded.",
+   "persona": "ceo",
+   "personas": [
+    "ceo",
+    "gm"
+   ],
+   "ids": [
+    "ceo-r2-8",
+    "gm-r2-6"
+   ],
+   "asks": [
+    "Read it at 2 to 3 rooftops on different CRMs that have an activity feed. State the figure phases 2 and 3 must clear to be funded.",
+    "Name the rooftop and the CRM activity source, or say the baseline comes from the BDC manager's own CRM report. Capture the baseline at each pilot rooftop before the flag goes on, and make that a pre-ship step rather than an open question."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r2-1",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "No new CRM write, but phase 1 rides the existing meeting push: VinSolutions gets a note line, no CRM gets a rep, confirmed pencils keep their first time [E80, E81, E87].",
+   "concern": "Phase 1 exists to put more agent-set visits on my floor, and the doc now admits every one of them lands with no salesperson on it and no notes about the car or the customer. That is my Saturday: an up walks in 'booked by the AI' and nobody owns it. The Spyne meeting already carries the lead's assigned_to and the push drops it, so this is not a provider negotiation, it is our own payload. Writing it down as a risk does not make it okay to scale.",
+   "because": "E81 (meeting carries assigned_to at create-meeting.js:447, 777; lambda payload has no assignee, description or notes); E83, E85, E86, E88 (no rep on DriveCentric, eLead, Tekion, ADF); E84 (PBS only with a rep already on the deal)",
+   "ask": "Make rep handoff a named phase 1 dependency, not just a risk: either pass the lead's assigned_to and a one-line context (vehicle, what the customer asked) in the meeting push for the CRMs whose lambdas can take it, or add an open question answered by the CSM with 2 GSMs before pilot: on each pilot CRM, does an appointment with no assignee show on the lead owner's appointment list or task queue? Pick pilot rooftops only where the answer is yes.",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager",
+    "gm"
+   ],
+   "ids": [
+    "general-sales-manager-r2-1",
+    "gm-r2-5"
+   ],
+   "asks": [
+    "Make rep handoff a named phase 1 dependency, not just a risk: either pass the lead's assigned_to and a one-line context (vehicle, what the customer asked) in the meeting push for the CRMs whose lambdas can take it, or add an open question answered by the CSM with 2 GSMs before pilot: on each pilot CRM, does an appointment with no assignee show on the lead owner's appointment list or task queue? Pick pilot rooftops only where the answer is yes.",
+    "Make it a pilot entry criterion (Q34): the CSM confirms how an unassigned appointment reaches a salesperson at that rooftop today. Note that the Spyne meeting already carries the lead's assigned_to, so a later phase could send it."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r2-2",
+   "severity": "major",
+   "type": "scope",
+   "quote": "| VinSolutions | note line plus stage change | integration user | 18 of 319 [E87, E89] |",
+   "concern": "VinSolutions is your biggest SMS population: 11 rooftops and 319 of the agent-set visits in the window. There the 'appointment' is a line in the Note field. A note is not an appointment; my reps work the appointment list. The doc only assumes the pilot starts elsewhere and leaves Q34 as a PM call. Nothing says what happens when the flag turns on at a VinSolutions store, so phase 1 can scale more phantom visits onto exactly the stores where they are invisible.",
+   "because": "E87; E89 (VinSolutions 18 of 319 carry a CRM id, 11 rooftops); E33 (a store lost a lead whose agent-set visit never reached its CRM)",
+   "ask": "State as a rule, not an assumption: the phase 1 flag stays off at VinSolutions rooftops until a meeting lands as a VinSolutions appointment, and name that appointment write as the full-value dependency with whether we have it (a provider question, like Q17 for tasks).",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager"
+   ],
+   "ids": [
+    "general-sales-manager-r2-2"
+   ],
+   "asks": [
+    "State as a rule, not an assumption: the phase 1 flag stays off at VinSolutions rooftops until a meeting lands as a VinSolutions appointment, and name that appointment write as the full-value dependency with whether we have it (a provider question, like Q17 for tasks)."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r2-3",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "- Inventory miss, SMS-guarded inside the shared fragment: visit times only for a verified unit shown or alternatives the customer agreed to see; otherwise no goodbye, no follow-up promise, one question that keeps the search open [E10, E24].",
+   "concern": "Unfixed from round 1. The whole rule rests on 'verified', and nobody has said whether verified means not sold, not in transit, not in recon and front-line ready, or how stale the feed can be. Q26 is open but does not block ship. And the same hole now applies to lever 1: a wake-up deferred overnight re-offers times on the car the customer asked about yesterday, which may have sold this morning. Booking a visit on a unit we cannot deliver is the one thing I will not accept from any vendor.",
+   "because": "E24 ('at most two verified listings', not defined); E57 (4 wake-ups deferred 11 to 25 hours still carrying last night's pair); E36 (prospect on another vendor booking cars not on the ground); front-line status check: missing",
+   "ask": "Move Q26 to 'blocks ship'. State that any visit time offered on a named unit, on a miss or on a re-offer, is sent only after a stock check at send time that excludes sold, in-transit and in-recon units, and say what freshness the feed guarantees.",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager"
+   ],
+   "ids": [
+    "general-sales-manager-r2-3"
+   ],
+   "asks": [
+    "Move Q26 to 'blocks ship'. State that any visit time offered on a named unit, on a miss or on a re-offer, is sent only after a stock check at send time that excludes sold, in-transit and in-recon units, and say what freshness the feed guarantees."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r2-4",
+   "severity": "major",
+   "type": "acceptance-gap",
+   "quote": "| Show rate on agent-set visits (guard) | not measurable | not down, where matchable | [E66], Q27 |",
+   "concern": "The primary measure is still visits set. The only line that tells me whether those visits walk in is 'not down, where matchable', and if Q27 comes back 'cannot match', the guard is empty and the pilot gets judged on appointments set alone. Q27 blocks 'Show guard', not the pilot. More re-offers can mean more soft yeses that never show.",
+   "because": "E66 (about 99% of spyne meetings stay scheduled; CRM rows carry completed and noshow); E11 (close per attempt slid 1.73 to 1.43, unexplained); E34",
+   "ask": "Make Q27 block pilot start. If matching is not possible, the pilot uses a manual fallback: the pilot store's GSM or BDC manager marks shown or no-show on the agent-set visits for the pilot weeks, and phase 2 cannot trigger without a show number.",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager",
+    "gm"
+   ],
+   "ids": [
+    "general-sales-manager-r2-4",
+    "gm-r2-7"
+   ],
+   "asks": [
+    "Make Q27 block pilot start. If matching is not possible, the pilot uses a manual fallback: the pilot store's GSM or BDC manager marks shown or no-show on the agent-set visits for the pilot weeks, and phase 2 cannot trigger without a show number.",
+    "At each pilot rooftop, set how show is read before ship: CRM completed or noshow rows matched by lead and time, or a weekly show list from the BDC manager. If neither is available, say the pilot runs without a quality guard and keep it short."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r2-5",
+   "severity": "major",
+   "type": "missing-evidence",
+   "quote": "- **Agent-set visits reach the CRM in one push at creation, with the time and no rep;** confirms and reschedules never re-push [E79, E80, E81].",
+   "concern": "The doc now covers time and rep but says nothing about lead source or lead owner surviving the push. On VinSolutions the same PUT moves the lead's stage and writes as the Spyne integration user. If any of these pushes changes who owns the lead or what source it carries, my commission fights and my marketing-by-source report both break, and phase 1 multiplies the pushes.",
+   "because": "E87 (PUT gateway/v1/lead/{id} sets StageId 16, UserId = 'Spyne' integration user); lead source and owner on the meeting push: missing (resolution of r1-7 says 'Lead source on the visit is not in evidence')",
+   "ask": "Add an open question for Engineering, answered before pilot: per pilot CRM, does the meeting push leave the lead's assigned salesperson and lead source untouched? Pilot only where the answer is yes.",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager"
+   ],
+   "ids": [
+    "general-sales-manager-r2-5"
+   ],
+   "asks": [
+    "Add an open question for Engineering, answered before pilot: per pilot CRM, does the meeting push leave the lead's assigned salesperson and lead source untouched? Pilot only where the answer is yes."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r2-6",
+   "severity": "minor",
+   "type": "wrong-for-dealers",
+   "quote": "- Live arm: after a side question, answer, then a different pair. After a declined pair, ask the constraint once, then a fitting pair. After a yes or near-yes, a two-day ask and nothing else [E55, E7, E31].",
+   "concern": "The director asked for 'Does today or tomorrow work better for you?' 'A two-day ask' could be Thursday or Saturday next week. On a yes, the closest day is the one that shows.",
+   "because": "E31",
+   "ask": "Write it as 'today or tomorrow, or the next two open days when the store is closed'.",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager"
+   ],
+   "ids": [
+    "general-sales-manager-r2-6"
+   ],
+   "asks": [
+    "Write it as 'today or tomorrow, or the next two open days when the store is closed'."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r2-7",
+   "severity": "minor",
+   "type": "acceptance-gap",
+   "quote": "- Skips: any active meeting for the lead, store-set CRM imports included, stops the nudge [E77, E78]; the live turn needs the same view [ASSUMPTION: the live SMS turn does not see a store-set appointment for the lead].",
+   "concern": "Good rule, but it only works where the CRM feed exists and only as fast as the import lands. At 2 of 18 rooftops a store booking is invisible, and nobody knows whether created_at is booking time or import time. A rep books the customer at 9am, the overnight wake-up fires at 12:10 with new times, and now there are two appointments.",
+   "because": "E66 (2 of 18 cohort rooftops have no feed; created_at may be import time); E57 (deferred wake-ups sent in a 12:10 UTC batch)",
+   "ask": "Name the no-feed rooftops as excluded from the pilot next to this rule, and add the import lag as an Engineering question that sets how long before a deferred wake-up the check must run.",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager"
+   ],
+   "ids": [
+    "general-sales-manager-r2-7"
+   ],
+   "asks": [
+    "Name the no-feed rooftops as excluded from the pilot next to this rule, and add the import lag as an Engineering question that sets how long before a deferred wake-up the check must run."
+   ]
+  },
+  {
+   "id": "general-sales-manager-r2-8",
+   "severity": "minor",
+   "type": "wrong-for-dealers",
+   "quote": "- Sourcing intent, rooftop setting default off, only where it lands as a person's timed task (DriveCentric; PBS with a rep on the deal) until write-back is confirmed elsewhere (Q17) [E26, E72, E73].",
+   "concern": "On DriveCentric 'a person' is the first user in the store's user list, not the salesperson and not the manager who can locate or dealer-trade a unit. A sourcing task in the wrong queue is the same as no task.",
+   "because": "E72 (resolveTaskAssignee: first user in the store's user list, else AssociatedSalesperson)",
+   "ask": "In phase 3, say the sourcing task goes to the lead's assigned salesperson or a store-named manager (rooftop setting), not the first user in the list.",
+   "persona": "general-sales-manager",
+   "personas": [
+    "general-sales-manager"
+   ],
+   "ids": [
+    "general-sales-manager-r2-8"
+   ],
+   "asks": [
+    "In phase 3, say the sourcing task goes to the lead's assigned salesperson or a store-named manager (rooftop setting), not the first user in the list."
+   ]
+  },
+  {
+   "id": "gm-r2-2",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "Skips: any active meeting for the lead, store-set CRM imports included, stops the nudge [E77, E78]",
+   "concern": "The TL;DR promises to stop nudging leads a person already holds. Picture my BDC rep booking the customer by phone at 2:05, and at 2:12 the customer gets a text from my store offering two other times. The wake-up fires 10 minutes after the last reply. Nobody knows how fast a CRM booking imports into Spyne, or whether created_at is booking time or import time. At 2 of 18 rooftops there is no import feed at all. As written, the skip covers my BDC's bookings only when the import beats a 10-minute timer.",
+   "because": "E66 (feed at 16 of 18 rooftops; created_at may be import time); E19 (wake-up at 10 minutes); E78 (bdc meetings carry no conversation id)",
+   "ask": "State the import lag for bdc meetings at the pilot rooftops, or make it a pre-ship open question. Claim 'stops nudging leads a person holds' only where the feed exists and lands inside the wake-up window. Pick pilot rooftops that have the feed.",
+   "persona": "gm",
+   "personas": [
+    "gm"
+   ],
+   "ids": [
+    "gm-r2-2"
+   ],
+   "asks": [
+    "State the import lag for bdc meetings at the pilot rooftops, or make it a pre-ship open question. Claim 'stops nudging leads a person holds' only where the feed exists and lands inside the wake-up window. Pick pilot rooftops that have the feed."
+   ]
+  },
+  {
+   "id": "gm-r2-3",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "Action items keep blocking on DriveCentric and PBS, and everywhere on callback, lost lead, trade-in and Human Requested; elsewhere a photo or quote item stops cancelling the nudge.",
+   "concern": "Your own evidence says the five blocked threads were all at VinSolutions or ADF stores, where the item is a line of note text and nobody's task. Under this rule, a customer at those stores who asked for a callback still gets no nudge, and still gets no call, because no person has the task. The silence stays and nobody owns it. A customer who asked for a quote now gets visit times on top of a quote nobody is preparing, while the price rule stops the agent from giving one. Both are promises in my store's name that nobody holds.",
+   "because": "E74 (none of the 5 at DriveCentric or PBS; items became notes); E51, E52 (note text, no task); E61 (2 of 5 were callbacks, 1 carried a quote follow-up); E29 (hand-back is an idle summary note)",
+   "ask": "For the four note-only CRMs, name who owns an open callback or quote item. Either name RETCONVAI-5165 explicitly as that owner, with these leads out of the pilot, or route the item to the BDC manager. When a quote item is open, the nudge acknowledges it rather than pitching times past it.",
+   "persona": "gm",
+   "personas": [
+    "gm"
+   ],
+   "ids": [
+    "gm-r2-3"
+   ],
+   "asks": [
+    "For the four note-only CRMs, name who owns an open callback or quote item. Either name RETCONVAI-5165 explicitly as that owner, with these leads out of the pilot, or route the item to the BDC manager. When a quote item is open, the nudge acknowledges it rather than pitching times past it."
+   ]
+  },
+  {
+   "id": "gm-r2-4",
+   "severity": "major",
+   "type": "acceptance-gap",
+   "quote": "| Wake-up cancelled by an item no person holds | 5 of 12 | 0 | [E61, E74] |",
+   "concern": "This target cannot be hit under the rule you wrote. Of those 5, two are callbacks, one is trade-in and one is lost lead. Your rule keeps all of them blocking everywhere, so at most the photo thread changes. A target of 0 also suggests the agent should text a lead the store marked lost. When my managers read this scorecard after the pilot, it will look like a miss on day one.",
+   "because": "E61 (SALES_SCHEDULE_CALLBACK x2, SEND_VEHICLE_PHOTO, SALES_TRADE_IN_FOLLOW_UP, SALES_LOST_LEAD); v2 line 57 rule",
+   "ask": "Restate the row as 'wake-up cancelled by a photo or quote item at a note-only CRM', with today's count (1 of 12) and the target. Measure the callback and lost-lead blocks separately, as correct blocks, not as a defect.",
+   "persona": "gm",
+   "personas": [
+    "gm"
+   ],
+   "ids": [
+    "gm-r2-4"
+   ],
+   "asks": [
+    "Restate the row as 'wake-up cancelled by a photo or quote item at a note-only CRM', with today's count (1 of 12) and the target. Measure the callback and lost-lead blocks separately, as correct blocks, not as a defect."
+   ]
+  }
+ ]
+}

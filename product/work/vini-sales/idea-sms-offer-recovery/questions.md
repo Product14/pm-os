@@ -271,3 +271,203 @@
 - who: pm
 - how: PM decides the pilot list in the PRD; confirm the CRM per pilot rooftop from the integration registry, not the E89 heuristic.
 - status: open
+
+### Q35
+- slot: request
+- unknown: Which service and collection can conversational-ai-backend read at wake-up time to learn a team's CRM provider (integrationConfigs providerType crm?), and how many sales SMS teams have more than one CRM config?
+- blocks: backend-engineer-r2-1 (per-CRM skip branch)
+- who: engineering
+- how: raised by the backend-engineer reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q36
+- slot: request
+- unknown: How long after a store books in the CRM does the source bdc meeting land in the meetings collection (batch cadence per CRM)?
+- blocks: backend-engineer-r2-8 (store-set meeting skip)
+- who: engineering
+- how: raised by the backend-engineer reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q37
+- slot: request
+- unknown: Why do 16 of 42 Tekion SMS visits have no CRM appointment id?
+- blocks: backend-engineer-r2-5 (primary counts only visits with a CRM id)
+- who: engineering
+- how: raised by the backend-engineer reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q38
+- slot: request
+- unknown: How many sales SMS rooftops set additional_fees_list or ShowMsrp, which an 'advertised price only' rule would override?
+- blocks: backend-engineer-r2-3 (price rule)
+- who: engineering
+- how: raised by the backend-engineer reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q39
+- slot: request
+- unknown: Does checkWakeupEligibility, or the live SMS turn, read the per-conversation aiMode (human takeover = off), so a salesperson who took the thread over stops both the nudge and the re-offer?
+- blocks: bdc-manager-r2-2
+- who: csm
+- how: raised by the bdc-manager reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q40
+- slot: request
+- unknown: For source bdc meetings imported from the CRM, is created_at the booking time or the import time, and what is the typical lag between a booking in the CRM and the row appearing in Spyne?
+- blocks: bdc-manager-r2-2
+- who: csm
+- how: raised by the bdc-manager reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q41
+- slot: request
+- unknown: On DriveCentric rooftops, who is the first user in the store's user list that resolveTaskAssignee picks: a BDC agent, a salesperson, a manager or an admin?
+- blocks: bdc-manager-r2-4
+- who: csm
+- how: raised by the bdc-manager reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q42
+- slot: request
+- unknown: Which CRM do the two stores carrying 14 and 13 of the 47 untaken-offer threads run, and which CRM does each of the 10 lever-1 rooftops run?
+- blocks: bdc-manager-r2-5
+- who: csm
+- how: raised by the bdc-manager reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q43
+- slot: request
+- unknown: At candidate pilot rooftops, does the store's BDC make a confirmation call or send a reminder from the CRM appointment that the Spyne push created, or does nothing confirm a bot-set visit?
+- blocks: bdc-manager-r2-3 (Q20)
+- who: csm
+- how: raised by the bdc-manager reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q44
+- slot: request
+- unknown: How many rooftops do the 20 same-pair repeat threads and the 12 silent threads span, with the two concentrated stores shown separately?
+- blocks: ceo-r2-1; base leverage in the Decision
+- who: pm
+- how: raised by the ceo reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q45
+- slot: request
+- unknown: At the 2 DriveCentric rooftops, who is the first user in the store's user list that resolveTaskAssignee picks: a salesperson, a BDC agent or an admin?
+- blocks: ceo-r2-4; whether 'a person holds the task' is true on DriveCentric
+- who: pm
+- how: raised by the ceo reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q46
+- slot: request
+- unknown: Is an opt-out or STOP reply after an agent message countable per SMS thread and rooftop in the warehouse?
+- blocks: ceo-r2-2; a guard against pushy re-offers we can measure
+- who: pm
+- how: raised by the ceo reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q47
+- slot: request
+- unknown: Does VinSolutions expose an appointment write we are not using, and if so is it covered by our current integration agreement?
+- blocks: ceo-r2-5; the plan for 11 VinSolutions rooftops
+- who: pm
+- how: raised by the ceo reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q48
+- slot: request
+- unknown: Per CRM push path, is the integration certified by the provider or only live in production?
+- blocks: ceo-r1-4 residual; phase 3 on DriveCentric and PBS
+- who: pm
+- how: raised by the ceo reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q49
+- slot: request
+- unknown: For the E33 lead: was a Spyne meeting row created, which CRM is the rooftop on, and was the push held, failed or never re-sent?
+- blocks: ceo-r2-6
+- who: pm
+- how: raised by the ceo reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q50
+- slot: request
+- unknown: Per pilot CRM (DriveCentric, eLead, Tekion, ADF, PBS), does the meeting push leave the lead's assigned salesperson and lead source unchanged? In particular, does the VinSolutions lead PUT that sets StageId 16 with the integration UserId change the lead owner or source?
+- blocks: general-sales-manager-r2-5
+- who: engineering
+- how: raised by the general-sales-manager reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q51
+- slot: request
+- unknown: On DriveCentric, Tekion and eLead, does an appointment pushed with no assignee appear on the lead owner's appointment list or task queue in the CRM UI?
+- blocks: general-sales-manager-r2-1
+- who: engineering
+- how: raised by the general-sales-manager reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q52
+- slot: request
+- unknown: Could the existing meeting push carry the Spyne meeting's assigned_to and a short description to the CRMs whose APIs accept them, and at what cost?
+- blocks: general-sales-manager-r2-1
+- who: engineering
+- how: raised by the general-sales-manager reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q53
+- slot: request
+- unknown: What does 'verified' mean in the inventory search results (excludes sold, in transit, in recon?), and how stale can the inventory feed be at send time?
+- blocks: general-sales-manager-r2-3
+- who: engineering
+- how: raised by the general-sales-manager reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q54
+- slot: request
+- unknown: How long after a booking in the dealer CRM does the source bdc meeting land in dealer_leads.meetings?
+- blocks: general-sales-manager-r2-7
+- who: engineering
+- how: raised by the general-sales-manager reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q55
+- slot: request
+- unknown: Why do 16 of 42 agent-set SMS visits at Tekion rooftops have no CRM appointment id: dropped for no end date, push failed, or id not reported back?
+- blocks: gm-r2-1, pilot rooftop selection
+- who: engineering
+- how: raised by the gm reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q56
+- slot: request
+- unknown: How long after a BDC or salesperson books in the CRM does the source='bdc' meeting appear in dealer_leads.meetings, and is created_at the booking time or the import time?
+- blocks: gm-r2-2, the store-set skip claim
+- who: engineering
+- how: raised by the gm reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q57
+- slot: request
+- unknown: At the candidate pilot rooftops, how does an appointment with no rep reach a salesperson today (round robin, BDC manager assigns, nobody)?
+- blocks: gm-r2-5, Q34 pilot criteria
+- who: engineering
+- how: raised by the gm reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q58
+- slot: request
+- unknown: Is there any feed of CRM activity (calls, texts, tasks worked) per lead in the warehouse for any SMS rooftop, or must BDC touches come from the dealer's own CRM report?
+- blocks: gm-r2-6, the cost-removed line
+- who: engineering
+- how: raised by the gm reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open
+
+### Q59
+- slot: request
+- unknown: At VinSolutions, Tekion, eLead and ADF rooftops, does anyone act on a SALES_SCHEDULE_CALLBACK item that lands as note text, and how soon?
+- blocks: gm-r2-3, ownership of blocked threads
+- who: engineering
+- how: raised by the gm reviewer in one-pager round 2; over the stage request cap, carried as a question
+- status: open

@@ -1,0 +1,178 @@
+{
+  "persona": "backend-engineer",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 3,
+    "Full value": 3,
+    "Brevity": 3,
+    "Code-cited baseline": 4,
+    "Integration reality": 3,
+    "Failure design": 3,
+    "Observability and rollback": 4,
+    "Scope discipline": 4
+  },
+  "previous_issues": [
+    {
+      "id": "backend-engineer-r1-1",
+      "fixed": true,
+      "note": "Line 49 puts phase 1 behind a team flag AND SMS medium with flip-to-rollback and pilot rooftops in the PRD. The precedent it cites is a prompt-variable gate, so the server-side changes also need to read that flag. Raised as new minor r2-7."
+    },
+    {
+      "id": "backend-engineer-r1-2",
+      "fixed": true,
+      "note": "Line 55 now says an unblocked thread is not penciled while a non-scheduling item is open, and line 59 names STL and follow_up. The per-CRM branching that replaced the global allowlist has its own data-contract gap. Raised as new r2-1."
+    },
+    {
+      "id": "backend-engineer-r1-3",
+      "fixed": true,
+      "note": "Line 56 limits the change to the SMS branch of response-format.xml and leaves sendOutbound untouched. The doc never says 'offer open' is the model's call, and it never says how the line 82 count is measured. isConcluded is not in ClickHouse (E63). Raised as minor r2-9."
+    },
+    {
+      "id": "backend-engineer-r1-4",
+      "fixed": true,
+      "note": "The miss ending is now SMS-guarded inside the shared fragment (line 58). Surfaces and render tests are named (line 59). The price rule and the guardrail pair instructions are shared fragments the doc does not cover. Raised as new r2-2 and r2-3."
+    },
+    {
+      "id": "backend-engineer-r1-5",
+      "fixed": false,
+      "note": "Line 65 now has miss goodbyes and unsent turns triggering phase 2, but phase 2 (line 64) builds only an offered-times record, so nothing backstops those failures. Line 83 still says 'target 0 goodbyes'. Re-raised as r2-4."
+    },
+    {
+      "id": "backend-engineer-r1-6",
+      "fixed": true,
+      "note": "Line 60 makes the daily per-rooftop warehouse count the gate, with wake-ups and live replies split. Line 65 still says 'two weekly reads'. It should say the same daily series aggregated weekly."
+    },
+    {
+      "id": "backend-engineer-r1-7",
+      "fixed": true,
+      "note": "Line 64 leaves the offered-times field, the enforcement point and the blocked-send behaviour to the PRD. That is acceptable for an on-trigger phase in a one-pager."
+    },
+    {
+      "id": "backend-engineer-r1-8",
+      "fixed": false,
+      "note": "Partly fixed. The per-CRM landing table is in, line 89 now says 'no new CRM write', line 68 limits phase 3 to the two CRMs that take tasks, and line 69 requires failed-push detection. Line 95 still asserts a provider negotiation on four CRMs. Re-raised as minor r2-6."
+    },
+    {
+      "id": "backend-engineer-r1-9",
+      "fixed": true,
+      "note": "The pull-back is now the flag (line 92). The assertiveness citation is gone."
+    },
+    {
+      "id": "backend-engineer-r1-10",
+      "fixed": true,
+      "note": "Line 50 rewrites the conflicting wake-up lines and adds the no-hours fallback (Q18)."
+    }
+  ],
+  "issues": [
+    {
+      "id": "backend-engineer-r2-1",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Action items keep blocking on DriveCentric and PBS, and everywhere on callback, lost lead, trade-in and Human Requested; elsewhere a photo or quote item stops cancelling the nudge. Q15 settles the list before ship [E61, E72, E73].",
+      "concern": "This makes the wake-up skip branch on the rooftop's CRM provider. checkWakeupEligibility has no way to know that today. It checks a global intent allowlist on the conversation and nothing else. conversational-ai-backend has no CRM-provider lookup: crm_type is an opaque id, and the only provider read is service-scheduler. Our own landing table had to infer the CRM per rooftop heuristically (E89). The rule also treats PBS as 'a person holds it', but a PBS reminder names a person only when a deal with a SalesRep already exists (E73, and line 31 says so). On DriveCentric the assignee is the first user in the store's user list (E72), which is not necessarily the person working the lead.",
+      "because": "`conversational-ai-backend:src/sms/sms-wakeup.service.ts:165-177`; E89; E72; E73; missing (no provider source of truth named)",
+      "ask": "Name the source of truth the wake-up reads for the rooftop's CRM (for example integrationConfigs providerType crm, through which service), when it is read, and the fallback when it is unknown or stale. The fallback should be today's behaviour, block. Make the PBS branch 'a rep on an existing deal', not 'PBS'. Log the branch taken in the skip-reason line."
+    },
+    {
+      "id": "backend-engineer-r2-2",
+      "severity": "major",
+      "type": "scope",
+      "quote": "Live arm: after a side question, answer, then a different pair. After a declined pair, ask the constraint once, then a fitting pair. After a yes or near-yes, a two-day ask and nothing else [E55, E7, E31].",
+      "concern": "Some of the live repeats after a side question are instructed by fragments other than appointment-conversion. guardrails.xml tells the agent that when a price or MSRP cannot be quoted it should 'propose a visit with two concrete times, an earlier and a later time on the next open weekday' (lines 72 and 74). escalation.xml carries the same missing-price path (lines 46 and 74). That is a fixed recipe, so every price question that turn answers produces the same next-weekday pair. Price and out-the-door are among the 13 of 17 (E55). These fragments render on every channel (sales_v2.xml:37), and the doc does not list them as files to change or guard.",
+      "because": "`conversational-ai-backend:src/prompts/base-system-prompts/sales_new/guardrails.xml:72`, `:74`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_new/escalation.xml:46`, `:74`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_v2.xml:37`; E55",
+      "ask": "List every fragment line that hard-codes a pair recipe (guardrails 72 and 74, escalation 46 and 74, appointment-conversion 19 and 57). Under an SMS guard, change each one to 'a pair not already offered'. Add a render test showing that voice and chat still render the original text."
+    },
+    {
+      "id": "backend-engineer-r2-3",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Price: the advertised price only, never an out-the-door, payment, rate or trade figure (Q28) [E30, E55].",
+      "concern": "Price disclosure is already governed by CRITICAL rules in the shared guardrails fragment, and they depend on rooftop data. VerifiedPriceDisclosure lets the agent share exact verified values. DealerFeePriceDisclosure requires a verified combined price, fees included, when applicable. MSRP depends on ShowMsrp, and additional_fees_list is per rooftop. 'Advertised price only' conflicts with the combined-price rule at rooftops that configure fees. The doc does not say whether this is SMS-guarded, which rule it overrides, or what a rooftop's fee and MSRP settings mean afterwards. Q28 (what the SMS price answer is today) is still open, and it is the baseline for this rule.",
+      "because": "`conversational-ai-backend:src/prompts/base-system-prompts/sales_new/guardrails.xml:64-80`; `conversational-ai-backend:src/prompts/base-system-prompts/sales_v2.xml:37`; Q28",
+      "ask": "Say where the rule lives (SMS guard inside guardrails.xml, or the SMS arm) and which existing rule it replaces, and keep verified combined price with fees where a rooftop sets fees. Alternatively, move the price rule out of phase 1 until Q28 is answered."
+    },
+    {
+      "id": "backend-engineer-r2-4",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Trigger: two weekly reads where the per-rooftop repeat rate has not halved at 5 or more rooftops, concentrated stores excluded (Q25), or miss goodbyes and unsent turns persist; show rate not down; BDC touches sized (Q6) [E2, E42] [PM].",
+      "concern": "This is r1-5, not fixed. If miss goodbyes or unsent concluded turns persist, the trigger fires phase 2. Phase 2 (line 64) is only an offered-times record on visitAskState, and nothing in it changes the miss ending or the concluded flag. The fallback for those two failures is therefore still more wording. Line 83 keeps 'target 0 goodbyes' on top of a rule (unavailable-vehicle-discovery.xml:40) that already says this and does not hold.",
+      "because": "`conversational-ai-backend:src/prompts/base-system-prompts/sales_new/unavailable-vehicle-discovery.xml:40`; E10; E62; E57",
+      "ask": "Either give phase 2 a non-prompt check for each failure (for example, block or regenerate an SMS send that has requested_vehicle_unavailable, no alternatives and no question; and log or flag a concluded batch that carries an offer and stays unsent), or take them out of this trigger and name their own backstop."
+    },
+    {
+      "id": "backend-engineer-r2-5",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Agent-set visits per 100 engaged SMS leads, per rooftop (primary) | 19 of 100 offered two times | up, counting only visits with a CRM id | [E5, E89] |",
+      "concern": "Counting only visits with a CRM id makes the primary measure track push acceptance, not agent behaviour. VinSolutions has no appointment object and ids are null by design: 18 of 319 (E87, E89), across 11 rooftops. Tekion is 26 of 42 for reasons nobody has traced (a meeting with no end date is dropped, E86). The CRM is unknown at 8 rooftops. Per rooftop, the primary would read near zero at VinSolutions stores whatever phase 1 does, and a push regression would look like an agent regression.",
+      "because": "E89; E87; E86; E76",
+      "ask": "Make the primary Spyne meetings (source spyne, joined by conversation_id, per E89's definition). Report the CRM-id landing rate as a separate per-CRM guard. Either exclude VinSolutions rooftops from the per-rooftop gate or use the stage change as their landing signal."
+    },
+    {
+      "id": "backend-engineer-r2-6",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "Thin, concentrated demand (Q31) [E38, E42]. Phase 3 needs task write-back on four CRMs, a provider negotiation [E49, E52].",
+      "concern": "This is the rest of r1-8. eLead already gets scheduled activities with a dueDate through Fortellis /activities/schedule (E85), so a timed task there may be a mapping change inside access we already have. Tekion, VinSolutions and ADF are unknown, which is not the same as missing. Line 68 already says 'until write-back is confirmed elsewhere (Q17)', and this line contradicts it.",
+      "because": "E85; E49; E52; Q17",
+      "ask": "Reword to: 'phase 3 beyond DriveCentric and PBS depends on per-provider task access, unknown (Q17); eLead may be in existing Fortellis scope.'"
+    },
+    {
+      "id": "backend-engineer-r2-7",
+      "severity": "minor",
+      "type": "feasibility",
+      "quote": "Gate: team flag AND SMS medium, on the outboundCallTransferEnabled pattern; rollback is flipping it. Pilot rooftops picked in the PRD [E69] [PM].",
+      "concern": "The cited precedent turns a team flag into a prompt template variable (E69). Half of phase 1 is server code that never touches the template: the meeting skip and the per-CRM action-item skip in checkWakeupEligibility, and the action-item check in the pencil cron. Unless those read the same conversationNotifications flag, flipping it rolls back the prompts but leaves the skip and pencil changes live at every rooftop.",
+      "because": "E69; `conversational-ai-backend:src/sms/sms-wakeup.service.ts:165-177`; `conversational-ai-backend:src/meetings/tentative-booking-evaluator.service.ts:79`",
+      "ask": "State that every phase 1 server change reads the same flag and that flag off means today's behaviour. Add a render test showing the SMS prompt is byte-identical with the flag off, and put the flag state on the skip-reason log line."
+    },
+    {
+      "id": "backend-engineer-r2-8",
+      "severity": "minor",
+      "type": "feasibility",
+      "quote": "Skips: any active meeting for the lead, store-set CRM imports included, stops the nudge [E77, E78]; the live turn needs the same view [ASSUMPTION: the live SMS turn does not see a store-set appointment for the lead].",
+      "concern": "This is feasible: meetings carry lead_id (indexed), is_active and status, and the schema already exports CANCELLED_MEETING_STATUSES. It is still a behaviour change in both directions. Today any meeting in the thread blocks, cancelled ones included. After the change a cancelled meeting stops blocking, and the lead starts getting nudges again. A store-set appointment can also only block once the CRM import has landed, and E66 cannot tell whether created_at is booking time or import time.",
+      "because": "`conversational-ai-backend:src/external_crm_integrations/meeting.schema.ts:18`, `:35`, `:62`, `:286`; E77; E66",
+      "ask": "Name the query (lead_id, is_active true, status not in CANCELLED_MEETING_STATUSES, any source). State that a cancelled meeting no longer blocks. Add the bdc import latency to the open questions."
+    },
+    {
+      "id": "backend-engineer-r2-9",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "| Concluded turn with an offer open, never sent | 4 threads | fewer, else phase 2 | [E62] |",
+      "concern": "No query in the doc can produce this number. smsMessages.isConcluded is not mirrored to ClickHouse (E63), so E62 had to read smsChatCompletions by hand. The suppression happens in sendOutbound (sms-v2.service.ts:4157), not in the wake-up skip check, so the skip-reason log on line 60 will not capture it. 'With an offer open' is also the model's judgement in phase 1, and the doc does not say so.",
+      "because": "E63; E62; `conversational-ai-backend:src/sms/sms-v2.service.ts:4157`",
+      "ask": "Log the suppressed-concluded batch in sendOutbound, with the batch text, or mirror isConcluded to ClickHouse. State that 'offer open' is decided by the model in phase 1."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Which service and collection can conversational-ai-backend read at wake-up time to learn a team's CRM provider (integrationConfigs providerType crm?), and how many sales SMS teams have more than one CRM config?",
+      "blocks": "backend-engineer-r2-1 (per-CRM skip branch)",
+      "source": "Integrations team / spyne_dev.integrationConfigs"
+    },
+    {
+      "question": "How long after a store books in the CRM does the source bdc meeting land in the meetings collection (batch cadence per CRM)?",
+      "blocks": "backend-engineer-r2-8 (store-set meeting skip)",
+      "source": "dealer-leads-backend CRM import jobs / Engineering"
+    },
+    {
+      "question": "Why do 16 of 42 Tekion SMS visits have no CRM appointment id?",
+      "blocks": "backend-engineer-r2-5 (primary counts only visits with a CRM id)",
+      "source": "conversation_ai.ci_integration_logs for tekion-push"
+    },
+    {
+      "question": "How many sales SMS rooftops set additional_fees_list or ShowMsrp, which an 'advertised price only' rule would override?",
+      "blocks": "backend-engineer-r2-3 (price rule)",
+      "source": "ClickHouse / central-config"
+    }
+  ]
+}

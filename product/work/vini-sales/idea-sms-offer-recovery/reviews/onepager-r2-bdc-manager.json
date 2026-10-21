@@ -1,0 +1,169 @@
+{
+  "persona": "bdc-manager",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 3,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 3,
+    "Brevity": 3,
+    "CRM completeness": 3,
+    "Human reach": 3,
+    "Show discipline": 2,
+    "Workload effect": 3,
+    "Contact compliance": 3
+  },
+  "previous_issues": [
+    {
+      "id": "bdc-manager-r1-1",
+      "fixed": true,
+      "note": "v2 keeps callback, lost lead, trade-in and Human Requested blocking everywhere, keeps every item blocking on DriveCentric and PBS, and has Q15 answered before ship. That is the default I asked for. The quote item is a smaller leftover, raised as r2-7."
+    },
+    {
+      "id": "bdc-manager-r1-2",
+      "fixed": false,
+      "note": "Partly fixed. The wake-up now checks for any active meeting on the lead, store-set CRM imports included. Still missing from my ask: what stands in at the 2 rooftops with no CRM feed, and suppression when a person takes the thread over. The live turn is still an ASSUMPTION. Re-raised as r2-2."
+    },
+    {
+      "id": "bdc-manager-r1-3",
+      "fixed": true,
+      "note": "Visits per engaged lead is now the primary measure, repeats are a diagnostic, show rate is a guard via Q27, and the missing reminder path is named as Q20. The guard still cannot be read and Q20 does not gate the pilot, raised as r2-3."
+    },
+    {
+      "id": "bdc-manager-r1-4",
+      "fixed": true,
+      "note": "v2 says plainly that hand-back is unchanged and owned by RETCONVAI-5165, and stops \"I'll note that\" on SMS when no task is written. That is one of the two options I offered."
+    },
+    {
+      "id": "bdc-manager-r1-5",
+      "fixed": false,
+      "note": "The closing line is now sent. But v2 dropped the wording about the wake-up instead of resolving it. A turn that is not concluded leaves the 10-minute wake-up armed, so a customer who said \"I'll check and let you know\" still gets new times 10 minutes later. These threads are also not counted separately. Re-raised as r2-1."
+    },
+    {
+      "id": "bdc-manager-r1-6",
+      "fixed": true,
+      "note": "Nudges go out in rooftop local hours (Q19), and the resolution confirms opt-out is already checked per lead at wake-up [E77]. The doc itself never says the opt-out check exists, raised as minor r2-8."
+    },
+    {
+      "id": "bdc-manager-r1-7",
+      "fixed": true,
+      "note": "Visit times only for a verified unit shown or alternatives the customer agreed to see. Otherwise no goodbye and no follow-up promise. The target is 0 goodbyes, not always a visit."
+    },
+    {
+      "id": "bdc-manager-r1-8",
+      "fixed": true,
+      "note": "Sourcing is limited to DriveCentric, and to PBS when a rep is on the deal, and is unavailable on the four note-only CRMs. Who the DriveCentric 'person' actually is remains open, raised as r2-4."
+    },
+    {
+      "id": "bdc-manager-r1-9",
+      "fixed": true,
+      "note": "The call offer stays off until the PRD names who places the call."
+    }
+  ],
+  "issues": [
+    {
+      "id": "bdc-manager-r2-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Concluded: change only the SMS branch of `conversational-ai-backend:src/prompts/base-system-prompts/sales_new/response-format.xml:60` so a \"let me check\" reply with an offer open is sent; sendOutbound is untouched [E62].",
+      "concern": "This fixes the unsent closing line by no longer marking the turn concluded. The concluded flag is what stops the wake-up (sms-wakeup.service.ts:177), and the customer's \"I'll check\" reply is what armed it. So the same change means a customer who just told us they will get back to us receives fresh times 10 minutes later. My agents give that customer until the time they named or the next business morning. v1 said the wake-up stays armed. v2 deleted that sentence but did not change the behaviour, so a dealer reading it will not know the nudge is coming. Dealers already call this pushy, and close per attempt is sliding with no explanation.",
+      "because": "E62, E58, E34, E35, E11",
+      "ask": "State the side effect in the one-pager. Phase 1 either suppresses the 10-minute wake-up on a deferral turn, so the thread goes quiet with the closing line sent and the 5165 hand-back owns it, or the PRD sends the nudge at the customer-named window or the next business morning. Count deferral threads separately in the measures and in the pull-back read."
+    },
+    {
+      "id": "bdc-manager-r2-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Skips: any active meeting for the lead, store-set CRM imports included, stops the nudge [E77, E78]; the live turn needs the same view [ASSUMPTION: the live SMS turn does not see a store-set appointment for the lead].",
+      "concern": "This is better, but it only stops double contact when a CRM appointment exists and has already been imported. At 2 of the 18 rooftops there is no feed, so my agent's booking is invisible and the bot keeps texting times. We do not know whether created_at is the booking time or the import time, so the bot can also overlap a fresh booking before it lands. A salesperson who pressed stop and took over the thread (aiMode off) is not mentioned at all. That is exactly what E32's store asked for. The live turn, which sends more re-offers under phase 1, is still an assumption.",
+      "because": "E66, E77, E78, E32, E69, missing (aiMode and import latency)",
+      "ask": "Add three lines. Human takeover (aiMode off) suppresses both the nudge and the live re-offer. The 2 no-feed rooftops are a named gap, kept out of the pilot or accepted in writing. Q33, whether the live turn sees store-set visits, is answered before the pilot, not in the PRD."
+    },
+    {
+      "id": "bdc-manager-r2-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "No confirmation or reminder path is known for agent-set SMS visits (Q20).",
+      "concern": "Phase 1 is built to set more visits, and the doc admits nobody knows whether those visits get a confirmation or a reminder. Booking with no reminder path is on my block list. The only protection is a show-rate guard the measures table calls 'not measurable', and phase 2's trigger leans on 'show rate not down', which nobody can read. A rescheduled or confirmed visit never re-pushes to the CRM, so my team's confirmation call can go out for the wrong time. More sets with no show discipline just move my no-show count. Q20 blocks only the 'Show guard', not the pilot.",
+      "because": "E66, E80, Q20, Q27",
+      "ask": "Make Q20 block the pilot. Pilot only where we know who confirms the visit: the store's BDC confirmation call off the CRM appointment, or a Spyne reminder text. Name that owner per pilot rooftop. If Q27 cannot match shows, say the guard is a manual check of CRM completed and noshow at the pilot rooftops, and remove 'show rate not down' from the phase 2 trigger until it can be read."
+    },
+    {
+      "id": "bdc-manager-r2-4",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "Sourcing intent, rooftop setting default off, only where it lands as a person's timed task (DriveCentric; PBS with a rep on the deal) until write-back is confirmed elsewhere (Q17) [E26, E72, E73].",
+      "concern": "On DriveCentric the task goes to the first user in the store's user list, and to the associated salesperson only when there is no such user. That is whoever sorts first, often an admin or the GM, not my BDC queue or the lead's salesperson. Saying 'a person's timed task' makes it sound owned, but a sourcing promise sitting in a random user's queue gets worked by nobody, and the customer shows up for a car nobody went looking for. Line 31 makes the same claim about items in general.",
+      "because": "E72, E47, missing (which user is first in the list)",
+      "ask": "Say 'assigned to the first user in the store's DriveCentric list (often not the BDC or the lead's salesperson)'. Make phase 3 depend on routing the sourcing task to the lead's assigned salesperson or a named BDC queue, with a fallback when it is not worked by its due time."
+    },
+    {
+      "id": "bdc-manager-r2-5",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "No new CRM write, but phase 1 rides the existing meeting push: VinSolutions gets a note line, no CRM gets a rep, confirmed pencils keep their first time [E80, E81, E87]. [ASSUMPTION: phase 1 pilots first at rooftops whose CRM takes the visit as an appointment, not VinSolutions]",
+      "concern": "The skip-rule fix only does anything where items are notes: all 5 cancelled wake-ups were at VinSolutions (4) and ADF (1) rooftops. If the pilot leaves out VinSolutions, the measure 'Wake-up cancelled by an item no person holds, 5 of 12 to 0' has almost nothing to read at the pilot rooftops. Meanwhile the DriveCentric and PBS pilots keep every item blocking. The pilot choice and the measures point at different stores, and nobody knows which CRM the two stores carrying 27 of 47 threads run.",
+      "because": "E74, E61, E87, E89, E42",
+      "ask": "List each phase 1 change with the CRMs where it can show an effect. Choose pilot rooftops that cover both halves: an appointment CRM for the offer change, and an ADF or VinSolutions store for the skip-rule change, with VinSolutions read on its ACTIVE_SET_APPOINTMENT stage instead of a CRM id. Name the CRM of the two concentrated stores."
+    },
+    {
+      "id": "bdc-manager-r2-6",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Agent-set visits per 100 engaged SMS leads, per rooftop (primary) | 19 of 100 offered two times | up, counting only visits with a CRM id | [E5, E89]",
+      "concern": "The baseline counts leads offered two times. The measure counts engaged leads. Those are different denominators. 'Counting only visits with a CRM id' also drops about 94% of VinSolutions visits and 38% of Tekion visits, so the number moves with the pilot's CRM mix, not with the agent. 'Up' gives no target and no read window.",
+      "because": "E5, E89",
+      "ask": "Use one denominator for today and after. Give a target and a read window per rooftop. For VinSolutions, count by the stage change rather than the CRM id."
+    },
+    {
+      "id": "bdc-manager-r2-7",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "Action items keep blocking on DriveCentric and PBS, and everywhere on callback, lost lead, trade-in and Human Requested; elsewhere a photo or quote item stops cancelling the nudge. Q15 settles the list before ship [E61, E72, E73].",
+      "concern": "A quote item means the customer asked for numbers that the bot is now told never to give. On four CRMs that request lands as a buried note nobody works. Unblocking the nudge means the customer's next message from us is a new pair of times that ignores the quote they asked for. That reads as dodging, and it is the pricing friction E30's director complained about from the other side. E60's photo item came right after a media handover, so a person may already be in that thread.",
+      "because": "E61, E60, E49, E50, E51, E52, E30",
+      "ask": "Put SALES_FOLLOW_UP_WITH_QUOTE and SEND_VEHICLE_PHOTO after a media handover on Q15's list explicitly. If they stop blocking, the nudge must acknowledge the open request without promising a callback that nobody is tasked with."
+    },
+    {
+      "id": "bdc-manager-r2-8",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Wake-up: rewrite the conflicting lines. One nudge offers an unoffered pair from store hours, or asks the constraint when no hours are set (Q18). Never the last message's text or last night's pair; sent in rooftop local hours (Q19) [E21, E57].",
+      "concern": "Phase 1 sends nudges on threads that went silent before, including aged follow_up leads, and the store carries the TCPA risk. The doc covers send hours but never says that opt-out is checked before each nudge, even though the code already does it per lead. A dealer reading this cannot tell.",
+      "because": "E77 (sms-wakeup.service.ts:160), E59",
+      "ask": "Add half a line: an opt-out on the lead cancels every pending nudge (already checked at dispatch, E77). Say whether a STOP that arrives in the CRM, not on the thread, reaches that flag."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does checkWakeupEligibility, or the live SMS turn, read the per-conversation aiMode (human takeover = off), so a salesperson who took the thread over stops both the nudge and the re-offer?",
+      "blocks": "bdc-manager-r2-2",
+      "source": "Engineering (sms-wakeup.service.ts, conversation.schema.ts aiMode)"
+    },
+    {
+      "question": "For source bdc meetings imported from the CRM, is created_at the booking time or the import time, and what is the typical lag between a booking in the CRM and the row appearing in Spyne?",
+      "blocks": "bdc-manager-r2-2",
+      "source": "Engineering (CRM import job), CSM"
+    },
+    {
+      "question": "On DriveCentric rooftops, who is the first user in the store's user list that resolveTaskAssignee picks: a BDC agent, a salesperson, a manager or an admin?",
+      "blocks": "bdc-manager-r2-4",
+      "source": "Engineering (drivecentric-push/transform.js:647-658), CSM"
+    },
+    {
+      "question": "Which CRM do the two stores carrying 14 and 13 of the 47 untaken-offer threads run, and which CRM does each of the 10 lever-1 rooftops run?",
+      "blocks": "bdc-manager-r2-5",
+      "source": "Engineering (ci_integration_logs, integrations registry)"
+    },
+    {
+      "question": "At candidate pilot rooftops, does the store's BDC make a confirmation call or send a reminder from the CRM appointment that the Spyne push created, or does nothing confirm a bot-set visit?",
+      "blocks": "bdc-manager-r2-3 (Q20)",
+      "source": "CSM"
+    }
+  ]
+}

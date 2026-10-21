@@ -1,0 +1,169 @@
+{
+  "persona": "ceo",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 3,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 3,
+    "Dealer economics": 3,
+    "Base leverage": 3,
+    "Dependency honesty": 4,
+    "Handoff clarity": 2,
+    "Decision readiness": 3
+  },
+  "previous_issues": [
+    {
+      "id": "ceo-r1-1",
+      "fixed": true,
+      "note": "The days gap is out of the TL;DR. The days row is labelled 'Spyne internal, self-selected, not for dealer use'. Line 10 frames phase 1 as defect repair, and Q6 gates phase 2. Phase 3's trigger (line 69) still does not need Q6, but the Open questions row says Q6 blocks phases 2 and 3. Close enough."
+    },
+    {
+      "id": "ceo-r1-2",
+      "fixed": true,
+      "note": "E33 moved from Problem to Risks as an adjacent failure. Two gaps remain, raised as minor ceo-r2-6: the cause has no open question and no owner, and the new wording 'agent-set visit' says more than E33 does."
+    },
+    {
+      "id": "ceo-r1-3",
+      "fixed": true,
+      "note": "Live arm: 'After a yes or near-yes, a two-day ask and nothing else'. The constraint question now fires only after a declined pair."
+    },
+    {
+      "id": "ceo-r1-4",
+      "fixed": true,
+      "note": "A per-CRM table was added (E83-E89), and the line now reads 'No new CRM write, but phase 1 rides the existing meeting push'. Two gaps remain. Certification status is still not stated: an id proves the push was accepted, not that the integration is certified. The table leaves out the 8 rooftops whose CRM is unknown (E89). The VinSolutions gap is raised as ceo-r2-5."
+    },
+    {
+      "id": "ceo-r1-5",
+      "fixed": false,
+      "note": "Partly fixed. Trade-in keeps blocking, and Q15 now has a CSM with BDC managers as owner, answered before ship. Still missing: the page never names the handoff as one, or who benefits, who signs and who may block. Re-raised as ceo-r2-3."
+    },
+    {
+      "id": "ceo-r1-6",
+      "fixed": false,
+      "note": "Escalated to the PM at the gate because it touches the fixed intents. Not re-raised. Q23 is carried in Open questions."
+    },
+    {
+      "id": "ceo-r1-7",
+      "fixed": true,
+      "note": "The phase 2 trigger is now a per-rooftop rate with the concentrated stores excluded (Q25), counted daily from the warehouse (E56)."
+    },
+    {
+      "id": "ceo-r1-8",
+      "fixed": true,
+      "note": "A row for shown on-lot units on a miss was added: unsized, and days in stock claimed only if the search favours aged units (Q24)."
+    }
+  ],
+  "issues": [
+    {
+      "id": "ceo-r2-1",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "Why: the same time pair repeats in 20 of 47 untaken-offer threads across 10 of 14 sampled rooftops, and the written rule against it is not holding [E2, E42, E15].",
+      "concern": "This is the base-versus-one-off sentence in the Decision, and it merges two numbers. E42 says the 47 untaken-offer threads span 10 rooftops. It does not say how many rooftops the 20 repeats span. Two stores carry 27 of the 47. For all I know the 20 repeats sit mostly at those two stores. If a CSM tells a dealer group 'this happens at 10 of 14 stores', we are quoting a figure we never measured.",
+      "because": "E42, E2; missing (rooftop spread of the 20 repeat threads and of the 12 silent threads)",
+      "ask": "Reword it as: '47 untaken-offer threads across 10 of 14 sampled rooftops; of these, 20 repeated the same pair'. Or add the rooftop count for the 20 repeats, with the two concentrated stores shown apart. Make the same fix to the Breadth line (line 45)."
+    },
+    {
+      "id": "ceo-r2-2",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Agent-set visits per 100 engaged SMS leads, per rooftop (primary) | 19 of 100 offered two times | up, counting only visits with a CRM id | [E5, E89] |",
+      "concern": "This is the one number phase 1 will be judged on, and it cannot be judged. First, the baseline and the after are different measures. 'Today' counts every booking among leads offered two times (E5). 'After' counts only bookings with a CRM id, and only 18 of 319 VinSolutions visits carry one (E89). Second, the name says 'engaged leads' but the baseline is 'offered two times'. Third, 'up' is not a target, and nothing says what result takes the pilot to every SMS rooftop (line 9) or what result stops it. Fourth, the only guard against pushy re-offers is show rate, and the page says show rate is 'not measurable'. In a quarter I will be asked whether this worked, and this row cannot answer.",
+      "because": "E5, E89, E66, E34, E35, E11; Q27",
+      "ask": "Restate the baseline on the same definition as the after: same denominator, CRM-id visits only, per rooftop, over a pre-period. Set a minimum lift and a read date that decide pilot-to-base, and a kill line. Add one guard you can measure now, such as opt-out or STOP replies after a re-offer per rooftop (see request), next to show rate."
+    },
+    {
+      "id": "ceo-r2-3",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "**Flywheel stage:** lead to appointment, on SMS, before the lead goes back to the BDC",
+      "concern": "Unfixed from ceo-r1-5. This is the handoff fact five is about, and the page still never names it as one. When Vini does not set the visit, the lead passes to the BDC or a salesperson, and a trade-in goes to the used-car desk. Phase 1 also leaves that handoff exactly as it is: an idle summary note, deferred to RETCONVAI-5165 (line 61). What phase 1 changes is when Vini stops talking. I still cannot tell who at the store benefits, who signs and who can kill it. The GM in E35 wants these leads on the phone, and the used car manager in E34 thinks the goal is too appointment-fixed. Either of them could pull the flag.",
+      "because": "E29, E33, E34, E35, E61; decide.md Inputs, Strategic fit (fact 5)",
+      "ask": "Add one line under Decision. Handoff: Vini to the BDC or internet sales on an unbooked lead, and to the used-car desk on a trade-in. Phase 1 changes when Vini stops, not what the person receives. Benefits: BDC manager (fewer re-touches, Q6). Signs: GM. May block: GSM or used car manager, on pushiness (E34, E35)."
+    },
+    {
+      "id": "ceo-r2-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Action items keep blocking on DriveCentric and PBS, and everywhere on callback, lost lead, trade-in and Human Requested; elsewhere a photo or quote item stops cancelling the nudge. Q15 settles the list before ship [E61, E72, E73].",
+      "concern": "The skip rule now rests on 'a person holds the task', but the evidence does not show the right person holds it. On DriveCentric the task goes to the first user in the store's user list, or else the associated salesperson (E72). That may be an admin rather than whoever works the lead. On PBS the reminder names nobody unless a deal with a rep already exists (E73, line 31). PBS without a rep is the same situation the page uses to unblock other stores: no person holds the item. If that is wrong, the lead goes quiet with a task sitting in nobody's real queue, which is the E33 failure again.",
+      "because": "E72, E73, E74, E33",
+      "ask": "On PBS, keep blocking only when the deal has a named SalesRep, and treat PBS without a rep like the note-only CRMs. On DriveCentric, confirm who 'first user in the store's user list' is at the 2 live DriveCentric rooftops before relying on it (see request), and add that to Q15."
+    },
+    {
+      "id": "ceo-r2-5",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "[ASSUMPTION: phase 1 pilots first at rooftops whose CRM takes the visit as an appointment, not VinSolutions]",
+      "concern": "VinSolutions is the largest CRM in the SMS base by rooftop count: 11 rooftops and 319 SMS visits (E89). There the visit lands as one note line plus a stage change, under the Spyne integration user (E87). Line 9 says we build this for every SMS rooftop. This line quietly drops a third of the base from the pilot, and the page gives no plan for those stores. The table also leaves out the 8 rooftops whose CRM is unknown (321 visits, E89). For fact four I need the list, plus the plan for the rest.",
+      "because": "E87, E89; Q34; missing (whether a VinSolutions appointment write exists and its commercial status)",
+      "ask": "Add a 'CRM unknown, 8 rooftops' row to the table. Say what phase 1 does at VinSolutions rooftops: ships with the note-and-stage landing, waits, or waits on a negotiated appointment write with that provider, with an owner. Change line 9 to 'every SMS rooftop whose CRM takes the visit as an appointment' until then."
+    },
+    {
+      "id": "ceo-r2-6",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "Adjacent, not fixed here: one store lost an aged lead whose agent-set visit never reached its CRM; cause not traced [E33].",
+      "concern": "E33 says Spyne 'tried to schedule' a 12PM test drive. That does not show a meeting row was created. 'Agent-set visit' says more than E33 does. The new evidence also offers causes we could check: confirming a pencil never re-pushes (E80), VinSolutions takes only a note (E87), and a sync-gate hold is logged but not retried (E82). 'Cause not traced' with no question and no owner means nobody will trace it.",
+      "because": "E33, E80, E82, E87",
+      "ask": "Change it to 'intended visit'. Add an open question with an Engineering owner: was a meeting row created for that lead, which CRM does the rooftop use, and was the push held or never re-sent?"
+    },
+    {
+      "id": "ceo-r2-7",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Pushing: re-offers can read as pushy [E34, E35]; close per attempt slid 1.73 to 1.43, unexplained [E11]. Pull back with the flag [E69].",
+      "concern": "Decide named when to pull back: close per attempt keeps sliding after phase 1, or a dealer names pushy re-offers. The one-pager keeps the switch and drops the trigger, so nobody knows when to flip it.",
+      "because": "E11, E34, E35; decide.md Outcome (Pull back)",
+      "ask": "Restore the trigger in one line. Pull back at a rooftop when close per attempt falls below its pre-period, or when the dealer names pushy re-offers. Name who flips the flag."
+    },
+    {
+      "id": "ceo-r2-8",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "| BDC touches per unbooked SMS lead | unknown | fewer, read at one rooftop from CRM activity | Q6 |",
+      "concern": "This is the only cost-removed line on the page, and it gates phases 2 and 3. A read at one rooftop is an anecdote, not a base case, and one CRM's activity model will not carry over to the others.",
+      "because": "E66, E49, E50, E51, E52; Q6",
+      "ask": "Read it at 2 to 3 rooftops on different CRMs that have an activity feed. State the figure phases 2 and 3 must clear to be funded."
+    }
+  ],
+  "requests": [
+    {
+      "question": "How many rooftops do the 20 same-pair repeat threads and the 12 silent threads span, with the two concentrated stores shown separately?",
+      "blocks": "ceo-r2-1; base leverage in the Decision",
+      "source": "Transcript read results joined to blind-key (E42)"
+    },
+    {
+      "question": "At the 2 DriveCentric rooftops, who is the first user in the store's user list that resolveTaskAssignee picks: a salesperson, a BDC agent or an admin?",
+      "blocks": "ceo-r2-4; whether 'a person holds the task' is true on DriveCentric",
+      "source": "Engineering (drivecentric-push resolveTaskAssignee) with the CSM for those rooftops"
+    },
+    {
+      "question": "Is an opt-out or STOP reply after an agent message countable per SMS thread and rooftop in the warehouse?",
+      "blocks": "ceo-r2-2; a guard against pushy re-offers we can measure",
+      "source": "Engineering, dealer_leads.smsMessages and the opt-out record checked at sms-wakeup.service.ts:160"
+    },
+    {
+      "question": "Does VinSolutions expose an appointment write we are not using, and if so is it covered by our current integration agreement?",
+      "blocks": "ceo-r2-5; the plan for 11 VinSolutions rooftops",
+      "source": "Integrations or partnerships, plus Engineering (vinsolution-push)"
+    },
+    {
+      "question": "Per CRM push path, is the integration certified by the provider or only live in production?",
+      "blocks": "ceo-r1-4 residual; phase 3 on DriveCentric and PBS",
+      "source": "Integrations or partnerships"
+    },
+    {
+      "question": "For the E33 lead: was a Spyne meeting row created, which CRM is the rooftop on, and was the push held, failed or never re-sent?",
+      "blocks": "ceo-r2-6",
+      "source": "Engineering (dealer_leads.meetings, insertionProcessData, ci_integration_logs)"
+    }
+  ]
+}

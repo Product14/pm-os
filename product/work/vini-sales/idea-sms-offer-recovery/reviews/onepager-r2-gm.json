@@ -1,0 +1,134 @@
+{
+  "persona": "gm",
+  "round": 2,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 3,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 4,
+    "Brevity": 3,
+    "Statement impact": 3,
+    "System of record": 3,
+    "Adoption cost": 4,
+    "Failure visibility": 2,
+    "Handoff ownership": 3
+  },
+  "previous_issues": [
+    { "id": "gm-r1-1", "fixed": true, "note": "Phase 3 sourcing is limited to CRMs where it lands as a person's timed task (DriveCentric; PBS with a rep on the deal) until write-back is confirmed elsewhere, and a failed push must be detectable (v2 lines 68-69)." },
+    { "id": "gm-r1-2", "fixed": true, "note": "The TL;DR says no days are claimed. The days row carries the 1.8 store-set median and is labelled Spyne internal, self-selected, not for dealer use." },
+    { "id": "gm-r1-3", "fixed": true, "note": "Adds a per-rooftop primary measure and an unsized on-lot unit line. How the BDC-touch line is actually read is still not shown; raised again as gm-r2-6." },
+    { "id": "gm-r1-4", "fixed": true, "note": "Items keep blocking on DriveCentric and PBS, and everywhere on callback, lost lead, trade-in and Human Requested. Q15 is settled before ship." },
+    { "id": "gm-r1-5", "fixed": true, "note": "The live arm is split: after a side question, answer and offer a different pair; after a declined pair, ask the constraint once." },
+    { "id": "gm-r1-6", "fixed": true, "note": "There is a no-hours fallback and Q18 now blocks the wake-up rule. The fallback is worded as 'no hours are set'; the PRD should also cover 'hours exist but the wake-up cannot read them'." },
+    { "id": "gm-r1-7", "fixed": true, "note": "Visit times are offered only on a verified unit or an agreed alternative. The target is '0 goodbyes, not always a visit'." },
+    { "id": "gm-r1-8", "fixed": true, "note": "A per-rooftop SMS flag is the pull-back, and E70 explains why assertiveness cannot be. The route by which a dealer's 'too pushy' complaint reaches the PM is still unnamed (folded into gm-r2-8)." },
+    { "id": "gm-r1-9", "fixed": true, "note": "Inbound, speed_to_lead and follow_up SMS are named as surfaces. Aged-lead scope is carried as Q32." },
+    { "id": "gm-r1-10", "fixed": true, "note": "E33 moved to Risks as an adjacent failure this release does not fix." }
+  ],
+  "issues": [
+    {
+      "id": "gm-r2-1",
+      "severity": "blocking",
+      "type": "wrong-for-dealers",
+      "quote": "Adjacent, not fixed here: one store lost an aged lead whose agent-set visit never reached its CRM; cause not traced [E33].",
+      "concern": "This is my worst day: a customer shows up for a visit nobody in my building knows about. Your own table shows it is not one store. At Tekion rooftops 16 of 42 agent-set SMS visits carry no CRM id, and at least one known cause is a code path that drops a meeting with no end date. Phase 1 exists to create more agent-set visits. The pilot assumption lets Tekion in because it 'takes the visit as an appointment'. The primary measure counts only visits with a CRM id, so the visits that never landed are filtered out of the scorecard instead of being flagged to anyone. Phase 1 adds volume to a path with an untraced loss and no detection.",
+      "because": "E89 (Tekion 26 of 42 with a CRM id; VinSolutions 18 of 319); E86 (Tekion drops a meeting with no end date); E33 (\"nobody would have ever known\"); E80 (no re-push after create)",
+      "ask": "Before the flag goes on anywhere, trace the 16 Tekion visits with no id. Keep Tekion and unknown-CRM rooftops out of the pilot until that trace is done. Add a daily per-rooftop count of agent-set visits with no CRM id after N minutes, routed to the CSM and the store's BDC manager, and report that count beside the primary measure instead of excluding it."
+    },
+    {
+      "id": "gm-r2-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Skips: any active meeting for the lead, store-set CRM imports included, stops the nudge [E77, E78]",
+      "concern": "The TL;DR promises to stop nudging leads a person already holds. Picture my BDC rep booking the customer by phone at 2:05, and at 2:12 the customer gets a text from my store offering two other times. The wake-up fires 10 minutes after the last reply. Nobody knows how fast a CRM booking imports into Spyne, or whether created_at is booking time or import time. At 2 of 18 rooftops there is no import feed at all. As written, the skip covers my BDC's bookings only when the import beats a 10-minute timer.",
+      "because": "E66 (feed at 16 of 18 rooftops; created_at may be import time); E19 (wake-up at 10 minutes); E78 (bdc meetings carry no conversation id)",
+      "ask": "State the import lag for bdc meetings at the pilot rooftops, or make it a pre-ship open question. Claim 'stops nudging leads a person holds' only where the feed exists and lands inside the wake-up window. Pick pilot rooftops that have the feed."
+    },
+    {
+      "id": "gm-r2-3",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Action items keep blocking on DriveCentric and PBS, and everywhere on callback, lost lead, trade-in and Human Requested; elsewhere a photo or quote item stops cancelling the nudge.",
+      "concern": "Your own evidence says the five blocked threads were all at VinSolutions or ADF stores, where the item is a line of note text and nobody's task. Under this rule, a customer at those stores who asked for a callback still gets no nudge, and still gets no call, because no person has the task. The silence stays and nobody owns it. A customer who asked for a quote now gets visit times on top of a quote nobody is preparing, while the price rule stops the agent from giving one. Both are promises in my store's name that nobody holds.",
+      "because": "E74 (none of the 5 at DriveCentric or PBS; items became notes); E51, E52 (note text, no task); E61 (2 of 5 were callbacks, 1 carried a quote follow-up); E29 (hand-back is an idle summary note)",
+      "ask": "For the four note-only CRMs, name who owns an open callback or quote item. Either name RETCONVAI-5165 explicitly as that owner, with these leads out of the pilot, or route the item to the BDC manager. When a quote item is open, the nudge acknowledges it rather than pitching times past it."
+    },
+    {
+      "id": "gm-r2-4",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Wake-up cancelled by an item no person holds | 5 of 12 | 0 | [E61, E74] |",
+      "concern": "This target cannot be hit under the rule you wrote. Of those 5, two are callbacks, one is trade-in and one is lost lead. Your rule keeps all of them blocking everywhere, so at most the photo thread changes. A target of 0 also suggests the agent should text a lead the store marked lost. When my managers read this scorecard after the pilot, it will look like a miss on day one.",
+      "because": "E61 (SALES_SCHEDULE_CALLBACK x2, SEND_VEHICLE_PHOTO, SALES_TRADE_IN_FOLLOW_UP, SALES_LOST_LEAD); v2 line 57 rule",
+      "ask": "Restate the row as 'wake-up cancelled by a photo or quote item at a note-only CRM', with today's count (1 of 12) and the target. Measure the callback and lost-lead blocks separately, as correct blocks, not as a defect."
+    },
+    {
+      "id": "gm-r2-5",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "No new CRM write, but phase 1 rides the existing meeting push: VinSolutions gets a note line, no CRM gets a rep, confirmed pencils keep their first time [E80, E81, E87].",
+      "concern": "Every extra visit this produces lands in my CRM with nobody's name on it. So who greets that customer? If my store has no round robin or BDC manager assigning unassigned appointments, a visit that counts as a win on your scorecard turns into a customer standing at the desk asking for 'whoever I was texting'. The doc names the gap but makes no pilot entry rule from it. The only pilot assumption is about VinSolutions.",
+      "because": "E83, E84, E85, E86, E87, E88 (no rep on any CRM; PBS only with an existing deal); E81 (assigned_to exists on the Spyne meeting but is not sent); Q20 (no reminder path known)",
+      "ask": "Make it a pilot entry criterion (Q34): the CSM confirms how an unassigned appointment reaches a salesperson at that rooftop today. Note that the Spyne meeting already carries the lead's assigned_to, so a later phase could send it."
+    },
+    {
+      "id": "gm-r2-6",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "| BDC touches per unbooked SMS lead | unknown | fewer, read at one rooftop from CRM activity | Q6 |",
+      "concern": "This is the only row that lands on my statement as cost removed, and nothing shows we can read it. The evidence shows we import CRM appointments, not calls, texts or tasks worked by my BDC. If there is no baseline before the flag goes on, there is no before and after at the pilot store, and phase 1 ends up justified on visits alone. That is volume, which is the argument I do not buy.",
+      "because": "missing (no evidence of a CRM activity feed); E66 (only bdc appointment rows are imported); Q6 is assigned to the CSM, not to a data read",
+      "ask": "Name the rooftop and the CRM activity source, or say the baseline comes from the BDC manager's own CRM report. Capture the baseline at each pilot rooftop before the flag goes on, and make that a pre-ship step rather than an open question."
+    },
+    {
+      "id": "gm-r2-7",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Show rate on agent-set visits (guard) | not measurable | not down, where matchable | [E66], Q27 |",
+      "concern": "The primary measure is 'visits up', and the only guard against the agent pushing low-quality visits is a show rate you say cannot be measured. If re-offers book people who do not come in, my salespeople spend floor time waiting on no-shows and nothing on your side sees it. Close per attempt is already sliding with no explanation. A pilot with an unreadable guard is a pilot I cannot judge.",
+      "because": "E66 (about 99% of Spyne meetings stay scheduled; CRM rows do carry completed and noshow); E11 (close per attempt 1.73 to 1.43, unexplained); E34, E35 (dealers object to pushy text asks)",
+      "ask": "At each pilot rooftop, set how show is read before ship: CRM completed or noshow rows matched by lead and time, or a weekly show list from the BDC manager. If neither is available, say the pilot runs without a quality guard and keep it short."
+    },
+    {
+      "id": "gm-r2-8",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Gate: team flag AND SMS medium, on the outboundCallTransferEnabled pattern; rollback is flipping it. Pilot rooftops picked in the PRD [E69] [PM].",
+      "concern": "The flag puts the pushier re-offer rules in the same box as plain defect fixes: the closing line that is saved and never sent, the 'I'll note that' with nothing behind it, and the goodbye on a miss. Every store outside the pilot keeps those bugs. If a pilot store calls the texts pushy and we flip the flag, its customers start missing closing lines again. Separately, nothing says how a 'too pushy' complaint reaches you.",
+      "because": "E62 (concluded turn saved, never sent); E29 (no tool behind 'I'll note that'); E6, E10 (goodbye on miss); E69 (flag shape)",
+      "ask": "Put only the behaviour changes (live re-offer rules, wake-up pair change, skip-rule changes) behind the flag, and ship the defect fixes to every SMS rooftop, as decision line 10 already allows. Name the complaint path for pilot stores (CSM to PM, reviewed in the weekly read)."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Why do 16 of 42 agent-set SMS visits at Tekion rooftops have no CRM appointment id: dropped for no end date, push failed, or id not reported back?",
+      "blocks": "gm-r2-1, pilot rooftop selection",
+      "source": "clickhouse:dealer_leads.meetings (Tekion rooftops, external_crm_appointment_id null) joined to conversation_ai.ci_integration_logs; lambdas:crm-integrations/tekion-push/transform.js:591-594"
+    },
+    {
+      "question": "How long after a BDC or salesperson books in the CRM does the source='bdc' meeting appear in dealer_leads.meetings, and is created_at the booking time or the import time?",
+      "blocks": "gm-r2-2, the store-set skip claim",
+      "source": "dealer-leads-backend CRM appointment import job; clickhouse:dealer_leads.meetings source bdc"
+    },
+    {
+      "question": "At the candidate pilot rooftops, how does an appointment with no rep reach a salesperson today (round robin, BDC manager assigns, nobody)?",
+      "blocks": "gm-r2-5, Q34 pilot criteria",
+      "source": "CSM with the store's BDC manager"
+    },
+    {
+      "question": "Is there any feed of CRM activity (calls, texts, tasks worked) per lead in the warehouse for any SMS rooftop, or must BDC touches come from the dealer's own CRM report?",
+      "blocks": "gm-r2-6, the cost-removed line",
+      "source": "clickhouse dealer_leads_raw / crm import tables; CSM"
+    },
+    {
+      "question": "At VinSolutions, Tekion, eLead and ADF rooftops, does anyone act on a SALES_SCHEDULE_CALLBACK item that lands as note text, and how soon?",
+      "blocks": "gm-r2-3, ownership of blocked threads",
+      "source": "CSM with 2 to 3 BDC managers (same call as Q15)"
+    }
+  ]
+}

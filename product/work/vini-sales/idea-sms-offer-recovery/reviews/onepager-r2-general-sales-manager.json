@@ -1,0 +1,133 @@
+{
+  "persona": "general-sales-manager",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 4,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 3,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 3,
+    "Brevity": 3,
+    "Desk control": 4,
+    "Rep handoff": 2,
+    "Inventory truth": 2,
+    "Attribution integrity": 2,
+    "Outcome metric": 3
+  },
+  "previous_issues": [
+    { "id": "general-sales-manager-r1-1", "fixed": true, "note": "Meeting push per CRM is now named with the evidence table (E79-E89), the claim is reworded to 'no new CRM write, rides the existing meeting push', and the primary measure counts only visits with a CRM id. The rep half of the concern is now stated ('no CRM gets a rep') but not acted on; raised again as r2-1." },
+    { "id": "general-sales-manager-r1-2", "fixed": true, "note": "Show rate is now a guard and a phase 2 condition via Q27. But it reads 'where matchable' with no fallback if Q27 says no; raised as r2-4." },
+    { "id": "general-sales-manager-r1-3", "fixed": true, "note": "'Price: the advertised price only, never an out-the-door, payment, rate or trade figure (Q28)'. Desk control holds." },
+    { "id": "general-sales-manager-r1-4", "fixed": true, "note": "Trade-in, callback, lost lead and Human Requested keep blocking everywhere, every item blocks on DriveCentric and PBS, and Q15 goes to BDC managers before ship." },
+    { "id": "general-sales-manager-r1-5", "fixed": false, "note": "The 'always a visit' target is gone and visit times are limited to a 'verified unit', but what 'verified' checks (sold, in transit, recon, front-line ready) is still open as Q26 and does not block ship, and lever 1 re-offers on a named unit have no stock re-check. Raised as r2-3." },
+    { "id": "general-sales-manager-r1-6", "fixed": true, "note": "Live arm now says 'After a yes or near-yes, a two-day ask and nothing else', and the constraint question fires only after a declined pair. The wording still differs from the director's ask (minor r2-6)." },
+    { "id": "general-sales-manager-r1-7", "fixed": true, "note": "A lead-level skip that sees store-set CRM imports is now in phase 1 (E77, E78). Still open: the 2 rooftops with no feed are not named next to the rule, import timing is unknown (minor r2-7), and lead source on the push is not addressed at all (r2-5)." },
+    { "id": "general-sales-manager-r1-8", "fixed": true, "note": "Phase 3 sourcing now lands only as a person's timed task (DriveCentric, PBS with a rep on the deal) until write-back is confirmed. Who that person is on DriveCentric is raised as minor r2-8." },
+    { "id": "general-sales-manager-r1-9", "fixed": true, "note": "Now '418 of 517 SMS leads offered two clock times did not book (99 booked, 19%)'." }
+  ],
+  "issues": [
+    {
+      "id": "general-sales-manager-r2-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "No new CRM write, but phase 1 rides the existing meeting push: VinSolutions gets a note line, no CRM gets a rep, confirmed pencils keep their first time [E80, E81, E87].",
+      "concern": "Phase 1 exists to put more agent-set visits on my floor, and the doc now admits every one of them lands with no salesperson on it and no notes about the car or the customer. That is my Saturday: an up walks in 'booked by the AI' and nobody owns it. The Spyne meeting already carries the lead's assigned_to and the push drops it, so this is not a provider negotiation, it is our own payload. Writing it down as a risk does not make it okay to scale.",
+      "because": "E81 (meeting carries assigned_to at create-meeting.js:447, 777; lambda payload has no assignee, description or notes); E83, E85, E86, E88 (no rep on DriveCentric, eLead, Tekion, ADF); E84 (PBS only with a rep already on the deal)",
+      "ask": "Make rep handoff a named phase 1 dependency, not just a risk: either pass the lead's assigned_to and a one-line context (vehicle, what the customer asked) in the meeting push for the CRMs whose lambdas can take it, or add an open question answered by the CSM with 2 GSMs before pilot: on each pilot CRM, does an appointment with no assignee show on the lead owner's appointment list or task queue? Pick pilot rooftops only where the answer is yes."
+    },
+    {
+      "id": "general-sales-manager-r2-2",
+      "severity": "major",
+      "type": "scope",
+      "quote": "| VinSolutions | note line plus stage change | integration user | 18 of 319 [E87, E89] |",
+      "concern": "VinSolutions is your biggest SMS population: 11 rooftops and 319 of the agent-set visits in the window. There the 'appointment' is a line in the Note field. A note is not an appointment; my reps work the appointment list. The doc only assumes the pilot starts elsewhere and leaves Q34 as a PM call. Nothing says what happens when the flag turns on at a VinSolutions store, so phase 1 can scale more phantom visits onto exactly the stores where they are invisible.",
+      "because": "E87; E89 (VinSolutions 18 of 319 carry a CRM id, 11 rooftops); E33 (a store lost a lead whose agent-set visit never reached its CRM)",
+      "ask": "State as a rule, not an assumption: the phase 1 flag stays off at VinSolutions rooftops until a meeting lands as a VinSolutions appointment, and name that appointment write as the full-value dependency with whether we have it (a provider question, like Q17 for tasks)."
+    },
+    {
+      "id": "general-sales-manager-r2-3",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "- Inventory miss, SMS-guarded inside the shared fragment: visit times only for a verified unit shown or alternatives the customer agreed to see; otherwise no goodbye, no follow-up promise, one question that keeps the search open [E10, E24].",
+      "concern": "Unfixed from round 1. The whole rule rests on 'verified', and nobody has said whether verified means not sold, not in transit, not in recon and front-line ready, or how stale the feed can be. Q26 is open but does not block ship. And the same hole now applies to lever 1: a wake-up deferred overnight re-offers times on the car the customer asked about yesterday, which may have sold this morning. Booking a visit on a unit we cannot deliver is the one thing I will not accept from any vendor.",
+      "because": "E24 ('at most two verified listings', not defined); E57 (4 wake-ups deferred 11 to 25 hours still carrying last night's pair); E36 (prospect on another vendor booking cars not on the ground); front-line status check: missing",
+      "ask": "Move Q26 to 'blocks ship'. State that any visit time offered on a named unit, on a miss or on a re-offer, is sent only after a stock check at send time that excludes sold, in-transit and in-recon units, and say what freshness the feed guarantees."
+    },
+    {
+      "id": "general-sales-manager-r2-4",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Show rate on agent-set visits (guard) | not measurable | not down, where matchable | [E66], Q27 |",
+      "concern": "The primary measure is still visits set. The only line that tells me whether those visits walk in is 'not down, where matchable', and if Q27 comes back 'cannot match', the guard is empty and the pilot gets judged on appointments set alone. Q27 blocks 'Show guard', not the pilot. More re-offers can mean more soft yeses that never show.",
+      "because": "E66 (about 99% of spyne meetings stay scheduled; CRM rows carry completed and noshow); E11 (close per attempt slid 1.73 to 1.43, unexplained); E34",
+      "ask": "Make Q27 block pilot start. If matching is not possible, the pilot uses a manual fallback: the pilot store's GSM or BDC manager marks shown or no-show on the agent-set visits for the pilot weeks, and phase 2 cannot trigger without a show number."
+    },
+    {
+      "id": "general-sales-manager-r2-5",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "- **Agent-set visits reach the CRM in one push at creation, with the time and no rep;** confirms and reschedules never re-push [E79, E80, E81].",
+      "concern": "The doc now covers time and rep but says nothing about lead source or lead owner surviving the push. On VinSolutions the same PUT moves the lead's stage and writes as the Spyne integration user. If any of these pushes changes who owns the lead or what source it carries, my commission fights and my marketing-by-source report both break, and phase 1 multiplies the pushes.",
+      "because": "E87 (PUT gateway/v1/lead/{id} sets StageId 16, UserId = 'Spyne' integration user); lead source and owner on the meeting push: missing (resolution of r1-7 says 'Lead source on the visit is not in evidence')",
+      "ask": "Add an open question for Engineering, answered before pilot: per pilot CRM, does the meeting push leave the lead's assigned salesperson and lead source untouched? Pilot only where the answer is yes."
+    },
+    {
+      "id": "general-sales-manager-r2-6",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "- Live arm: after a side question, answer, then a different pair. After a declined pair, ask the constraint once, then a fitting pair. After a yes or near-yes, a two-day ask and nothing else [E55, E7, E31].",
+      "concern": "The director asked for 'Does today or tomorrow work better for you?' 'A two-day ask' could be Thursday or Saturday next week. On a yes, the closest day is the one that shows.",
+      "because": "E31",
+      "ask": "Write it as 'today or tomorrow, or the next two open days when the store is closed'."
+    },
+    {
+      "id": "general-sales-manager-r2-7",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "- Skips: any active meeting for the lead, store-set CRM imports included, stops the nudge [E77, E78]; the live turn needs the same view [ASSUMPTION: the live SMS turn does not see a store-set appointment for the lead].",
+      "concern": "Good rule, but it only works where the CRM feed exists and only as fast as the import lands. At 2 of 18 rooftops a store booking is invisible, and nobody knows whether created_at is booking time or import time. A rep books the customer at 9am, the overnight wake-up fires at 12:10 with new times, and now there are two appointments.",
+      "because": "E66 (2 of 18 cohort rooftops have no feed; created_at may be import time); E57 (deferred wake-ups sent in a 12:10 UTC batch)",
+      "ask": "Name the no-feed rooftops as excluded from the pilot next to this rule, and add the import lag as an Engineering question that sets how long before a deferred wake-up the check must run."
+    },
+    {
+      "id": "general-sales-manager-r2-8",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "- Sourcing intent, rooftop setting default off, only where it lands as a person's timed task (DriveCentric; PBS with a rep on the deal) until write-back is confirmed elsewhere (Q17) [E26, E72, E73].",
+      "concern": "On DriveCentric 'a person' is the first user in the store's user list, not the salesperson and not the manager who can locate or dealer-trade a unit. A sourcing task in the wrong queue is the same as no task.",
+      "because": "E72 (resolveTaskAssignee: first user in the store's user list, else AssociatedSalesperson)",
+      "ask": "In phase 3, say the sourcing task goes to the lead's assigned salesperson or a store-named manager (rooftop setting), not the first user in the list."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Per pilot CRM (DriveCentric, eLead, Tekion, ADF, PBS), does the meeting push leave the lead's assigned salesperson and lead source unchanged? In particular, does the VinSolutions lead PUT that sets StageId 16 with the integration UserId change the lead owner or source?",
+      "blocks": "general-sales-manager-r2-5",
+      "source": "Engineering: lambdas crm-integrations/*-push meeting paths; vinsolution-push/handler.js:996-1017, 1656-1730"
+    },
+    {
+      "question": "On DriveCentric, Tekion and eLead, does an appointment pushed with no assignee appear on the lead owner's appointment list or task queue in the CRM UI?",
+      "blocks": "general-sales-manager-r2-1",
+      "source": "CSM with 2 GSMs at DriveCentric and Tekion rooftops"
+    },
+    {
+      "question": "Could the existing meeting push carry the Spyne meeting's assigned_to and a short description to the CRMs whose APIs accept them, and at what cost?",
+      "blocks": "general-sales-manager-r2-1",
+      "source": "Engineering: dealer-leads-backend fetch-data.js:681-708; create-meeting.js:447, 777"
+    },
+    {
+      "question": "What does 'verified' mean in the inventory search results (excludes sold, in transit, in recon?), and how stale can the inventory feed be at send time?",
+      "blocks": "general-sales-manager-r2-3",
+      "source": "Engineering: inventory search tool and inventory sync service (Q26)"
+    },
+    {
+      "question": "How long after a booking in the dealer CRM does the source bdc meeting land in dealer_leads.meetings?",
+      "blocks": "general-sales-manager-r2-7",
+      "source": "Engineering / data: CRM import jobs; dealer_leads.meetings created_at vs CRM booking timestamp"
+    }
+  ]
+}
