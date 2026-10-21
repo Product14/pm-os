@@ -11,5 +11,6 @@
 
 - 2026-10-21 Gate 2: approve v4 as final, and file step 1 as a Bug too (resolves escalated ceo-r1-6 in the CEO's favour on shipping step 1 now).
 
-## Overrides
 - 2026-10-21 Gate 2 feedback (PM): v3 Decision, Problem and Evidence were not comprehensible; rewritten as v4 in plain language (customer stories first, internal terms removed, mechanism moved to the PRD).
+
+## Overrides
