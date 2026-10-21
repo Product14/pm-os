@@ -1,0 +1,288 @@
+# Evidence
+
+### E1
+- source: pm:2026-10-21
+- date: 2026-10-21
+- side: pm
+- role: unknown
+- text: "both sms wins" (PM choosing the two SMS levers from the 21 Oct weekly review for one PRD)
+
+### E2
+- source: search:transcript-read:sales-inbound-weekly-2026-10-21 (results/sms-b1..b4.json, field after_unaccepted_offer)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Of 47 winnable SMS threads (14 to 20 Oct) where offered times were not taken: same pair repeated 20, no follow-up 12, different times 7, asked constraint 5, customer left 3. Blinded readers, rubric v1.0.
+
+### E3
+- source: search:transcript-read:sales-inbound-weekly-2026-10-21
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Same time pair repeated within a thread on 28 of 100 SMS threads read (12 Oct read: 10 of 50).
+
+### E4
+- source: search:transcript-read:sales-inbound-weekly-2026-10-21
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Agent proposed a visit clock time unprompted on 57 of 84 winnable SMS threads (68%, CI 57-77%), vs 72% on 12 Oct.
+
+### E5
+- source: search:clickhouse:abr-trends prelude, 11-day same-store window 10 to 20 Oct 2026 (abr-deepdive/weekly/2026-10-21/REFRESH.md)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: 517 qualified SMS leads were offered two clock times; 99 booked (19%). SMS ABR 16.6% vs 14.0% prior window (p about 0.16).
+
+### E6
+- source: search:transcript-read:sales-inbound-weekly-2026-10-21
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: no_inventory_match_no_sourcing_offer on 10 of 84 winnable SMS threads; agent_notes_instead_of_acting ("I'll note that" as last act) on 10 of 84. Neither moved since the 12 Oct read.
+
+### E7
+- source: search:transcript-read:sales-inbound-weekly-2026-10-12 (results-discovery/DISCOVERY.md)
+- date: 2026-10-12
+- side: system
+- role: engineering
+- text: Times offered before the customer's constraint was known: in 5 threads with a constraint (out of state, wants today, works weekdays) the first offer failed and only 1 recovered.
+
+### E8
+- source: search:transcript-read:sales-inbound-weekly-2026-10-12 (REPORT.md)
+- date: 2026-10-12
+- side: system
+- role: engineering
+- text: SMS has no visit-ask gate, so nothing enforces "never repeat a declined pair" server-side. "10:30 AM" appeared in 16 of 43 post-release SMS threads at 8 rooftops (model convergence, not a prompt literal).
+
+### E9
+- source: search:transcript-read:sales-inbound-weekly-2026-10-21 (sms-b2, thread 01a1553f)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Agent, after the customer said they would reply with a time later: "That works. I'll be here when you're ready, and we can line up a time for the Civic and take a look at your Altima then." No follow-up sent.
+
+### E10
+- source: search:transcript-read:sales-inbound-weekly-2026-10-21 (sms-b1, thread 01a14fab; sms-b2, thread 01a15667)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Inventory miss endings: "I do not see a used SUV under $10,000 right now." and "Understood. We do not have that older Trailblazer here. I hope you find the right one soon."
+
+### E11
+- source: search:clickhouse:abr-trends prelude, calendar week of 12 Oct 2026
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: SMS week of 12 Oct: 3,372 leads received, 558 qualified, 103 appointments, ABR 18.5%, 21 rooftops, 4.9 appointments per rooftop. Close / attempt slid 1.73 to 1.43 over four weeks (unexplained).
+
+### E12
+- source: jira:RETCONVAI-5392
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Voice regression filed separately: workflow_v2 voice proposes visit times on 8% of winnable calls vs 58% inline.
+
+### E30
+- source: arali:meeting:65fc1506-f9f8-4b63-a229-2d3dd1565714@00:09:26
+- date: 2026-10-06
+- side: dealer
+- role: sales director
+- text: "a customer was asked if they'd like to schedule a test drive... the customer said yes. And then Emily came back and said... Would you like the price for for this vehicle? And then it ruined the appointment." (Vini sales SMS on internet leads)
+
+### E31
+- source: arali:meeting:65fc1506-f9f8-4b63-a229-2d3dd1565714@00:10:55
+- date: 2026-10-06
+- side: dealer
+- role: sales director
+- text: "anytime someone agrees to an appointment, it needs to be, great. Does today or tomorrow work better for you? Instead of asking any other questions"
+
+### E32
+- source: arali:meeting:65fc1506-f9f8-4b63-a229-2d3dd1565714@00:05:31
+- date: 2026-10-06
+- side: dealer
+- role: unknown
+- text: "if there's a conversation happening, our salesperson sees it, and they wanna take over... they can press stop... Follow-up for the AI." Same store asks for the raw SMS thread pushed to their CRM, close to live (@00:03:53).
+
+### E33
+- source: arali:meeting:f3a073ba-44b1-4008-9099-911fea646318@00:27:26
+- date: 2026-09-24
+- side: dealer
+- role: unknown (says he runs the store's follow-up team; a manager beside him confirms appointments)
+- text: "Spine tried to schedule a test drive for... 12PM, but that appointment never made it in the system... nobody would have ever known that this customer was supposed to even have an appointment." (Spyne SMS follow-up on an aged sales lead)
+
+### E34
+- source: arali:meeting:c1a25a67-9b45-4f9b-84d2-c0482edc6566@00:45:34
+- date: 2026-10-13
+- side: dealer
+- role: used car manager
+- text: "It's got the AI goal in its mind of I have to set the appointment versus... there might be a different way to attack this lead." (reviewing Emily's aged-lead text follow-ups)
+
+### E35
+- source: arali:meeting:c95786a6-4c00-4462-a655-0c906aa1db07@00:41:24
+- date: 2026-09-21
+- side: dealer
+- role: general manager
+- text: "It's always moving to the phone. Moving to the phone. It's too much commitment to try and get him to book an appointment with text." Counter-signal: dead-deal re-engagement campaign, rooftop is in Canada.
+
+### E36
+- source: arali:meeting:0886f834-ad0c-4744-9880-66f93fb428d3@00:11:57
+- date: 2026-09-22
+- side: dealer
+- role: unknown
+- text: "it is creating appointments for a car that we don't have that we don't have on the ground." Prospect describing their current vendor's AI, not Vini. Inventory awareness matters to them, but the failure is the opposite of E6.
+
+### E37
+- source: arali:meeting:65fc1506-f9f8-4b63-a229-2d3dd1565714@00:09:59
+- date: 2026-10-06
+- side: spyne
+- role: csm
+- text: CSM reply to E30: "I have received this feedback from other dealership as well." Fix offered was a per-store rule to stop proactive pricing questions. Spyne-side, does not satisfy the slot.
+
+### E38
+- source: search:search-ticket-messages:"Vini SMS repeating same appointment times, not following up" and "sales agent text lead vehicle sold or not in inventory, no alternative offered, appointment not booked"
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: 2 ticket searches, no company filter, 2026-07-23 to 2026-10-21, 20 results each: 0 dealer tickets on repeated or unfollowed SMS time offers, 0 on inventory-miss dead ends. Hits were VIN sync, merchandising, an STL text to a sold lead, and a July ticket on repeats after a confirmed appointment (different problem).
+
+### E39
+- source: search:search-thread-messages:"AI text conversation did not book appointment, customer went quiet, no follow up, vehicle not available"
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: 1 email/Slack search, 2026-09-21 to 2026-10-21, 20 results: 0 relevant to sales SMS. Hits were service-scheduler booking failures (Xtime, Dealer-FX) and Studio uploads.
+
+### E40
+- source: search:search-transcripts:"AI text keeps offering the same appointment times, customer stops responding" + "vehicle not in stock, offer similar vehicles or source" (2026-09-21 to 2026-10-21) + "text conversations not converting to appointments, leads not booked handed back to BDC" (2026-07-23 to 2026-10-21)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: 3 transcript searches, 20-25 results each. Rooftops raising the job (unbooked text leads lost or mishandled, wants a direct close or a hand-back): 3, all inside 30 days (E30-E34). Pushing the other way (move text leads to the phone): 1 (E35). Raising the Vini inventory-miss dead end: 0 (1 prospect on another vendor, E36). No dealer named repeated time pairs specifically. Semantic search, not exhaustive.
+
+### E13
+- source: conversational-ai-backend:src/agents/agents-v2.service.ts:1500 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Any agent type whose name contains "sales" (other than acquisition) resolves to the sales_v2 prompt root, on every channel, so Sales Inbound SMS renders sales_v2.xml.
+
+### E14
+- source: conversational-ai-backend:src/agents/agents-v2.service.ts:2905 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: templateVars.visit_ask_gate is true only when communication_mode is 'voice' and the mapping is not workflow_v1/workflow_v2 (lines 2905-2911). On SMS it is false, so the sales_visit_ask_gate tool is not supplied and the gate branch of VisitInvite (sales_new/appointment-conversion.xml:8-9) does not render.
+
+### E15
+- source: conversational-ai-backend:src/prompts/base-system-prompts/sales_new/appointment-conversion.xml:19 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Repeat protection on SMS is prompt text only: "Each new ask uses different days and times from every earlier ask; a pair the customer declined is never offered again" (line 19), restated at lines 71 and 106.
+
+### E16
+- source: conversational-ai-backend:src/prompts/base-system-prompts/sales_new/appointment-conversion.xml:30 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Turning down only the two offered times is not a no: "ask once what day and time suit them" (line 30); an open day or time question is allowed only after both times are turned down or the customer cannot commit (line 62). Undecided replies are "not now": keep helping and ask again after a real buying signal (line 30).
+
+### E17
+- source: conversational-ai-backend:src/prompts/base-system-prompts/sales_new/appointment-conversion.xml:131 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: The SMS channel arm (lines 131-134) only says to use a short one-tap ask with two exact times and a reply path; it has no SMS-specific rule for the turn after an untaken offer.
+
+### E18
+- source: search:git-grep conversational-ai-backend origin/release src/ for offeredSlots|offeredTimes|proposedSlots|declinedSlots|lastOfferedSlot
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: No match. There is no server-side field that records the time pairs already offered or declined in an SMS thread.
+
+### E19
+- source: conversational-ai-backend:src/sms/sms-wakeup.constants.ts:4 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: SMS wake-up defaults: enabled, fires 10 minutes after the window is armed, at most 2 wake-ups per conversation (lines 3-5). The window is re-armed on every inbound SMS reply (sms-wakeup.service.ts:67, 82) and stops at the cap (sms-wakeup.service.ts:190).
+
+### E20
+- source: conversational-ai-backend:src/sms/sms-wakeup.service.ts:177 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: A wake-up is skipped when a meeting exists, an action item with a non-scheduling intent exists, or the last message was marked isConcluded (line 177); also on outcomes such as SOFT_DECLINE and CALLBACK_REQUESTED (sms-wakeup.constants.ts:27-56).
+
+### E21
+- source: conversational-ai-backend:src/prompts/base-system-prompts/sales_new/sms-wakeup.xml:7 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: On flowType=wakeup the root drops appointment-conversion.xml and offer-conversion.xml (sales_v2.xml:57-59) and the nudge is told to ignore AppointmentConversion (line 7) and re-ask the open question in fresh wording (line 44). Its examples re-offer the same visit ("does next Friday still work", line 18; "next Friday at 11 or 4", line 53); no rule says to offer a different pair.
+
+### E22
+- source: conversational-ai-backend:src/meetings/tentative-booking-evaluator.service.ts:72 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Tentative (pencil) booking cron picks in-progress SMS conversations from sources speed_to_lead, sms or follow_up (tentative-booking.constants.ts:17-22) that have had a wake-up sent and then the team's createAfter wait (fallback 15 minutes, line 68) with no human takeover (lines 72-83).
+
+### E23
+- source: conversational-ai-backend:src/meetings/tentative-appointment-gate.service.ts:278 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: The pencil gate needs a customer-stated visit commitment (line 271) and a customer-stated daypart or exact time; times in Agent lines do not count (line 278), and a date-only reply is rejected (line 279).
+
+### E24
+- source: conversational-ai-backend:src/prompts/base-system-prompts/sales_new/unavailable-vehicle-discovery.xml:3 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: On inventorySearchOutcome="requested_vehicle_unavailable" (line 3) the agent states the miss once and asks one question about what the vehicle is for (line 14), searches with searchMode="agreed_alternative" and shows at most two verified listings (line 32); if that returns empty it stops and offers one visit-oriented next step (line 40). The block is skipped in the request-only visit flow (line 1). Included for all channels (sales_v2.xml:49).
+
+### E25
+- source: search:git-grep sales_v2.xml and every fragment it includes on origin/release for sourc|locate|special order|dealer trade|find one
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: No match for a sourcing, locate or dealer-trade instruction. The only hit for "locate" is cancelling a meeting (sales_new/guardrails.xml:10).
+
+### E26
+- source: conversational-ai-backend:src/action-items/intent/intent-code.enum.ts:12 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Sales action-item intents (lines 12-29) cover appointment, callback, quote, test drive, showroom visit, send vehicle info, quote and be-back follow-ups, trade-in, finance, manager, voicemail and lost lead. No vehicle sourcing or locate intent exists.
+
+### E27
+- source: conversational-ai-backend:src/braintrust/eval-toolsets.ts:19 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Canonical Sales:inbound toolset (lines 19-32): inventory_search_vehicles_v3, inventory_get_carfax_history, communication_get_details, communication_send_sms, dealership_check_hours, find_sibling_rooftop, communication_transfer_call_v3, communication_end_call, sales_get_finance_partners, sales_get_finance_prequalify, get_finance_offers_tool, sales_create_meeting. No note or task tool. Live agents take tools from agent config (agents-v2.service.ts:2265-2276), so a given rooftop's list is not proven by code.
+
+### E28
+- source: search:git-grep conversational-ai-backend origin/release src/ for remember_sales_details
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: remember_sales_details appears only in workflows/sales_v2 fragments (for example workflows/sales_v2/appointments/create.xml:2), the workflow_v2 path, not in the sales_v2 root that SMS renders.
+
+### E29
+- source: conversational-ai-backend:src/sms/sms-v2.service.ts:2630 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: The prompt tells the agent to use note-style wording ("I'll note that...", sales_new/escalation.xml:193; guardrails.xml:143) with no tool behind it. The dealer CRM receives the SMS thread as a conversation summary note after the thread goes idle (lines 2630-2632), posted via createSalesNote with title 'AI SMS Conversation' (lines 1456-1465).
+
+### E41
+- source: conversational-ai-backend:src/tools/definitions/sales/sales-confirm-tentative-meeting.tool.ts:47 (origin/release 21dd50b5a)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: sales_confirm_tentative_meeting promotes a penciled meeting to scheduled when the customer confirms (lines 47-54; prompt rule sales_new/guardrails.xml:17-22). sales_create_meeting is for sales meetings only and must not be used for callbacks or text follow-ups (sales-create-meeting.tool.ts:139).
