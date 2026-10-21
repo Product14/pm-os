@@ -40,3 +40,7 @@ Prompt fragments these rules touch are also rendered for voice, chat and outboun
 **Out of scope.** Voice (RETCONVAI-5392). Server-side memory of offered times and a vehicle-sourcing request are steps 2 and 3 of the PRD, behind their own triggers.
 
 **Sources.** pm-os `product/work/vini-sales/idea-sms-offer-recovery/` (one-pager/final.md, evidence.md E2 E5 E6 E9 E10 E30 E31 E54 E55 E57 E60-E62 E69 E71 E77-E80 E87); Sales Inbound weekly review 21 Oct 2026. Full PRD to follow.
+
+## Created
+
+- RETCONVAI-5395 · https://spyne.atlassian.net/browse/RETCONVAI-5395 · 2026-10-21 · Prod Bug, no parent, unassigned, Product Backlog
