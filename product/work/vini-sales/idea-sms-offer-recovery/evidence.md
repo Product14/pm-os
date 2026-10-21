@@ -286,3 +286,87 @@
 - side: system
 - role: engineering
 - text: sales_confirm_tentative_meeting promotes a penciled meeting to scheduled when the customer confirms (lines 47-54; prompt rule sales_new/guardrails.xml:17-22). sales_create_meeting is for sales meetings only and must not be used for callbacks or text follow-ups (sales-create-meeting.tool.ts:139).
+
+### E42
+- source: search:transcript-read:sales-inbound-weekly-2026-10-21 (results/sms-b1..b4.json joined to data/blind-key.json)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: The 100 sampled SMS threads came from 14 rooftops. The 47 winnable untaken-offer threads span 10 rooftops (two stores carry 14 and 13, the next 7). The 10 inventory-miss dead ends span 5 rooftops (one store carries 6).
+
+### E43
+- source: conversational-ai-backend:src/crm_integration/crm_integration.service.ts:853 (origin/release e7190a7d9)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: syncActionItems sends each sales action item with intent, description and due_date (lines 858-881). With crm-core on it posts crm-core /v1/internal/action-items/ci/bulk, which also fires the CRM push (lines 897-935; crm-core-service.client.ts:847); otherwise dealer-leads /v3/action-items/bulk then start-insertion-process with type 'action_items' (lines 937-958).
+
+### E44
+- source: dealer-leads-backend:api/helpers/crm-integrations/start-insertion-process.js:636 (release a1587e2b1)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: start-insertion-process looks up the rooftop's one registered CRM (provider type "crm" for sales, "crm-service" for service, lines 636-664) and hands the payload to that CRM's own push lambda (lines 1336-1361). The per-CRM object mapping lives in each lambda, not in dealer-leads (lines 773-774).
+
+### E45
+- source: dealer-leads-backend:api/helpers/crm-integrations/start-insertion-process.js:894 (release a1587e2b1)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Action items with no conversation_id or call_id are dropped before the push (lines 894-920), and the sales sync gate can hold a whole conversation from the CRM (lines 592-628).
+
+### E46
+- source: search:gh-api:spyne-ai-tech/lambdas crm-integrations/ (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Sales CRM push lambdas that handle actionItems: adf-push, drivecentric-push, eleads-push, pbs-push, tekion-push, vinsolution-push (foureyes-consent-push is consent only). Six write paths, one per CRM.
+
+### E47
+- source: lambdas:crm-integrations/drivecentric-push/transform.js:667 (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: DriveCentric writes each action item as a customer task (type "Touchpoint", name = intent) with assignedAt = due_date, pulled forward to now + 5 min if in the past (lines 667-704; called at main.js:657-658). Carries a due time.
+
+### E48
+- source: lambdas:crm-integrations/pbs-push/transform.js:518 (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: PBS writes each action item as a Workplan reminder with DueDate = due_date (or now if missing), Status Active, Summary = description (lines 518-527; called at main.js:878-881). Carries a due time.
+
+### E49
+- source: lambdas:crm-integrations/eleads-push/fortellis.js:783 (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: eLead (Fortellis) writes each action item as an already-completed activity named "Note" via /activities/complete with a completedDate, no due date (lines 783-793). Only meetings go through /activities/schedule with a dueDate (lines 768-779). No due time on action items.
+
+### E50
+- source: lambdas:crm-integrations/tekion-push/transform.js:551 (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Tekion writes each action item as a lead note with title = intent and description only (lines 551-569), posted to /openapi/v4.0.0/leads/{id}/notes (insert-data.js:534; main.js:540-567). No due time.
+
+### E51
+- source: lambdas:crm-integrations/vinsolution-push/handler.js:1669 (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: VinSolutions joins action-item descriptions with meetings, notes and timeline lines into one text block written to the lead's Note field on a lead update (lines 1669-1711). No task object, no due time.
+
+### E52
+- source: lambdas:crm-integrations/adf-push/xml-formats.js:103 (release c846c1430)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: ADF push lists action items as bullets under "ACTION ITEMS" inside the ADF lead's comments text (lines 103-125, used at 183-213). No task object, no due time.
+
+### E53
+- source: crm-core-service:src/external-crm-sync-status/update-external-crm-sync-status.service.ts:225 (release a5d1d5be5)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: external_crm_synced_timestamp is set by crm-core PATCH /v1/sales/external-crm-sync (user-auth guard, synced_by system or user; controller lines 47-54), which writes the legacy action item (action-item-legacy.mongo.repository.ts:105-112). Push lambdas report CRM ids back via /v1/internal/sales/sync-external-crm-ids (eleads-push/spyne.js:65). This pass did not prove the lambda path also sets the timestamp.

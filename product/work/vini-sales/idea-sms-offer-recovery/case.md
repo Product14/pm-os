@@ -11,8 +11,8 @@ arali_company:
 raised_by: pm (Sales Inbound PM)
 raised_by_role: unknown
 csm:
-feature:
-outcome:
+feature: sms-offer-recovery
+outcome: build-generalised
 prd:
 jira:
 ledger_match:

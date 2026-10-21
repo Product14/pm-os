@@ -1,10 +1,10 @@
 {
- "stage": "decide",
+ "stage": "solution-research",
  "started": "2026-10-21",
  "rubrics": {},
  "lessons_loaded": [],
  "observations_loaded": {},
  "rounds": {},
- "requests": 0,
+ "requests": 2,
  "gates": []
 }
