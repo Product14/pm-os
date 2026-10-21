@@ -38,7 +38,7 @@
 - blocks: how many untaken-offer threads already get a nudge or a pencil, which sizes the gap the prompt change must close
 - who: engineering
 - how: Query conversationNotifications in Mongo for wakeup.enabled, wakeup.totalWakeups and tentativeBooking.createAfter by teamId.
-- status: open
+- status: partly answered (E59): wake-ups run on defaults almost everywhere (1 of 2,739 conversationNotifications rows sets a wakeup key; none of the 5 teams in the silent threads). tentativeBooking.createAfter overrides still unread; no longer blocks the one-pager.
 
 ### Q6
 - slot: request
@@ -54,7 +54,7 @@
 - blocks: Inputs > Dealer P&L impact (days removed); the case.md Job assumption
 - who: engineering
 - how: join SMS conversations to meetings by lead, compare lead-created to meeting-time for first-thread bookings vs later bookings; read the context/metrics and context/traps entries first.
-- status: open
+- status: answered for days to visit (E64, E65, E66); sale and show not measurable today (E66), so the one-pager claims neither. Detail: first-thread agent visits median 1.6 days (p75 2.9) from lead created; later agent visits after a reply median 5.8 (p75 11.5, n=36); store-set CRM visits after a reply median 1.8 (p75 4.5), visible at 16 of 18 rooftops by lead_id only. Still unknown: days to sale and show for any group, who at the store set the visit, and whether the thread caused it.
 
 ### Q8
 - slot: request
@@ -86,4 +86,36 @@
 - blocks: As asked vs as solved, lever 1b (build vs fix a setting)
 - who: engineering
 - how: for the 12 thread ids in results/sms-b1..b4.json, read conversationNotifications wake-up state and the last message outcome in Mongo.
+- status: answered (E59..E63)
+
+### Q12
+- slot: solution
+- unknown: whether repeating an open time pair after a side question (address, price, photos, trade-in) actually costs bookings; 4 of 7 live-only repeat threads booked [E55]. Decides whether line 19's "even after a side question" stays as written.
+- blocks: one-pager/v1.md Recommendation, phase 1 live SMS rule
+- who: engineering
+- how: in the next weekly read, compare booking and customer reply after a side question for threads that re-offered the same open pair vs a different pair or no pair; use smsMessages.wakeUpMessage to keep live replies only.
+- status: open
+
+### Q13
+- slot: assumption
+- unknown: an SMS lead that leaves the first thread without a visit is worked again by the BDC
+- blocks: one-pager/v1.md Problem (cost to the store)
+- who: csm
+- how: ask the BDC manager at 2 SMS rooftops what happens to an internet lead the SMS agent did not book (who picks it up, when, by what channel); pairs with Q6.
+- status: narrowed (E66): stores do book some of these leads (612 leads with no agent-set visit got a store-set visit within 30 days, at the 16 of 18 rooftops with the CRM feed). Still open: who at the store works the lead (BDC or salesperson), by what channel, and whether the thread prompted it. The one-pager assumption is removed; the question stays as Q13 in Open questions.
+
+### Q14
+- slot: assumption
+- unknown: a wake-up that changes the offer gets more customer replies than one that repeats it
+- blocks: one-pager/v1.md Risks (the phase 1 bet)
+- who: engineering
+- how: after phase 1 ships, compare customer reply rate within 24 hours of a wake-up (smsMessages.wakeUpMessage = 1) for wake-ups that repeat the last pair vs those that change it; today's baseline is 8 of 9 wake-up-only repeat threads with no reply [E55].
+- status: open
+
+### Q15
+- slot: solution
+- unknown: which action-item intents mean a human now owns the lead, so they must keep blocking the SMS wake-up, and which leave the visit offer open (photo, trade-in follow-up, quote) and should stop cancelling it. Today only six schedule intents are exempt and every other intent blocks, including SALES_SCHEDULE_CALLBACK and SALES_TRADE_IN_FOLLOW_UP by design [E61].
+- blocks: one-pager/v1.md Recommendation, phase 1 skip rule; the "Wake-up cancelled by a side action item" row
+- who: pm, engineering
+- how: list the sales action-item intents in intent-code.enum.ts; PM marks each as "human owns the lead" or "offer still open"; engineering checks the 5 E61 threads against the split.
 - status: open

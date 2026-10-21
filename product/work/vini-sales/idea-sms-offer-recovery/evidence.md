@@ -405,3 +405,59 @@
 - side: system
 - role: engineering
 - text: The SMS turn is generated in the sms-worker lambda, not the backend: it requests the prompt with flowType "wakeup" or "reply" (line 1522), strips booking tools on a wake-up (lines 1528-1532), calls the model, and posts to /internal/sms/v2/messages/outbound with wakeUp (lines 1576-1582). The wake-up sees the whole thread: the dispatch passes Date.now() as the window start (sms-wakeup.service.ts:268) and getMessagesInWindow returns every chat-completion message before it (sms-v2.service.ts:3851-3873). The window is re-armed only by an inbound customer reply (sms.service.ts:2545), so a thread gets at most one wake-up per customer silence.
+
+### E59
+- source: clickhouse:dealer_leads.conversationNotifications, dealer_leads.conversations, dealer_leads.smsMessages (12 conversation ids, results/sms-b1..b4.json after_unaccepted_offer = no_followup, 14 to 20 Oct 2026); conversational-ai-backend:src/sms/sms-wakeup.constants.ts:3-5, 74-82 (origin/release e7190a7d9)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: None of the 12 threads lost its wake-up to a setting, the cap, a failed send or an unelapsed window. All 5 teams have no wakeup key in conversationNotifications (1 of 2,739 rows in the warehouse sets one), so the defaults apply: enabled, 10 minutes, cap 2. The highest wakeup.totalWakeups on any of the 12 is 1. Every wake-up sent was delivered with no error code, and the last customer message in every thread was more than 10 minutes (and past any silent-hours deferral) before the 21 Oct read.
+
+### E60
+- source: clickhouse:dealer_leads.smsMessages.wakeUpMessage, dealer_leads.conversations.wakeup_totalWakeups (same 12 ids)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: 4 of the 12 did get a wake-up, so "no follow-up" is the reader's code, not the system's: 01a13d91, 01a14318 and 01a151f2 in the 12:10 UTC batch the morning after a late-night silence, and 01a15a7b 10 minutes after the offer. None of the 4 carried a fresh time pair: 2 repeated the previous agent message word for word (same text, same length) and so read as a double send, 1 asked a non-scheduling question, and 1 re-sent the listing link with an open "stop by" ask. In 01a15a7b the customer replied, then sent an image, a media handover followed and a SEND_VEHICLE_PHOTO action item blocked the second wake-up.
+
+### E61
+- source: clickhouse:dealer_leads.actionItems (meta.conversationId), dealer_leads.conversations.conversationAnalytics.outcome, dealer_leads.meetings (conversation_id or call_id); conversational-ai-backend:src/sms/sms-wakeup.service.ts:144-178, src/sms/sms-wakeup.constants.ts:15-22 (origin/release e7190a7d9)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: 6 of the 12 were stopped by a skip rule written about a minute after the customer's last message, inside the 10-minute window. 5 by an action item whose intent is not on the scheduling allowlist: SALES_SCHEDULE_CALLBACK (2 threads, one also carrying SALES_FOLLOW_UP_WITH_QUOTE and CUSTOM), SEND_VEHICLE_PHOTO, SALES_TRADE_IN_FOLLOW_UP and SALES_LOST_LEAD (1 each). 1 by the outcome Human Requested (checked first), which also had a CUSTOM action item. None had a meeting row, and none carried the outcomes Soft Decline or Callback Requested. SALES_SCHEDULE_CALLBACK and SALES_TRADE_IN_FOLLOW_UP block by design today: only six SALES_/SERVICE_ schedule intents are exempt.
+
+### E62
+- source: clickhouse:dealer_leads.smsChatCompletions (is_concluded in the stored assistant JSON), dealer_leads.smsMessages.status; conversational-ai-backend:src/sms/sms-v2.service.ts:4078-4090, 4141, 4157-4163 (origin/release e7190a7d9)
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: The other 2 of the 12 (01a14cb3, 01a15a95) have no action item, meeting or blocking outcome. In both the last agent message was marked is_concluded after a customer "I'll check and let you know" style reply, which stops the wake-up (sms-wakeup.service.ts:177). Two more threads (01a13c2e, 01a14a1f) end the same way on top of their action item. A concluded batch is saved with status queued and never sent to the carrier (sms-v2.service.ts:4157), so in these 4 threads the customer never received the agent's closing line either.
+
+### E63
+- source: conversational-ai-backend:src/sms/sms-wakeup.service.ts:94-104, 236-266 (origin/release e7190a7d9); clickhouse:dealer_leads.conversations.wakeup_lastAction
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: The rule that fired is inferred, not logged. checkWakeupEligibility returns false without writing a reason, and wakeup.lastAction keeps only the last state: 8 of the 12 show "cancelled", from removeFromWakeupZset, but conversations.updatedAt (the last write) lands 1 to 2 days after each window was due, so the cancel came after the skip and did not cause it. smsMessages.isConcluded is not mirrored to ClickHouse; E62 reads it from smsChatCompletions instead. Proving which check fired per dispatch would need a log line in checkWakeupEligibility.
+
+### E64
+- source: clickhouse:dealer_leads.conversations + dealer_leads.meetings (direct join on conversation_id / call_id) + dealer_leads_raw.leads; query /private/tmp/claude-502/-Users-yash-Documents-claude-code/69f1cb87-8494-46f4-9502-58e7e1be05b4/scratchpad/r4_q3.sql
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Cohort: leads whose first Sales Inbound SMS thread started 27 Jul to 20 Sep 2026 at live, non-test rooftops (12,553 leads, 18 rooftops; one row per lead; 113 leads with a meeting already on file before the thread excluded; every lead observed for 30 days after the thread). Visits set by the agent inside the first thread (source spyne, conversation_id = that thread, created more than 30s after it, sales intent): 192 leads at 11 rooftops, days from lead created to scheduled visit time median 1.6, p75 2.9, p90 5.0, 77% within 3 days. Lead creation to first thread is a median of 0 days (STL), so this is effectively days from first contact.
+
+### E65
+- source: clickhouse:dealer_leads.meetings (source spyne, conversation_id or call_id = a later conversation of the same lead); query /private/tmp/claude-502/-Users-yash-Documents-claude-code/69f1cb87-8494-46f4-9502-58e7e1be05b4/scratchpad/r4_q3.sql
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Visits set by the agent in a later Spyne conversation (SMS or call, any agent, within 30 days, lead not booked in the first thread): 199 leads, lead created to scheduled visit median 5.8 days, p75 12.7, p90 22.6, 34% within 3 days. The subset whose customer had replied in the first thread and then went quiet (the recovery case): 36 leads at 7 rooftops, median 5.8, p75 11.5, p90 19.0. Booking to visit is about 1 to 2 days in every group, so the gap comes from when the visit is set, not how far out it is scheduled. Groups self-select, so the roughly 4-day median gap is a description, not an effect estimate; n=36 is small.
+
+### E66
+- source: clickhouse:dealer_leads.meetings source='bdc' (lead_id join only, no conversation key); query /private/tmp/claude-502/-Users-yash-Documents-claude-code/69f1cb87-8494-46f4-9502-58e7e1be05b4/scratchpad/r4_q3.sql, /private/tmp/claude-502/-Users-yash-Documents-claude-code/69f1cb87-8494-46f4-9502-58e7e1be05b4/scratchpad/r4_q4.sql
+- date: 2026-10-21
+- side: system
+- role: engineering
+- text: Store-set visits are only partly observable. They arrive as meetings with source bdc imported from the dealer CRM (41,679 schedule_appointment rows at 64 teams since 27 Jul), with no conversation_id, so they tie to the lead by lead_id and cannot be attributed to any conversation. Only 16 of the 18 cohort rooftops have this feed (9,051 of 12,553 leads); at the other 2 a store booking is invisible. Where visible: 612 leads with no Spyne-set visit got a store-set sales appointment within 30 days, median 2.0 days lead to visit, p75 5.0, p90 13.5; of those, 150 had replied in the first thread, median 1.8, p75 4.5. Not observable: who at the store set it (BDC or salesperson), whether the thread prompted it, and whether created_at is booking time or CRM import time. Show and sale are not measurable for Spyne-set visits (about 99% of spyne meetings stay scheduled); CRM rows do carry completed and noshow, so a show comparison across the groups is not possible.
