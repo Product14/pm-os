@@ -8,3 +8,4 @@
 - 2026-10-21 Idea opened from the Sales Inbound weekly review (PM).
 
 ## Overrides
+- 2026-10-21 Gate 2 feedback (PM): v3 Decision, Problem and Evidence were not comprehensible; rewritten as v4 in plain language (customer stories first, internal terms removed, mechanism moved to the PRD).

@@ -106,7 +106,7 @@
 
 ### Q14
 - slot: assumption
-- unknown: a wake-up that changes the offer gets more customer replies than one that repeats it
+- unknown: a follow-up that changes the offer gets more shopper replies than one that repeats it
 - blocks: one-pager/v1.md Risks (the phase 1 bet)
 - who: engineering
 - how: after phase 1 ships, compare customer reply rate within 24 hours of a wake-up (smsMessages.wakeUpMessage = 1) for wake-ups that repeat the last pair vs those that change it; today's baseline is 8 of 9 wake-up-only repeat threads with no reply [E55].
