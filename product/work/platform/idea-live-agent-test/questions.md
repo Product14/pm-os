@@ -215,3 +215,11 @@
 - who: engineering
 - how: size a demo-call check in the SMS and follow-up tools
 - status: open
+
+### Q84
+- slot: assumption
+- unknown: not measured
+- blocks: v3.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open

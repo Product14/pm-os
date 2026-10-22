@@ -1,5 +1,5 @@
 {
- "stage": "one-pager",
+ "stage": "gate-2",
  "started": "2026-10-22",
  "rubrics": {},
  "lessons_loaded": [
@@ -46,8 +46,14 @@
     },
     "requests_raised": 5,
     "requests_sent": 0,
-    "note": "request budget used; logged as questions"
-   }
+    "note": "request budget used; logged as questions",
+    "resolution": {
+     "accepted": 20,
+     "rejected": 0,
+     "escalated": 5
+    }
+   },
+   "note": "round 3 skipped: remaining blocker turns on fixed intents, escalated to PM at Gate 2"
   }
  },
  "requests": 4,
