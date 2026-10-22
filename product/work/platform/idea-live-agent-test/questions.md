@@ -103,3 +103,19 @@
 - who: engineering
 - how: Count distinct teams with Talk to agent calls (metadata source CONSOLE, E59) on live product lines over 90 days in ClickHouse or the calls table.
 - status: open
+
+### Q70
+- slot: request
+- unknown: Does an is_demo_meeting booking or the demo CRM lead reach the DMS, scheduler or the dealer's external CRM on a live rooftop? Not answerable from the repos read (DF:84-87, 140-141).
+- blocks: rollout gate, Phase 0
+- who: engineering
+- how: UAT rooftop with a working DMS integration
+- status: open
+
+### Q71
+- slot: request
+- unknown: Do live service cards show isOnboarded, does live mode cover the receptionist, and does isTest exclude tests in the iframe report apps? (DF:142, 179-180)
+- blocks: lane scope and reporting claim
+- who: engineering
+- how: UAT check plus iframe app code read
+- status: open
