@@ -1,5 +1,5 @@
 {
- "stage": "decide-gate",
+ "stage": "solution-research",
  "started": "2026-10-22",
  "rubrics": {},
  "lessons_loaded": [
@@ -8,5 +8,11 @@
  "observations_loaded": {},
  "rounds": {},
  "requests": 0,
- "gates": []
+ "gates": [
+  {
+   "gate": "decide",
+   "date": "2026-10-22",
+   "choice": "reopen as build (override of defer)"
+  }
+ ]
 }

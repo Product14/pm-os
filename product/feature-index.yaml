@@ -2,9 +2,10 @@
 # area > feature > work items, each with its ticket, stage, outcome, prd and jira.
 
 platform:
-  unassigned:
+  live-agent-test:
     - work: product/work/platform/idea-live-agent-test
       stage: triaged
+      outcome: build-generalised
 vini-sales:
   unassigned:
     - work: product/work/vini-sales/fd23736-human-takeover-in-stl-and-chat

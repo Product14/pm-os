@@ -11,8 +11,8 @@ arali_company:
 raised_by: pm (Sales Inbound PM)
 raised_by_role: unknown
 csm:
-feature:
-outcome:
+feature: live-agent-test
+outcome: build-generalised
 prd:
 jira:
 ledger_match:

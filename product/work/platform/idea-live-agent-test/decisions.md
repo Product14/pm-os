@@ -11,6 +11,8 @@
 - The Agent Demos admin flags or filters out rooftops already live on the agent they tried. [E21]
 
 ## Log
+- 2026-10-22 Decide gate: judge said defer; PM reopened as build (build-generalised, feature live-agent-test).
 - 2026-10-22 Idea opened by PM; case built from the 21 Oct investigation (brainstorming-flows/projects/demo-flow/demo-flow-live-rooftops.md).
 
 ## Overrides
+- 2026-10-22 Decide gate: judge (ceo persona) outcome defer; PM reopened as build. Reason: PM call; live rooftops already test through Talk to agent and those tests reach reports and CRM, so a guided test-flagged path on the real agent is wanted now.

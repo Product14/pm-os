@@ -77,3 +77,6 @@
 **Why it did not carry:** The unmanaged side effect is fixed more cheaply by stamping console Talk to agent conversations as test data, matching E59 and the reception precedent E9 (unmerged branch E22 is a partial start), with no live-test mode and no demo-flow risk; it proves pollution, not demand for the demo experience.
 **Revisit trigger:** Any one of: (a) Q50/Q54 answered and show 3 or more distinct live rooftops in 90 days using Talk to agent or asking a CSM to test their live agent; (b) Q53 returns CSM-logged live-agent errors (hours, policy, script) with the days each stayed live, giving a cost or days figure; (c) the console isTest fix ships and a rooftop still asks for the transcript-led report or test history the modal lacks [E18].
 **Rubric scores:** Job, not request: 4 · Evidence weight: 3 · Five facts: 4 · Proportion: 4 · Reversibility: 5
+
+## PM decision
+**Final outcome:** build-generalised (PM override of the judge's defer, 2026-10-22). **Feature slug:** live-agent-test. Logged in decisions.md > Overrides.
