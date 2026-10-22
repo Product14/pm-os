@@ -9,10 +9,13 @@
 - Reuse the working demo flow with flags; do not rewrite working pieces or touch what can be worked around. [E21]
 - Test conversations stay out of the rooftop's core reporting and analytics, and the rooftop can find its tests later. [E21]
 - The Agent Demos admin flags or filters out rooftops already live on the agent they tried. [E21]
+- Before the first production test, real texts, callback tasks and reminders are blocked for test calls. [PM]
 
 ## Log
+- 2026-10-22 Gate 2: approve; owners-stage escalation resolved as block texts, callback tasks and reminders for tests first; who-can-test kept as owners then every user.
 - 2026-10-22 Decide gate: judge said defer; PM reopened as build (build-generalised, feature live-agent-test).
 - 2026-10-22 Idea opened by PM; case built from the 21 Oct investigation (brainstorming-flows/projects/demo-flow/demo-flow-live-rooftops.md).
 
 ## Overrides
 - 2026-10-22 Decide gate: judge (ceo persona) outcome defer; PM reopened as build. Reason: PM call; live rooftops already test through Talk to agent and those tests reach reports and CRM, so a guided test-flagged path on the real agent is wanted now.
+- 2026-10-22 gm-r1-7 gm: PM keeps 'Spyne owners first, then every user'; no role limit or per-department switch for who can test.

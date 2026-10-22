@@ -1,5 +1,5 @@
 {
- "stage": "gate-2",
+ "stage": "prd",
  "started": "2026-10-22",
  "rubrics": {},
  "lessons_loaded": [
@@ -62,6 +62,12 @@
    "gate": "decide",
    "date": "2026-10-22",
    "choice": "reopen as build (override of defer)"
+  },
+  {
+   "gate": 2,
+   "date": "2026-10-22",
+   "choice": "approve; owners stage: block texts/tasks/reminders for tests first; who tests: owners then every user",
+   "doc": "one-pager/final.md (v3 + gate edits)"
   }
  ]
 }

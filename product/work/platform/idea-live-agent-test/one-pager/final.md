@@ -1,6 +1,6 @@
 # A live rooftop cannot test its own Vini agent without the test landing in its reports and CRM
 
-**Author:** Sales Inbound PM · **Date:** 2026-10-22 · **Status:** Draft v3 · **Ticket:** none (PM idea) · **Area:** platform
+**Author:** Sales Inbound PM · **Date:** 2026-10-22 · **Status:** Approved at Gate 2 (2026-10-22) · **Ticket:** none (PM idea) · **Area:** platform
 **Where it lands:** sales leads and appointments, service drive appointments
 
 ## Decision
@@ -41,17 +41,18 @@ The GM, BDC manager and service manager own what the agent says, yet nothing lin
 - The dealer's DMS or scheduler for a new test service booking; read in code, not yet run. [E81]
 - The dealer's own CRM unless the rooftop opted in, with known misses (5 of 46 in a staging test). [E83] [E84]
 
+**Blocked for test calls before the first production test**
+- Real staff tasks from callback requests. [E94] [PM]
+- Real texts to whatever number the agent is given. [E90] [E91] [PM]
+- Reminders on test bookings. [E92] [E93] [PM]
+
 **Still shows until fixed** (owner: Sales Inbound PM; closed before every user)
 - Test bookings in the overview appointment count. [E12]
-- Real staff tasks from callback requests. [E94]
 - A lead under the tester's phone, from inbound and outbound sales tests. [E14] [E56]
-- Real texts to whatever number the agent is given. [E90] [E91]
-- Reminders on test bookings, unless stopped upstream. [E92] [E93]
 
 **Rollout:** Spyne owners first on production, then every user; an off switch per rooftop returns today's form. [E21] [PM]
-- Before the first production test: a test rooftop run with a live DMS and a connected CRM shows nothing reaches either, tests are checked to stay out of reports, and Engineering alerts on any live agent set up as a demo agent. [E81] [E84] [E6] [PM]
+- Before the first production test: texts, callback tasks and reminders are blocked for test calls; a test rooftop run with a live DMS and a connected CRM shows nothing reaches either, tests are checked to stay out of reports, and Engineering alerts on any live agent set up as a demo agent. [E81] [E84] [E6] [PM]
 - Before every user: "still shows" closed, no live agent set up as a demo agent, and an Engineering daily check that tests add no report counts, tasks, leads or texts. [E102] [PM]
-- What the owners stage needs first is the PM's call (open question 1). [PM]
 
 Set per rooftop: which agents show and the tester's verified phone. [E23] [PM]
 Not in this release: text-message tests, the receptionist, and rebuilding what already works. [E24] [PM]
@@ -74,7 +75,7 @@ For the PRD: how the test mark is stored and read, how the CRM block links a rec
 ## Open questions
 | # | Question | Who answers | Blocks |
 |---|---|---|---|
-| 1 | Before the owners stage: block texts, callback tasks and reminders for tests, or run with a written rule that testers use only their own phone and an internal number list? | PM | Spyne owners stage |
+| 1 | How big is the change to block texts, callback tasks and reminders for test calls, and which team owns each tool? | Engineering | First production test |
 | 2 | Does the test rooftop run cover Xtime, cancel and move? | Engineering | First production test |
 | 3 | By when can each "still shows" item close, and which team fixes it? | PM | Every user |
 | 4 | How many live agents are set up as demo agents today? | Engineering, source database | Spyne owners stage |
