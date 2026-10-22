@@ -167,3 +167,11 @@
 - who: pm
 - how: <confirm or replace with evidence>
 - status: open
+
+### Q78
+- slot: assumption
+- unknown: inferred from who uses Settings
+- blocks: v2.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open

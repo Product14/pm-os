@@ -27,3 +27,10 @@
 - why: the one-pager must not imply it exists in production
 - source: context
 - status: answered (E24, E61): local branch yash/demo-flow-live-test, commit f996cd4c8, not pushed, calls only.
+
+### R5
+- question: When a service manager saves hours or policies in Settings, does the save change anything else for the service agent (for example reset the service menu or op codes), and on which path?
+- blocks: one-pager Open questions; reviewer service-manager-r1-4
+- why: the test-then-fix loop sends managers to Settings; a save that resets the service menu would hurt the drive
+- source: bluebrain
+- status: not needed: the live test never saves hours or any agent setting (Fixed intent: read-only; decisions.md).
