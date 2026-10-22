@@ -175,3 +175,43 @@
 - who: pm
 - how: <confirm or replace with evidence>
 - status: open
+
+### Q79
+- slot: request
+- unknown: Does a test call text only the tester's verified number or any number the agent is given, and from which sender number?
+- blocks: one-pager step 7 and owners-stage gate
+- who: engineering
+- how: trace communication_send_sms args in a live test call
+- status: open
+
+### Q80
+- slot: request
+- unknown: Does the inbound sales test create a lead that shows in the BDC task queue or speed-to-lead counts?
+- blocks: one-pager step 7
+- who: engineering
+- how: trace lead creation on inbound sales demo call start (E14, E56)
+- status: open
+
+### Q81
+- slot: request
+- unknown: Which console role sees a callback action item created by a live test, and does the lead list show the tester's lead?
+- blocks: one-pager step 7
+- who: engineering
+- how: trace action item assignment in receptionist-create-follow-up and the console action items list
+- status: open
+
+### Q82
+- slot: request
+- unknown: In a test call, does the service agent read open slots and appointment-type limits from the real scheduler?
+- blocks: one-pager fidelity claim
+- who: engineering
+- how: trace service availability tool on a demo call
+- status: open
+
+### Q83
+- slot: request
+- unknown: Can service callback tasks and in-call texts be blocked for demo-flagged calls before the owners stage?
+- blocks: owners-stage rollout gate
+- who: engineering
+- how: size a demo-call check in the SMS and follow-up tools
+- status: open

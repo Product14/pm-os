@@ -23,6 +23,30 @@
     "minor": 11,
     "requests_raised": 17,
     "requests_sent": 3
+   },
+   "r2": {
+    "issues": 24,
+    "blocking": 1,
+    "major": 13,
+    "minor": 10,
+    "discarded_generic": 0,
+    "verdicts": {
+     "gm": "revise",
+     "backend-engineer": "revise",
+     "ceo": "revise",
+     "bdc-manager": "block",
+     "service-manager": "revise"
+    },
+    "score_avg": {
+     "gm": 3.57,
+     "backend-engineer": 3.71,
+     "ceo": 3.43,
+     "bdc-manager": 3.5,
+     "service-manager": 3.43
+    },
+    "requests_raised": 5,
+    "requests_sent": 0,
+    "note": "request budget used; logged as questions"
    }
   }
  },

@@ -1,0 +1,83 @@
+{
+  "persona": "service-manager",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 3,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 4,
+    "Shared scope": 4,
+    "Full value": 3,
+    "Brevity": 4,
+    "Capacity truth": 3,
+    "Appointment quality": 3,
+    "Fixed ops metric": 2,
+    "Promise control": 3,
+    "DMS write-back": 4
+  },
+  "previous_issues": [
+    { "id": "service-manager-r1-1", "fixed": true, "note": "Step 6 and rollout step 9 now say a test booking skips the scheduler (E81) and one run on a live-DMS test rooftop gates the first production test. Xtime, cancel and move are untraced and stated as such. Residual: the owners stage still runs on live rooftops, see r2-2." },
+    { "id": "service-manager-r1-2", "fixed": true, "note": "'No trace' wording is gone; appointment count and staff-task leaks are listed in step 7 and gate every-user rollout (E94, E12). Owner and date still open, but honestly shown as Q2." },
+    { "id": "service-manager-r1-3", "fixed": false, "note": "A dealer-side effect is named (missed or misbooked appointments) and CSM time is labelled a Spyne cost, but no fixed-ops metric is named. See r2-3." },
+    { "id": "service-manager-r1-4", "fixed": true, "note": "Scene is labelled illustrative, E101 shows live stores do test, and the hours-save side effect is Q5." },
+    { "id": "service-manager-r1-5", "fixed": true, "note": "Real texts and reminders (E90, E92) are now in step 7 and gate every-user rollout, not a loose risk." },
+    { "id": "service-manager-r1-6", "fixed": true, "note": "Step 3 now lists policies and service menu (E15); report content for service is Q6." },
+    { "id": "service-manager-r1-7", "fixed": true, "note": "Lanes, set not coded, UAT and Q-ids are gone. Two jargon leftovers, see r2-5." },
+    { "id": "service-manager-r1-8", "fixed": true, "note": "Step 2 says outbound calls only the tester's own verified number, never a customer's." },
+    { "id": "service-manager-r1-9", "fixed": false, "note": "PM skipped it (no evidence on which service call types the test exercises). Accepted as skipped; not re-raised." }
+  ],
+  "issues": [
+    {
+      "id": "service-manager-r2-1",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "The agent uses its live script, hours, policies, service menu, inventory and finance provider.",
+      "concern": "A fake booking id is fine, but the test is only worth running if the agent offers slots from the real scheduler and obeys my appointment limits, wait caps and loaner rules. Store hours are not shop capacity. The evidence covers only the create path skipping the DMS (E81); nothing says whether the slots the agent offers in a test are read from the real scheduler. If they are not, a manager hears a script that looks right and the first real customer gets a slot we cannot work.",
+      "because": "E81 (create path only); missing (no trace of the availability read for a test call)",
+      "ask": "Add the scheduler open slots and appointment-type limits to the list in step 3 only if engineering confirms the test reads them; otherwise say plainly the test does not check slots and capacity. Add as a request to engineering."
+    },
+    {
+      "id": "service-manager-r2-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Rollout: Spyne owners first on production, then every user, with an off switch per rooftop; off means today's form.",
+      "concern": "Step 7 is only closed before every user, so the owners stage runs on live rooftops while a service callback still creates a real staff task and a text goes to whatever number the agent was given. An advisor on a real drive gets a task or a customer gets a text from a Spyne test, and Spyne staff tests are exactly what E101 counts. The owners stage is where I would expect the first complaint.",
+      "because": "E94, E90, E101",
+      "ask": "For the owners stage, say which rooftops are used (a test rooftop, or only stores that agreed to it) or that callback tasks and in-call texts are blocked for Service from the first test. Do not change the rollout order itself."
+    },
+    {
+      "id": "service-manager-r2-3",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "Days a wrong hours or policy answer costs missed or misbooked appointments",
+      "concern": "This is a dealer cost now, good, but I still cannot tell which of my numbers it protects. A fixed ops director buys customer-pay appointments kept, hours per RO or absorption. 'Fewer' with no metric and no owner of the number reads as a feeling.",
+      "because": "missing (Q53 / E30: no dealer figure); r1-3 not fully fixed",
+      "ask": "Name the metric in four or five words (for example customer-pay appointments kept) and say the figure is not available and Q7 is how we get it. No new section."
+    },
+    {
+      "id": "service-manager-r2-4",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "The block on the dealer's own CRM lets a record through when it cannot link it to the call.",
+      "concern": "In plain terms: a test appointment or lead can still reach the dealer's real CRM when the link fails. Step 6 says it 'is not sent unless the rooftop opted in', which reads as safe. A service manager reads step 6 and stops there, and then an advisor sees a test customer in the CRM.",
+      "because": "E84 (gate fails open; UAT 5 of 46 missed)",
+      "ask": "Make step 6 say 'is not sent, with known misses (see Risks)' so the promise in the numbered steps matches the risk."
+    },
+    {
+      "id": "service-manager-r2-5",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "**Flywheel stage:** lead and appointment (sales), service drive appointment (service)",
+      "concern": "'Flywheel stage' and 'old demo flag' mean nothing on the service drive and the page has to read cold. 'Demo flag' is also used in step 9 without being explained.",
+      "because": "missing (PM requirement: plain language)",
+      "ask": "Drop the flywheel line or say 'Where it lands: sales appointment, service appointment'; write 'test mark' once with a short definition where it first appears."
+    }
+  ],
+  "requests": [
+    { "question": "In a test call, does the service agent read open slots and appointment-type limits from the real scheduler, or from something else?", "blocks": "service-manager-r2-1", "source": "Engineering, trace of the service availability tool" },
+    { "question": "Are Service callback tasks and in-call texts blockable for demo-flagged calls before the owners stage?", "blocks": "service-manager-r2-2", "source": "Engineering (E94, E90)" }
+  ]
+}

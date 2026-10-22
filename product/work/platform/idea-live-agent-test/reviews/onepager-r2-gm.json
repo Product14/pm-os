@@ -1,0 +1,63 @@
+{
+  "persona": "gm",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 3, "Right decision": 4, "Evidence": 4, "P&L": 3, "Above the DMS": 4,
+    "Honest unknowns": 5, "Shared scope": 4, "Full value": 4, "Brevity": 4,
+    "Statement impact": 3, "System of record": 3, "Adoption cost": 4, "Failure visibility": 3, "Handoff ownership": 2
+  },
+  "previous_issues": [
+    { "id": "gm-r1-1", "fixed": true, "note": "TL;DR now says what stays out and what still shows, and step 7 is a condition before every user." },
+    { "id": "gm-r1-2", "fixed": true, "note": "Lead leak is named and gated before every user (E14, E83, E84). Owner of the cleanup is still missing, raised again as gm-r2-1." },
+    { "id": "gm-r1-3", "fixed": true, "note": "CSM time labelled as Spyne's cost; dealer-side line named and marked not measured (Q53)." },
+    { "id": "gm-r1-4", "fixed": true, "note": "Scene labelled illustrative, no-dealer-quote stated, E101 count of 60 live rooftops added." },
+    { "id": "gm-r1-5", "fixed": true, "note": "E81 and E82 answer it: no DMS slot, but a Spyne booking record is written. Still code-read only; see gm-r2-3." },
+    { "id": "gm-r1-6", "fixed": true, "note": "Real texts and reminders are now in step 7 as conditions (E90, E92). Stage gap raised as gm-r2-2." },
+    { "id": "gm-r1-7", "fixed": false, "note": "Per-rooftop off switch added. Per-department switch and who at the store can start a test are still not stated. Escalated to PM as a fixed intent; not re-raised." },
+    { "id": "gm-r1-8", "fixed": true, "note": "Now a precondition and open question 3; count needs the source database (E102)." },
+    { "id": "gm-r1-9", "fixed": true, "note": "Step 3 now says transfers are not tested." },
+    { "id": "gm-r1-10", "fixed": true, "note": "Jargon and Q-ids removed. 'demo flag' is still unexplained but acceptable." }
+  ],
+  "issues": [
+    {
+      "id": "gm-r2-1",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Closing step 7 touches tools other teams own; no owner or date yet.",
+      "concern": "Step 7 is the list of things my BDC manager and advisors would see: a fake callback task, a fake lead, a fake appointment count. The page makes closing it a condition but names nobody, and says nothing about who on my staff cleans up a test item that shows up before it is closed. Work lands on my BDC with no owner.",
+      "because": "E94 (real action item and CRM lead created, which console role sees them was not traced), E14, E13",
+      "ask": "Name an owner role and a date for step 7 before the PM approves the build, or state the interim rule: how test items are marked in the lead list and task list and who removes them."
+    },
+    {
+      "id": "gm-r2-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Rollout: Spyne owners first on production, then every user, with an off switch per rooftop; off means today's form. Before the first production test: one run on a test rooftop with a live DMS connection proves no booking reaches the scheduler.",
+      "concern": "The first production stage is Spyne staff testing on live dealer rooftops, but the only gate before it is the DMS run. Real texts, callback tasks, leads and reminders (step 7) are all still open at that stage, and they hit the live store's customers and staff. A text with my store's name going to a wrong number, or a callback task my BDC chases, is my bad call even if the tester is from Spyne.",
+      "because": "E90, E91, E92, E94; step 7 is gated only 'before every user'",
+      "ask": "For the Spyne owners stage, state the guardrail: tests only on Spyne-owned rooftops, or only to the tester's own number with callbacks and texts off, until step 7 is closed."
+    },
+    {
+      "id": "gm-r2-3",
+      "severity": "minor",
+      "type": "unsupported-claim",
+      "quote": "| Test service bookings reaching the dealer's scheduler | Not traced for today's form | None | [E80] [E81] |",
+      "concern": "'None' is promised, but the page's own risks say the block is read in code, not run, Xtime was not traced, and cancel and move were not traced. The sales side is also unchecked: E84 says no sales calendar write was found, not that none exists.",
+      "because": "E81, E84",
+      "ask": "Change 'None' to 'None expected, to be proven by the test rooftop run' so the table matches the risk line."
+    },
+    {
+      "id": "gm-r2-4",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "and a daily check that tests stay out of report counts.",
+      "concern": "A daily check on report counts shows nothing about the leaks my staff actually trip over: a callback task, a lead, a text. Nobody is named to look at it or act on it, so a customer-facing failure has no detection owner.",
+      "because": "missing (no detection owner or channel); E94",
+      "ask": "Say who receives the daily check result and that it also counts test tasks, leads and texts, or drop 'daily' and name the owner."
+    }
+  ],
+  "requests": [
+    { "question": "Which console role sees an unassigned callback action item created by a live test, and does the lead list show the tester's lead to the BDC?", "blocks": "gm-r2-1", "source": "Engineering (E94 untraced part)" }
+  ]
+}
