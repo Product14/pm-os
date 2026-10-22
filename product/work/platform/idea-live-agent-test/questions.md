@@ -79,3 +79,27 @@
 - who: engineering
 - how: Place one Talk to agent call on a UAT rooftop and check Conversations, console reports and ClickHouse conversations isTest.
 - status: open
+
+### Q52
+- slot: request
+- unknown: Any churn or escalation signal tied to live rooftops being unable to test, or to test calls polluting reports or CRM. No evidence retrieved (E30, E50).
+- blocks: Cost of not solving input in decide.md
+- who: pm
+- how: Re-run Arali signals and ticket searches when the server recovers; ask CSMs in Slack for escalations about test calls or wrong agent info.
+- status: open
+
+### Q53
+- slot: request
+- unknown: Dealer P&L impact: which live-agent errors (hours, policy, script) a rooftop caught by self-test, and the days each stayed live. No measurement or dealer-side evidence exists.
+- blocks: Dealer P&L impact input in decide.md
+- who: csm
+- how: Ask CSMs for the last 10 change requests to a live agent's info and how long each error ran; do not estimate.
+- status: open
+
+### Q54
+- slot: request
+- unknown: Demand breadth by job, not words: how many distinct live rooftops in the last 90 days tested their own agent (Talk to agent usage) or asked a CSM to.
+- blocks: Demand breadth input in decide.md
+- who: engineering
+- how: Count distinct teams with Talk to agent calls (metadata source CONSOLE, E59) on live product lines over 90 days in ClickHouse or the calls table.
+- status: open
