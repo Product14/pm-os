@@ -1,0 +1,437 @@
+{
+ "kept": [
+  {
+   "id": "backend-engineer-r1-1",
+   "severity": "blocking",
+   "type": "feasibility",
+   "quote": "It sits behind a switch: Spyne owners first on production, then every user; with it off, today's form stays.",
+   "concern": "The switch is a role gate, then global. After 'every user' there is no per-rooftop off switch. If one rooftop's real mapping gets flagged demo, real web calls 404 there and I cannot turn off just that store. 'Turn it off' for everyone is the rollback.",
+   "because": "E6, E7, E8 (mapping flagged isDemoAgent breaks real calls); E21 gives role gating only; solution-context Risk 1",
+   "ask": "Add a per-rooftop (team) kill switch independent of the role flag, and state the per-rooftop rollback: how a wrongly flagged mapping is detected and reverted without a deploy."
+  },
+  {
+   "id": "backend-engineer-r1-2",
+   "severity": "blocking",
+   "type": "unsupported-claim",
+   "quote": "Build one guided test mode for every live rooftop, on Sales and Service, running on the rooftop's own live agent and kept out of its numbers.",
+   "concern": "The Decision promises 'kept out of its numbers', but the same page says test bookings still show in the overview appointments count, callback requests create real staff tasks, and a CRM lead is created. The evidence contradicts the headline claim, and v1 ships to live stores with those leaks open.",
+   "because": "E12 (ClickHouse meetings has no demo column), E13 (action item, no test check), E14 and E56 (CRM lead, no marker)",
+   "ask": "Either narrow the Decision to what v1 actually excludes (calls list, analytics, reports via isTest), or make v1 suppress booking, follow-up task and CRM lead writes in live-test mode. Name which, with an owner."
+  },
+  {
+   "id": "backend-engineer-r1-3",
+   "severity": "blocking",
+   "type": "feasibility",
+   "quote": "A test service booking may write into the dealer's DMS scheduler; a UAT check on a rooftop with a working DMS connection gates rollout. [ASSUMPTION: no DMS write; Q70]",
+   "concern": "A test booking in a live dealer's scheduler takes a real slot from a service advisor, and write-back is per provider (CDK, Reynolds, Tekion, Dealertrack, PBS). Whether the demo flag stops the DMS write is an unverified assumption. A one-provider UAT does not cover the others, and no failure or cleanup path is specified.",
+   "because": "missing (solution-context Unknowns: DF:84-87, 140-141 unverified); E10 only covers post-processing skip",
+   "ask": "Trace the booking tool for is_demo_meeting and state per provider whether a write happens. Decide that live-test mode hard-blocks DMS and scheduler writes at the tool layer, with a failure alert. Do this before rollout, not as a UAT surprise."
+  },
+  {
+   "id": "backend-engineer-r1-4",
+   "severity": "major",
+   "type": "feasibility",
+   "quote": "The agent's details are read-only, each with an \"Edit in Settings\" link; nothing in the test changes the live agent.",
+   "concern": "Read-only is a UI promise. The demo app today writes hours, finance and service policies and agent name or voice, and auto-saves standard hours before a test. Those backend endpoints stay callable, and hours saves reset the service menu through central config. Nothing server-side stops a write in live mode.",
+   "because": "E15; solution-context 'What the demo app must stop doing'; memory of hours-save side effect via central-config",
+   "ask": "Specify server-side rejection of every config write when mode=live (working-hours, central-config agent-config, console agent endpoint), plus the auto-save-before-test removal. List the callers who-calls found for each write path."
+  },
+  {
+   "id": "backend-engineer-r1-5",
+   "severity": "major",
+   "type": "unsupported-claim",
+   "quote": "The call is marked as a test so it stays out of the rooftop's reports and analytics.",
+   "concern": "'Marked as a test' is several different fields: isTest, isDemo, isTestCall, forceTestCall, isLiveTest, is_demo_meeting. The doc names no source of truth and no list of consumers. E11 shows reports filter on isTest only, and the ordinary demo conversation has isTest false. Embedded iframe report apps and dealer-leads v3/meetings were not read.",
+   "because": "E11, E9, E59; solution-context Unknowns (iframe report apps)",
+   "ask": "Define the data contract: which field is authoritative, who writes it, and the list of readers (who-calls on the isTest filters, including iframe report apps and dealer-leads). Resolve open question 3 before the Decision claims exclusion."
+  },
+  {
+   "id": "backend-engineer-r1-6",
+   "severity": "major",
+   "type": "missing-evidence",
+   "quote": "The agent may send real texts during a test and reminders may fire on test bookings. [ASSUMPTION: texts and reminders are not gated for tests]",
+   "concern": "This is checkable in code today, not an unknown. A reminder on a test booking can text a real number, and in-call SMS has no demo gate. An unchecked side effect on a live agent is a customer-facing incident.",
+   "because": "solution-context: 'in-call SMS has no demo gate and reminders on demo meetings likely fire'; E10",
+   "ask": "Read the SMS tool and reminder scheduler, state what fires for a test booking, and gate both in live-test mode or list them as v1 blockers with an owner."
+  },
+  {
+   "id": "backend-engineer-r1-7",
+   "severity": "major",
+   "type": "acceptance-gap",
+   "quote": "| Staff test calls in conversation reports | Counted | Excluded | [E63] [E9] |",
+   "concern": "No production check exists. How do we know after rollout that live-test calls are excluded and no real mapping got flagged? Which query, which alert? The other rows are 'Unknown', so nothing measurable proves the outcome.",
+   "because": "missing; E63 relies on a ClickHouse check (Q51) not yet run",
+   "ask": "Add the verification query (isTest and isLiveTest conversations per rooftop vs reports count), an alert on real-mapping isDemoAgent=true, and a failure log or alert for call/start in live mode."
+  },
+  {
+   "id": "backend-engineer-r1-8",
+   "severity": "major",
+   "type": "feasibility",
+   "quote": "Per rooftop, set not coded: which lanes show (only agents it has live) and the tester's phone number.",
+   "concern": "A free-form tester number on outbound dials any E.164 from a shared caller ID, 20 per hour, with no allow-list. On live stores that is an open dialer on a customer's agent and a TCPA exposure. Also, who validates the number and what happens on a bad one is not specified.",
+   "because": "solution-context Risk 3 (DF:75, 178); E23",
+   "ask": "Restrict the outbound test to the signed-in user's verified number or a rooftop allow-list, validate E.164, and state the failure behaviour for a bad or unreachable number."
+  },
+  {
+   "id": "backend-engineer-r1-9",
+   "severity": "major",
+   "type": "feasibility",
+   "quote": "Rooftops that tried the prospect demo before go-live may already have their real agent marked as a demo and need a check first. [ASSUMPTION: some live rooftops carry an old demo mark]",
+   "concern": "This is a one-query Mongo check on isDemoAgent: true mappings of live teams, not an assumption. If any exist, enabling the flag for them or their old demo copy breaks real calls today. It gates the owners-first rollout, and the fix plan (per-rooftop backfill) is absent.",
+   "because": "E6, E7; solution-context Risk 2 (DF:143)",
+   "ask": "Run the count before approval and list affected rooftops. Add the fix and backfill step, and make a clean mapping a precondition for enabling a rooftop."
+  },
+  {
+   "id": "backend-engineer-r1-10",
+   "severity": "minor",
+   "type": "missing-evidence",
+   "quote": "Outbound tests ring from a shared caller ID, and demo cleanup at sales go-live could remove test leads on a rooftop already live on service. [E23] [E17]",
+   "concern": "E17 says delete-demo-data sweeps leads by tester mobile. If a tester's phone matches a real lead, cleanup deletes real lead data. 'Could remove test leads' understates it, and the owner (user-management) is not named.",
+   "because": "E17; solution-context Risk 4",
+   "ask": "Name the user-management caller and state the guard: sweep only demo-flagged leads, or skip rooftops live on any line."
+  },
+  {
+   "id": "bdc-manager-r1-1",
+   "severity": "blocking",
+   "type": "unsupported-claim",
+   "quote": "The call is marked as a test so it stays out of the rooftop's reports and analytics.",
+   "concern": "This is not true for my board. Test bookings still show in the overview appointments count, so my sets are inflated by the GM's own test calls. The callback tool makes real tasks my team has to clear. Evidence contradicts the sentence, and the doc admits it two sections later.",
+   "because": "E12, E13, E14 (contradicts the line); E11 only covers conversation reports",
+   "ask": "Say plainly what stays in and what stays out in v1. Do not promise 'out of reports' until the booking, task and CRM lead leaks are closed. Make closing them a gate for rollout past Spyne owners."
+  },
+  {
+   "id": "bdc-manager-r1-2",
+   "severity": "blocking",
+   "type": "wrong-for-dealers",
+   "quote": "| Test leads in the CRM | One per sales outbound test | Still created, see risks | [E56] [E14] |",
+   "concern": "A real lead lands in my CRM under the tester's phone with no test marker. My agents work the queue by status, so someone calls a GM's cell phone as a lead, or it skews speed to lead and my appointment numbers. If the tester's number belongs to a customer my agent is already working, we double-contact them. This breaks my 'outcomes in the CRM must be correct and my agents must not do cleanup' test.",
+   "because": "E56, E14, E54; observation: CRM lead created before outbound call with no demo marker",
+   "ask": "Do not create a CRM lead for live tests in v1, or create it with a test status that is suppressed from the BDC queue and from speed-to-lead and set counts. Add a duplicate-contact check against active leads."
+  },
+  {
+   "id": "bdc-manager-r1-3",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "The agent may send real texts during a test and reminders may fire on test bookings. [ASSUMPTION: texts and reminders are not gated for tests]",
+   "concern": "A text or reminder that goes out to a real number is a consent problem and the store carries the TCPA risk, not Spyne. It is also a risk that a test booking sets off a confirmation workflow that my team then sees as a real appointment.",
+   "because": "missing (no code reference for SMS or reminder gating in evidence.md)",
+   "ask": "Verify it and state the rule. Texts and reminders are off for test conversations, outbound tests only dial a number the logged-in user has verified as theirs, and opt-out is honoured. Put this ahead of rollout, not as an assumption."
+  },
+  {
+   "id": "bdc-manager-r1-4",
+   "severity": "major",
+   "type": "scope",
+   "quote": "It never transfers, so the store's line never rings, and any appointment it books is marked as a test.",
+   "concern": "The transfer is where my customers get lost: it rings out, or the main number forwards back to the bot after hours. A test that never transfers cannot show me that. I would believe the agent is fine and still lose calls.",
+   "because": "missing (fixed intent blocks the transfer, so this is about what the test report shows; no evidence in evidence.md on what the test reports for transfers)",
+   "ask": "Have the test report show what would have happened on a transfer: who would be rung, the ring time, and the fallback (a named human or a CRM callback task). If the fallback is only the main number, flag it. Say in the doc that transfer reach is not tested in v1."
+  },
+  {
+   "id": "bdc-manager-r1-5",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "After the call the tester gets the same structured report a prospect gets, and finds every past test in the test history.",
+   "concern": "A prospect report says 'Your agent is not live' and carries a 'Get Vini on your lines' button that files a sales request. A live store seeing that will think we are confused. More important, it must show what the agent would write to the CRM (status, appointment, summary) and why it escalated, or I cannot tell whether my agents would have to re-key it.",
+   "because": "E16, E18",
+   "ask": "Change the report copy for live rooftops, remove the sales CTA, and add the structured CRM write (lead status, appointment, summary) and the escalation reason."
+  },
+  {
+   "id": "bdc-manager-r1-6",
+   "severity": "major",
+   "type": "five-facts",
+   "quote": "It removes CSM time per agent change and days a wrong hours or policy answer stays live; neither is measured yet.",
+   "concern": "Both benefits are Spyne's or the service manager's, not mine. The BDC manager is never named, and the one-pager does not say who on my team runs the test or how it affects my appointment credit. The doc adds cleanup (leaks) for my team before it removes any work.",
+   "because": "E1, E30 (no dealer evidence; the problem is the PM's assumption)",
+   "ask": "Name the role and the cost removed for that role (for example BDC calls handled with a wrong hours or policy answer), or say the benefit is Spyne-side. State who cleans up the leaked tasks and appointments."
+  },
+  {
+   "id": "bdc-manager-r1-7",
+   "severity": "major",
+   "type": "acceptance-gap",
+   "quote": "Who owns closing the booking, task and CRM lead leaks, and by when?",
+   "concern": "Without an owner and date, we ship a partial fix with the dealer's CRM still polluted and call it done. Nobody on my side signs up for that.",
+   "because": "E12, E13, E14; decide.md Full value 'needs an owner and a date from the PM'",
+   "ask": "Name an owner and date in the doc, or state that rollout beyond Spyne owners waits for the leaks to close. Acceptance must be measured in shows and in test records visible in the BDC queue (zero), not only in test calls excluded from conversation reports."
+  },
+  {
+   "id": "bdc-manager-r1-8",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "Outbound tests ring from a shared caller ID, and demo cleanup at sales go-live could remove test leads on a rooftop already live on service.",
+   "concern": "A call from an unknown shared number is not answered by the GM, and if it is returned it reaches nobody. Test leads removed by cleanup also mean records vanish from the CRM that my agents may have touched.",
+   "because": "E23, E17",
+   "ask": "State what shows on the tester's phone and what happens when it is called back. Confirm cleanup cannot delete a lead or appointment a human has touched."
+  },
+  {
+   "id": "bdc-manager-r1-9",
+   "severity": "minor",
+   "type": "missing-evidence",
+   "quote": "A service manager changes Saturday hours in Settings and wants to hear the agent say them before customers call. [ASSUMPTION: illustrative; no dealer has been quoted yet]",
+   "concern": "The problem is told from fixed ops only. There is no sales or BDC scene, and no dealer's words. I cannot tell whether a BDC manager would test this way.",
+   "because": "E30, E50 (searches failed); case.md Customer context (30 days) is EMPTY",
+   "ask": "Add a sales inbound or BDC scene, or say plainly that none exists. Re-run the Arali search before the PRD."
+  },
+  {
+   "id": "bdc-manager-r1-10",
+   "severity": "minor",
+   "type": "acceptance-gap",
+   "quote": "Per rooftop, set not coded: which lanes show (only agents it has live) and the tester's phone number.",
+   "concern": "Jargon. 'Lanes', 'set not coded', 'marked as a test', 'demo-flagged' and 'Edit in Settings' mean nothing cold. A BDC manager would read 'lane' as a phone line.",
+   "because": "missing (plain-language requirement from the PM)",
+   "ask": "Replace with plain words: 'which agents show (inbound sales, outbound sales, service)'. Replace 'marked as a test' with what the dealer sees, for example 'hidden from counts and the CRM queue'."
+  },
+  {
+   "id": "ceo-r1-1",
+   "severity": "blocking",
+   "type": "unsupported-claim",
+   "quote": "with a report afterwards and no trace in their reports",
+   "concern": "The headline promise to dealers is 'no trace in their reports'. The same page admits test bookings still show in the overview appointments count, callback requests create real staff tasks, and a CRM lead is created. A dealer who is told 'no trace' and then finds a fake appointment on the advisor's board will stop trusting the reports and us. We would be making an unattributed promise we know is false.",
+   "because": "E12, E13, E14 (leaks listed in Risks); E22 is unmerged",
+   "ask": "Change the TL;DR, Goal and Decision wording to what v1 delivers (conversation reports only), and list the leaks next to the promise. Do not tell dealers 'no trace' until the three leaks are closed or owned."
+  },
+  {
+   "id": "ceo-r1-2",
+   "severity": "major",
+   "type": "five-facts",
+   "quote": "It removes CSM time per agent change and days a wrong hours or policy answer stays live; neither is measured yet.",
+   "concern": "I cannot say the value in 60 seconds. There is no dollar, no days figure, and the dealer role who benefits is not named. 'CSM time' is Spyne's cost, not a number on the dealer's statement. A wrong Saturday-hours answer is a missed service drive appointment, so say that, with a way to measure it. 'Days a wrong answer stays live' is not tied to the turn-speed or fixed-ops gross story.",
+   "because": "E30, E1 (PM only); decide.md Inputs: dealer P&L impact unknown",
+   "ask": "Name one measurable lever and who at the store owns it (for example mishandled service-drive calls per wrong-policy incident, or CSM hours per change from the CSM log). Mark it as Spyne's own hypothesis. Add the first measurement to the plan."
+  },
+  {
+   "id": "ceo-r1-3",
+   "severity": "major",
+   "type": "missing-evidence",
+   "quote": "Demand is unmeasured; this ships on a PM call.",
+   "concern": "I do not fund one-offs. The only ask is the PM's, and no rooftop is named. I accept the build decision is made, but the page must say how it will be proven a base capability before it goes from Spyne owners to every user. Right now the Spyne-owners-first stage has no exit test.",
+   "because": "E30, E50 (searches failed); E1 PM-only; decide.md revisit trigger",
+   "ask": "Add the count (rooftops using Talk to agent in the last 90 days, from conversations with source CONSOLE) as a gate between Spyne owners and every user. State the number that releases the gate, and who reads it."
+  },
+  {
+   "id": "ceo-r1-5",
+   "severity": "major",
+   "type": "feasibility",
+   "quote": "A test service booking may write into the dealer's DMS scheduler; a UAT check on a rooftop with a working DMS connection gates rollout. [ASSUMPTION: no DMS write; Q70]",
+   "concern": "Fact four. If a test booking reaches the dealer's own scheduler, we put a fake appointment on a real service advisor's board. That is the worst possible outcome for a fixed-ops director and a trust loss across the base. The line names the risk but gives no certified provider list and no stop rule.",
+   "because": "E12 (bookings cannot be filtered); missing: list of DMS and scheduler providers with write-back today",
+   "ask": "List the DMS and scheduler providers with write-back today and whether a demo-flagged booking is blocked for each. Make 'no demo booking reaches a DMS' a hard rule before any rooftop beyond Spyne owners."
+  },
+  {
+   "id": "ceo-r1-6",
+   "severity": "major",
+   "type": "scope",
+   "quote": "The agent may send real texts during a test and reminders may fire on test bookings.",
+   "concern": "A live agent texting or reminding a real customer number, or a reminder going to a number tied to a test lead, is a compliance and brand risk. It is an unchecked assumption sitting in a bullet list while the Decision says build for every live rooftop.",
+   "because": "missing (no E-id; marked ASSUMPTION)",
+   "ask": "Move this into Open questions with an engineering owner and make it a rollout gate. State what is suppressed on a test booking."
+  },
+  {
+   "id": "ceo-r1-7",
+   "severity": "major",
+   "type": "scope",
+   "quote": "| 2 | Who owns closing the booking, task and CRM lead leaks, and by when? | PM | Full \"out of reports\" promise |",
+   "concern": "Full value is unowned and undated, and it touches tools other teams own. We are shipping the visible half and hoping for the rest. I remember what was promised, so this is a commitment gap.",
+   "because": "decide.md step 7 (not yet planned or dated); E13, E14 owned by other teams; E22 unmerged partial start",
+   "ask": "State on the page whether this release takes the full-value path or plans it. If planned, name the owner team and a date. Say what we are not doing this quarter to fund it."
+  },
+  {
+   "id": "ceo-r1-8",
+   "severity": "minor",
+   "type": "wrong-for-dealers",
+   "quote": "A service manager changes Saturday hours in Settings and wants to hear the agent say them before customers call. [ASSUMPTION: illustrative; no dealer has been quoted yet]",
+   "concern": "The Problem section opens with an invented scene and no dealer words. I need the role that signs and the role that benefits. The GM, BDC manager and service manager are named in case.md, but not on this page. The handoff it closes (Settings owner to the person who hears the call) is not stated.",
+   "because": "E30 (Arali failed); case.md Who feels this is THIN",
+   "ask": "Say on the page who benefits (the store roles) and who buys. Name the handoff it closes (Settings change to what the customer hears). Replace the scene with a real quote once Arali recovers."
+  },
+  {
+   "id": "ceo-r1-9",
+   "severity": "minor",
+   "type": "scope",
+   "quote": "Not in v1: text-message tests, and rebuilding any part of the guided test that already works.",
+   "concern": "The Decision says 'every live rooftop, on Sales and Service', but speed-to-lead and chat have no live test and the receptionist is undecided. Say what a dealer on those lines gets, so the claim 'every' is honest.",
+   "because": "E24, E23; case.md Agents affected (STL and chat unknown, receptionist unknown)",
+   "ask": "Name the agents not covered in the Decision itself, and say when they are decided."
+  },
+  {
+   "id": "ceo-r1-10",
+   "severity": "minor",
+   "type": "acceptance-gap",
+   "quote": "Per rooftop, set not coded: which lanes show (only agents it has live) and the tester's phone number.",
+   "concern": "This must read cold in plain language. 'Lanes', 'set not coded', 'switch', 'test mark', 'CSM' and 'STL' are our words. Say 'which agents show' and 'set in configuration, no code change'. Spell out CSM (customer success manager) once.",
+   "because": "PM requirement: cold read, plain language",
+   "ask": "Replace lanes, switch, test mark and set not coded with plain wording, and spell out CSM on first use."
+  },
+  {
+   "id": "gm-r1-1",
+   "severity": "blocking",
+   "type": "unsupported-claim",
+   "quote": "with a report afterwards and no trace in their reports",
+   "concern": "The TL;DR promises no trace, but the Risks section admits test bookings still show in the appointments count, callback requests still create real staff tasks, and a lead is still created in the CRM. My BDC manager would chase a fake callback and my advisor would see a fake appointment. A claim the document's own evidence contradicts.",
+   "because": "E12, E13, E14, E56",
+   "ask": "Rewrite the TL;DR and Decision so they state what is hidden and what still leaks. Or list closing the booking, callback task and CRM lead leaks as a release condition for dealer-facing rollout, with a named owner and date."
+  },
+  {
+   "id": "gm-r1-2",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "| Test leads in the CRM | One per sales outbound test | Still created, see risks | [E56] [E14] |",
+   "concern": "A fake lead in my CRM is a second mess in the system my BDC works from. They will call the tester's number as a real lead, and nobody is named to clean it up. Staff testing should not create work for another department.",
+   "because": "E56, E14, missing owner",
+   "ask": "Say how a test lead is marked or suppressed in the dealer's CRM, who removes it, and what the BDC manager sees. If it cannot be closed in v1, make sales outbound test calls out of scope for dealers until it is."
+  },
+  {
+   "id": "gm-r1-3",
+   "severity": "major",
+   "type": "missing-evidence",
+   "quote": "It removes CSM time per agent change and days a wrong hours or policy answer stays live; neither is measured yet.",
+   "concern": "CSM time is Spyne's cost, not a line on my statement. Days a wrong answer stays live is the only dealer-side effect, and it has no number and no named store role. I cannot tell whether it moves gross, expense or days, or how it would be measured at one rooftop.",
+   "because": "E30, E50, Q53",
+   "ask": "Name the dealer-side line (for example missed service appointments from a wrong Saturday hours answer) and the measure at one rooftop. Or say plainly that the dealer P&L case is not made yet and the build rests on a PM call."
+  },
+  {
+   "id": "gm-r1-4",
+   "severity": "major",
+   "type": "missing-evidence",
+   "quote": "A service manager changes Saturday hours in Settings and wants to hear the agent say them before customers call. [ASSUMPTION: illustrative; no dealer has been quoted yet]",
+   "concern": "The whole problem is one invented scene. I have no dealer who said this. The only evidence of live stores testing is code showing the old modal exists. No dealer's words, no count, and the customer-context search failed.",
+   "because": "E1, E30, E50 (customer context empty)",
+   "ask": "Add at least one dealer-side or CSM quote, or a count of rooftops that used Talk to agent. If that cannot be retrieved now, say in the Problem section that the demand is the PM's belief, not a dealer request."
+  },
+  {
+   "id": "gm-r1-5",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "any appointment it books is marked as a test.",
+   "concern": "Marked where? If a test service booking lands in the DMS scheduler it takes a real bay slot, and my service manager shows up to a phantom customer. The marker only counts if my advisors can see it and the slot is released. The document does not know whether it reaches the DMS.",
+   "because": "E12; Risks line \"A test service booking may write into the dealer's DMS scheduler\" (Q70)",
+   "ask": "State whether a test booking can write to the DMS or scheduler. If it can, say how it is flagged in the dealer's own system and who releases the slot. Make the answer a condition for the first non-Spyne rooftop, not a note."
+  },
+  {
+   "id": "gm-r1-6",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "The agent may send real texts during a test and reminders may fire on test bookings.",
+   "concern": "A real text with my store's name on it going to a customer, or a reminder for a booking that does not exist, is my bad call. This is left as an assumption with no gate, owner or detection.",
+   "because": "missing (assumption only)",
+   "ask": "Confirm whether texts and reminders can reach anyone but the tester. Block them for test conversations, or hold dealer rollout until they are blocked."
+  },
+  {
+   "id": "gm-r1-7",
+   "severity": "major",
+   "type": "scope",
+   "quote": "It sits behind a switch: Spyne owners first on production, then every user; with it off, today's form stays.",
+   "concern": "I need to turn this off for one department without breaking the others, and decide who on my staff can place test calls on the live line. A flag on or off for the whole team does not do that. Rollout also has no stated exit test, only a sequence.",
+   "because": "missing (per-department control not stated)",
+   "ask": "State whether the switch is per rooftop and per department (sales or service), who at the store can start a test, and what Spyne owners must see on prod before it opens to every user."
+  },
+  {
+   "id": "gm-r1-8",
+   "severity": "major",
+   "type": "five-facts",
+   "quote": "Rooftops that tried the prospect demo before go-live may already have their real agent marked as a demo and need a check first. [ASSUMPTION: some live rooftops carry an old demo mark]",
+   "concern": "If that is true, real customers calling a live store get 'not found' today, and every real conversation is offered lease and payment estimates. That is a live customer-facing failure now, not a rollout risk. A GM would want to know this week, not after v1 ships.",
+   "because": "E6, E7, E8",
+   "ask": "Run the query for live rooftops with the real agent flagged as demo before this ships, and put the result in the one-pager. If any exist, fix them first."
+  },
+  {
+   "id": "gm-r1-9",
+   "severity": "minor",
+   "type": "unsupported-claim",
+   "quote": "The agent behaves exactly as live: same script, policies, hours, inventory and finance provider. It never transfers, so the store's line never rings",
+   "concern": "It is not exactly as live. Transfers are the moment a customer is most likely to be sent into the phone tree, and this test cannot show it. A manager who hears a clean test will assume the transfer path works too.",
+   "because": "Fixed intent (transfers blocked); decide.md notes transfers that reach no human",
+   "ask": "Replace 'exactly as live' with what the test does and does not cover, and say that transfers are not tested."
+  },
+  {
+   "id": "gm-r1-10",
+   "severity": "minor",
+   "type": "acceptance-gap",
+   "quote": "Per rooftop, set not coded: which lanes show (only agents it has live) and the tester's phone number.",
+   "concern": "A dealer or exec cannot follow 'lanes', 'set not coded', 'test mark', 'Talk to agent', 'UAT' or the Q-numbers. 'Flywheel stage' and 'Source' column ids mean nothing to a GM. The page is meant to read cold.",
+   "because": "PM requirement: plain language",
+   "ask": "Replace with plain words (for example 'which agents show: only the ones the store has live'), define 'test mark' once, and spell out UAT and the Q-ids or drop them."
+  },
+  {
+   "id": "service-manager-r1-1",
+   "severity": "blocking",
+   "type": "feasibility",
+   "quote": "A test service booking may write into the dealer's DMS scheduler; a UAT check on a rooftop with a working DMS connection gates rollout.",
+   "concern": "If a test call books a real slot in Xtime or the DMS scheduler, it takes a bay and technician hour from a real customer and nobody can tell it is fake. The scheduler is my single source of truth for the day. 'May write' is not a plan. A test booking must never occupy real capacity, or the agent must be proven to stop before the write. A UAT check that gates 'rollout' also leaves the Spyne-owners-first stage unprotected on live dealers.",
+   "because": "missing (Q70 unanswered; E12 shows demo bookings are only flagged in Spyne's own tables, not in the scheduler)",
+   "ask": "State the default for service: either the test books against a closed or sandbox slot, or the write is blocked and the agent shows what it would have booked. Make the answer to open question 1 a gate before any live rooftop sees Talk to agent on Service, not only before full rollout. Say whether we have write access to that scheduler today."
+  },
+  {
+   "id": "service-manager-r1-2",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "Leaks the test mark does not close: test bookings show in the overview appointments count, callback requests create real staff tasks, and a CRM lead is created under the tester's phone.",
+   "concern": "A callback task lands on a real advisor's list and they will call the tester back or chase it. Test appointments inflate the count I use to judge how full the drive is. Advisor time at the counter is what I protect. These are accepted as known leaks with no owner and no date, yet the Decision promises 'no trace in their reports'.",
+   "because": "E12, E13, E14",
+   "ask": "Tell us whether Service callback requests are blocked during a test (no staff task), and drop the 'no trace' wording in TL;DR and Decision until the appointments count and task leaks are closed or given an owner and date."
+  },
+  {
+   "id": "service-manager-r1-3",
+   "severity": "major",
+   "type": "missing-evidence",
+   "quote": "It removes CSM time per agent change and days a wrong hours or policy answer stays live; neither is measured yet.",
+   "concern": "Nothing here says what it does to service gross, absorption, hours per RO or customer-pay share. A fixed ops director buys one of those. 'Fewer days a wrong answer is live' needs a dealer-side cost, for example missed or misbooked service appointments, not Spyne's CSM time. The two measures are Spyne cost, not the dealer's P&L.",
+   "because": "missing (no fixed-ops metric named; E30 customer context failed)",
+   "ask": "Name the service-drive effect in plain terms (a wrong hours or policy answer sends customers to the wrong time or away from the drive) and say which metric it protects. If there is no number, say 'not available' and name who can supply it."
+  },
+  {
+   "id": "service-manager-r1-4",
+   "severity": "major",
+   "type": "unsupported-claim",
+   "quote": "A service manager changes Saturday hours in Settings and wants to hear the agent say them before customers call. [ASSUMPTION: illustrative; no dealer has been quoted yet]",
+   "concern": "The story is invented and no service manager has asked for this. Worse, the document does not check what saving hours does today: a known side effect is that saving hours can reset the service menu and op codes, which drives my hours per RO. If the fix loop is 'change Settings, then test', that side effect is the first thing a service manager would hit.",
+   "because": "E15, E1 (the only ask is the PM's); missing (no check on what an hours save resets for Service)",
+   "ask": "Cite a real service-side request, or label this as unproven in the Problem. Add one line on what saving hours or policies changes for Service, and whether the test flow still triggers the automatic standard-hours save."
+  },
+  {
+   "id": "service-manager-r1-5",
+   "severity": "major",
+   "type": "wrong-for-dealers",
+   "quote": "The agent may send real texts during a test and reminders may fire on test bookings. [ASSUMPTION: texts and reminders are not gated for tests]",
+   "concern": "A reminder for a booking that does not exist, or a text to a number that is not a customer, produces a no-show on my schedule or a confused customer. This is a promise the shop cannot keep. It is only a risk bullet.",
+   "because": "missing (no evidence either way; assumption only)",
+   "ask": "Engineering to confirm whether reminders and texts fire on demo-flagged bookings. If they do, make blocking them part of the first release, not a risk."
+  },
+  {
+   "id": "service-manager-r1-6",
+   "severity": "major",
+   "type": "scope",
+   "quote": "The agent behaves exactly as live: same script, policies, hours, inventory and finance provider.",
+   "concern": "This list is sales-shaped (inventory, finance provider). For Service, what matters is the same scheduler capacity and rules, service menu, op codes, appointment-type limits, loaner and shuttle policy. The page never says the service test uses them, or that the report shows the concern, service type and time the advisor would receive.",
+   "because": "E21 (intent covers 'real agent setup'); missing for service-specific items; E4 report is a sales-era prospect report",
+   "ask": "Add the service equivalents to this line and confirm the post-call report shows concern, service type, requested time and any loaner or wait promise made, so the manager can judge whether the advisor would have to re-ask."
+  },
+  {
+   "id": "service-manager-r1-7",
+   "severity": "minor",
+   "type": "acceptance-gap",
+   "quote": "Per rooftop, set not coded: which lanes show (only agents it has live) and the tester's phone number.",
+   "concern": "A service manager does not know what a 'lane' is. Other plain-language gaps: 'test mark', 'flywheel stage', 'UAT', 'CRM lead', 'overview appointments count'. The page has to read cold.",
+   "because": "missing (PM requirement: plain language)",
+   "ask": "Replace with plain words: 'which agents show (only the ones the store has live)', 'flagged as a test', 'user acceptance test on a store with a working DMS connection'. Define the term the first time it appears."
+  },
+  {
+   "id": "service-manager-r1-8",
+   "severity": "minor",
+   "type": "acceptance-gap",
+   "quote": "Outbound tests ring from a shared caller ID, and demo cleanup at sales go-live could remove test leads on a rooftop already live on service.",
+   "concern": "Service outbound (recall and maintenance outreach) tests ringing from a shared number is fine for a tester, but it is not stated whether outbound service tests can select a real customer or RO. A test must not call a real customer with a recall message. Also unclear who the tester's phone is: an advisor's phone would mean an advisor takes a test call at the counter.",
+   "because": "E23; missing (no rule on outbound test target)",
+   "ask": "State that outbound tests can only call the tester's own entered number and never pull a customer or RO from the DMS."
+  },
+  {
+   "id": "service-manager-r1-9",
+   "severity": "minor",
+   "type": "scope",
+   "quote": "Not in v1: text-message tests, and rebuilding any part of the guided test that already works.",
+   "concern": "Much of service volume is status and booking by text, and the document says the agent may send real texts during tests. Excluding text tests while texts can still fire is inconsistent. Also silent on status calls ('is my car ready?'), which is the call that frees advisors.",
+   "because": "E24, E21",
+   "ask": "Say plainly which service call types the test can exercise (new booking, reschedule, status, recall) and which it cannot, so a manager does not assume coverage."
+  }
+ ],
+ "dropped": 1
+}

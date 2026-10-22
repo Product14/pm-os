@@ -5,9 +5,28 @@
  "lessons_loaded": [
   "~/.claude/projects/-Users-yash-Documents-claude-code/memory/feedback_onepager_plain_language.md"
  ],
- "observations_loaded": {},
- "rounds": {},
- "requests": 0,
+ "observations_loaded": {
+  "gm": [],
+  "backend-engineer": [],
+  "ceo": [],
+  "bdc-manager": [],
+  "service-manager": []
+ },
+ "rounds": {
+  "onepager": {
+   "r1": {
+    "issues": 49,
+    "kept": 48,
+    "discarded_generic": 1,
+    "blocking": 8,
+    "major": 29,
+    "minor": 11,
+    "requests_raised": 17,
+    "requests_sent": 3
+   }
+  }
+ },
+ "requests": 4,
  "gates": [
   {
    "gate": "decide",

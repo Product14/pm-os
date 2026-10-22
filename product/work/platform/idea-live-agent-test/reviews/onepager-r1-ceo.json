@@ -1,0 +1,131 @@
+{
+  "persona": "ceo",
+  "round": 1,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 2,
+    "Right decision": 3,
+    "Evidence": 2,
+    "P&L": 2,
+    "Above the DMS": 3,
+    "Honest unknowns": 4,
+    "Shared scope": 3,
+    "Full value": 2,
+    "Brevity": 3,
+    "Dealer economics": 2,
+    "Base leverage": 1,
+    "Dependency honesty": 3,
+    "Handoff clarity": 2,
+    "Decision readiness": 3
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "ceo-r1-1",
+      "severity": "blocking",
+      "type": "unsupported-claim",
+      "quote": "with a report afterwards and no trace in their reports",
+      "concern": "The headline promise to dealers is 'no trace in their reports'. The same page admits test bookings still show in the overview appointments count, callback requests create real staff tasks, and a CRM lead is created. A dealer who is told 'no trace' and then finds a fake appointment on the advisor's board will stop trusting the reports and us. We would be making an unattributed promise we know is false.",
+      "because": "E12, E13, E14 (leaks listed in Risks); E22 is unmerged",
+      "ask": "Change the TL;DR, Goal and Decision wording to what v1 delivers (conversation reports only), and list the leaks next to the promise. Do not tell dealers 'no trace' until the three leaks are closed or owned."
+    },
+    {
+      "id": "ceo-r1-2",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "It removes CSM time per agent change and days a wrong hours or policy answer stays live; neither is measured yet.",
+      "concern": "I cannot say the value in 60 seconds. There is no dollar, no days figure, and the dealer role who benefits is not named. 'CSM time' is Spyne's cost, not a number on the dealer's statement. A wrong Saturday-hours answer is a missed service drive appointment, so say that, with a way to measure it. 'Days a wrong answer stays live' is not tied to the turn-speed or fixed-ops gross story.",
+      "because": "E30, E1 (PM only); decide.md Inputs: dealer P&L impact unknown",
+      "ask": "Name one measurable lever and who at the store owns it (for example mishandled service-drive calls per wrong-policy incident, or CSM hours per change from the CSM log). Mark it as Spyne's own hypothesis. Add the first measurement to the plan."
+    },
+    {
+      "id": "ceo-r1-3",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "Demand is unmeasured; this ships on a PM call.",
+      "concern": "I do not fund one-offs. The only ask is the PM's, and no rooftop is named. I accept the build decision is made, but the page must say how it will be proven a base capability before it goes from Spyne owners to every user. Right now the Spyne-owners-first stage has no exit test.",
+      "because": "E30, E50 (searches failed); E1 PM-only; decide.md revisit trigger",
+      "ask": "Add the count (rooftops using Talk to agent in the last 90 days, from conversations with source CONSOLE) as a gate between Spyne owners and every user. State the number that releases the gate, and who reads it."
+    },
+    {
+      "id": "ceo-r1-4",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "That call counts in the rooftop's conversation reports like a customer conversation, and a sales outbound test also creates a real CRM lead.",
+      "concern": "This sentence is the reason the PM overrode the defer, and it is stated as fact. The code says the opposite for the calls table (hidden) and says the conversation-report effect is 'not verified against ClickHouse'. If it is wrong, the stated problem shrinks to the CRM lead only.",
+      "because": "E60 (not verified in ClickHouse), E59 (calls table hides console calls), E63",
+      "ask": "Verify the conversation-report count in ClickHouse before this goes to the board, or tag the line 'from code reading, not data'. Add the check to Open questions with an owner."
+    },
+    {
+      "id": "ceo-r1-5",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "A test service booking may write into the dealer's DMS scheduler; a UAT check on a rooftop with a working DMS connection gates rollout. [ASSUMPTION: no DMS write; Q70]",
+      "concern": "Fact four. If a test booking reaches the dealer's own scheduler, we put a fake appointment on a real service advisor's board. That is the worst possible outcome for a fixed-ops director and a trust loss across the base. The line names the risk but gives no certified provider list and no stop rule.",
+      "because": "E12 (bookings cannot be filtered); missing: list of DMS and scheduler providers with write-back today",
+      "ask": "List the DMS and scheduler providers with write-back today and whether a demo-flagged booking is blocked for each. Make 'no demo booking reaches a DMS' a hard rule before any rooftop beyond Spyne owners."
+    },
+    {
+      "id": "ceo-r1-6",
+      "severity": "major",
+      "type": "scope",
+      "quote": "The agent may send real texts during a test and reminders may fire on test bookings.",
+      "concern": "A live agent texting or reminding a real customer number, or a reminder going to a number tied to a test lead, is a compliance and brand risk. It is an unchecked assumption sitting in a bullet list while the Decision says build for every live rooftop.",
+      "because": "missing (no E-id; marked ASSUMPTION)",
+      "ask": "Move this into Open questions with an engineering owner and make it a rollout gate. State what is suppressed on a test booking."
+    },
+    {
+      "id": "ceo-r1-7",
+      "severity": "major",
+      "type": "scope",
+      "quote": "| 2 | Who owns closing the booking, task and CRM lead leaks, and by when? | PM | Full \"out of reports\" promise |",
+      "concern": "Full value is unowned and undated, and it touches tools other teams own. We are shipping the visible half and hoping for the rest. I remember what was promised, so this is a commitment gap.",
+      "because": "decide.md step 7 (not yet planned or dated); E13, E14 owned by other teams; E22 unmerged partial start",
+      "ask": "State on the page whether this release takes the full-value path or plans it. If planned, name the owner team and a date. Say what we are not doing this quarter to fund it."
+    },
+    {
+      "id": "ceo-r1-8",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "A service manager changes Saturday hours in Settings and wants to hear the agent say them before customers call. [ASSUMPTION: illustrative; no dealer has been quoted yet]",
+      "concern": "The Problem section opens with an invented scene and no dealer words. I need the role that signs and the role that benefits. The GM, BDC manager and service manager are named in case.md, but not on this page. The handoff it closes (Settings owner to the person who hears the call) is not stated.",
+      "because": "E30 (Arali failed); case.md Who feels this is THIN",
+      "ask": "Say on the page who benefits (the store roles) and who buys. Name the handoff it closes (Settings change to what the customer hears). Replace the scene with a real quote once Arali recovers."
+    },
+    {
+      "id": "ceo-r1-9",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Not in v1: text-message tests, and rebuilding any part of the guided test that already works.",
+      "concern": "The Decision says 'every live rooftop, on Sales and Service', but speed-to-lead and chat have no live test and the receptionist is undecided. Say what a dealer on those lines gets, so the claim 'every' is honest.",
+      "because": "E24, E23; case.md Agents affected (STL and chat unknown, receptionist unknown)",
+      "ask": "Name the agents not covered in the Decision itself, and say when they are decided."
+    },
+    {
+      "id": "ceo-r1-10",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Per rooftop, set not coded: which lanes show (only agents it has live) and the tester's phone number.",
+      "concern": "This must read cold in plain language. 'Lanes', 'set not coded', 'switch', 'test mark', 'CSM' and 'STL' are our words. Say 'which agents show' and 'set in configuration, no code change'. Spell out CSM (customer success manager) once.",
+      "because": "PM requirement: cold read, plain language",
+      "ask": "Replace lanes, switch, test mark and set not coded with plain wording, and spell out CSM on first use."
+    }
+  ],
+  "requests": [
+    {
+      "question": "How many live rooftops placed a Talk to agent call in the last 90 days (conversations with source CONSOLE), and do those conversations show in console reports (isTest = 0)?",
+      "blocks": "ceo-r1-3, ceo-r1-4",
+      "source": "ClickHouse conversations table; engineering"
+    },
+    {
+      "question": "Which DMS and scheduler providers have working write-back today, and does a demo-flagged booking reach any of them?",
+      "blocks": "ceo-r1-5",
+      "source": "Engineering and the integrations owner"
+    },
+    {
+      "question": "Which live-agent errors did CSMs fix in the last 90 days, and how many days did each stay live?",
+      "blocks": "ceo-r1-2",
+      "source": "CSM team log"
+    }
+  ]
+}

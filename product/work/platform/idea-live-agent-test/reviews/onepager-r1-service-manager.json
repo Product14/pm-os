@@ -1,0 +1,111 @@
+{
+  "persona": "service-manager",
+  "round": 1,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 2,
+    "Right decision": 4,
+    "Evidence": 2,
+    "P&L": 2,
+    "Above the DMS": 2,
+    "Honest unknowns": 4,
+    "Shared scope": 3,
+    "Full value": 2,
+    "Brevity": 3,
+    "Capacity truth": 1,
+    "Appointment quality": 3,
+    "Fixed ops metric": 1,
+    "Promise control": 3,
+    "DMS write-back": 2
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "service-manager-r1-1",
+      "severity": "blocking",
+      "type": "feasibility",
+      "quote": "A test service booking may write into the dealer's DMS scheduler; a UAT check on a rooftop with a working DMS connection gates rollout.",
+      "concern": "If a test call books a real slot in Xtime or the DMS scheduler, it takes a bay and technician hour from a real customer and nobody can tell it is fake. The scheduler is my single source of truth for the day. 'May write' is not a plan. A test booking must never occupy real capacity, or the agent must be proven to stop before the write. A UAT check that gates 'rollout' also leaves the Spyne-owners-first stage unprotected on live dealers.",
+      "because": "missing (Q70 unanswered; E12 shows demo bookings are only flagged in Spyne's own tables, not in the scheduler)",
+      "ask": "State the default for service: either the test books against a closed or sandbox slot, or the write is blocked and the agent shows what it would have booked. Make the answer to open question 1 a gate before any live rooftop sees Talk to agent on Service, not only before full rollout. Say whether we have write access to that scheduler today."
+    },
+    {
+      "id": "service-manager-r1-2",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Leaks the test mark does not close: test bookings show in the overview appointments count, callback requests create real staff tasks, and a CRM lead is created under the tester's phone.",
+      "concern": "A callback task lands on a real advisor's list and they will call the tester back or chase it. Test appointments inflate the count I use to judge how full the drive is. Advisor time at the counter is what I protect. These are accepted as known leaks with no owner and no date, yet the Decision promises 'no trace in their reports'.",
+      "because": "E12, E13, E14",
+      "ask": "Tell us whether Service callback requests are blocked during a test (no staff task), and drop the 'no trace' wording in TL;DR and Decision until the appointments count and task leaks are closed or given an owner and date."
+    },
+    {
+      "id": "service-manager-r1-3",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "It removes CSM time per agent change and days a wrong hours or policy answer stays live; neither is measured yet.",
+      "concern": "Nothing here says what it does to service gross, absorption, hours per RO or customer-pay share. A fixed ops director buys one of those. 'Fewer days a wrong answer is live' needs a dealer-side cost, for example missed or misbooked service appointments, not Spyne's CSM time. The two measures are Spyne cost, not the dealer's P&L.",
+      "because": "missing (no fixed-ops metric named; E30 customer context failed)",
+      "ask": "Name the service-drive effect in plain terms (a wrong hours or policy answer sends customers to the wrong time or away from the drive) and say which metric it protects. If there is no number, say 'not available' and name who can supply it."
+    },
+    {
+      "id": "service-manager-r1-4",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "A service manager changes Saturday hours in Settings and wants to hear the agent say them before customers call. [ASSUMPTION: illustrative; no dealer has been quoted yet]",
+      "concern": "The story is invented and no service manager has asked for this. Worse, the document does not check what saving hours does today: a known side effect is that saving hours can reset the service menu and op codes, which drives my hours per RO. If the fix loop is 'change Settings, then test', that side effect is the first thing a service manager would hit.",
+      "because": "E15, E1 (the only ask is the PM's); missing (no check on what an hours save resets for Service)",
+      "ask": "Cite a real service-side request, or label this as unproven in the Problem. Add one line on what saving hours or policies changes for Service, and whether the test flow still triggers the automatic standard-hours save."
+    },
+    {
+      "id": "service-manager-r1-5",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "The agent may send real texts during a test and reminders may fire on test bookings. [ASSUMPTION: texts and reminders are not gated for tests]",
+      "concern": "A reminder for a booking that does not exist, or a text to a number that is not a customer, produces a no-show on my schedule or a confused customer. This is a promise the shop cannot keep. It is only a risk bullet.",
+      "because": "missing (no evidence either way; assumption only)",
+      "ask": "Engineering to confirm whether reminders and texts fire on demo-flagged bookings. If they do, make blocking them part of the first release, not a risk."
+    },
+    {
+      "id": "service-manager-r1-6",
+      "severity": "major",
+      "type": "scope",
+      "quote": "The agent behaves exactly as live: same script, policies, hours, inventory and finance provider.",
+      "concern": "This list is sales-shaped (inventory, finance provider). For Service, what matters is the same scheduler capacity and rules, service menu, op codes, appointment-type limits, loaner and shuttle policy. The page never says the service test uses them, or that the report shows the concern, service type and time the advisor would receive.",
+      "because": "E21 (intent covers 'real agent setup'); missing for service-specific items; E4 report is a sales-era prospect report",
+      "ask": "Add the service equivalents to this line and confirm the post-call report shows concern, service type, requested time and any loaner or wait promise made, so the manager can judge whether the advisor would have to re-ask."
+    },
+    {
+      "id": "service-manager-r1-7",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Per rooftop, set not coded: which lanes show (only agents it has live) and the tester's phone number.",
+      "concern": "A service manager does not know what a 'lane' is. Other plain-language gaps: 'test mark', 'flywheel stage', 'UAT', 'CRM lead', 'overview appointments count'. The page has to read cold.",
+      "because": "missing (PM requirement: plain language)",
+      "ask": "Replace with plain words: 'which agents show (only the ones the store has live)', 'flagged as a test', 'user acceptance test on a store with a working DMS connection'. Define the term the first time it appears."
+    },
+    {
+      "id": "service-manager-r1-8",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Outbound tests ring from a shared caller ID, and demo cleanup at sales go-live could remove test leads on a rooftop already live on service.",
+      "concern": "Service outbound (recall and maintenance outreach) tests ringing from a shared number is fine for a tester, but it is not stated whether outbound service tests can select a real customer or RO. A test must not call a real customer with a recall message. Also unclear who the tester's phone is: an advisor's phone would mean an advisor takes a test call at the counter.",
+      "because": "E23; missing (no rule on outbound test target)",
+      "ask": "State that outbound tests can only call the tester's own entered number and never pull a customer or RO from the DMS."
+    },
+    {
+      "id": "service-manager-r1-9",
+      "severity": "minor",
+      "type": "scope",
+      "quote": "Not in v1: text-message tests, and rebuilding any part of the guided test that already works.",
+      "concern": "Much of service volume is status and booking by text, and the document says the agent may send real texts during tests. Excluding text tests while texts can still fire is inconsistent. Also silent on status calls ('is my car ready?'), which is the call that frees advisors.",
+      "because": "E24, E21",
+      "ask": "Say plainly which service call types the test can exercise (new booking, reschedule, status, recall) and which it cannot, so a manager does not assume coverage."
+    }
+  ],
+  "requests": [
+    { "question": "Which scheduler (Xtime, myKaarma, DMS module) does the Service agent write bookings to today, and does a demo-flagged booking skip that write?", "blocks": "Open question 1 / Q70; service-manager-r1-1", "source": "Engineering, code trace of the service booking tool" },
+    { "question": "Do reminders and text confirmations fire for demo-flagged bookings?", "blocks": "service-manager-r1-5", "source": "Engineering" },
+    { "question": "Do Service callback requests during a test create a staff task, and for which role?", "blocks": "service-manager-r1-2", "source": "Engineering (E13)" },
+    { "question": "Any real service manager or advisor requests, from tickets or customer calls, to hear or test their live agent?", "blocks": "Evidence and Real problem scores", "source": "Arali re-run when it recovers, Freshdesk" }
+  ]
+}

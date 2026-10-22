@@ -119,3 +119,51 @@
 - who: engineering
 - how: UAT check plus iframe app code read
 - status: open
+
+### Q72
+- slot: assumption
+- unknown: illustrative; no dealer has been quoted yet
+- blocks: v1.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q73
+- slot: assumption
+- unknown: rooftops will self-check after a change
+- blocks: v1.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q74
+- slot: assumption
+- unknown: not measured, Q53
+- blocks: v1.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q75
+- slot: assumption
+- unknown: texts and reminders are not gated for tests
+- blocks: v1.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q76
+- slot: assumption
+- unknown: no DMS write; Q70
+- blocks: v1.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
+
+### Q77
+- slot: assumption
+- unknown: some live rooftops carry an old demo mark
+- blocks: v1.md
+- who: pm
+- how: <confirm or replace with evidence>
+- status: open
