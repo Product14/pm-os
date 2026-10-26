@@ -6,6 +6,7 @@ platform:
     - work: product/work/platform/idea-live-agent-test
       stage: triaged
       outcome: build-generalised
+      jira: RETCONVAI-5409
 vini-sales:
   unassigned:
     - work: product/work/vini-sales/fd23736-human-takeover-in-stl-and-chat

@@ -68,6 +68,14 @@
    "date": "2026-10-22",
    "choice": "approve; owners stage: block texts/tasks/reminders for tests first; who tests: owners then every user",
    "doc": "one-pager/final.md (v3 + gate edits)"
+  },
+  {
+   "gate": "jira",
+   "date": "2026-10-26",
+   "choice": "create (from approved one-pager, before PRD)",
+   "key": "RETCONVAI-5409"
   }
- ]
+ ],
+ "jira": "RETCONVAI-5409",
+ "resume_note": "Next: stage 6 PRD from one-pager/final.md (plain language first; reviewers sonnet, max 3 parallel). Jira RETCONVAI-5409 already filed from the one-pager; update its description when the PRD is approved."
 }

@@ -14,7 +14,7 @@ csm:
 feature: live-agent-test
 outcome: build-generalised
 prd:
-jira:
+jira: RETCONVAI-5409
 ledger_match:
 fetched_freshdesk:
 fetched_arali:
