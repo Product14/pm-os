@@ -32,10 +32,21 @@ jobs:
         with:
           node-version: 22
 
+      - name: Check the reviewer has a Claude credential
+        id: cred
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY$CLAUDE_CODE_OAUTH_TOKEN" ]; then echo "ok=true" >> "$GITHUB_OUTPUT";
+          else echo "::notice::Reviewer skipped: add the repo secret CLAUDE_CODE_OAUTH_TOKEN (from 'claude setup-token') or ANTHROPIC_API_KEY. Until then a maintainer runs /pm-os:reviewer run locally."; echo "ok=false" >> "$GITHUB_OUTPUT"; fi
+
       - name: Install Claude Code
+        if: steps.cred.outputs.ok == 'true'
         run: npm install -g @anthropic-ai/claude-code
 
       - name: Run reviewer
+        if: steps.cred.outputs.ok == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -45,7 +56,7 @@ jobs:
           bash scripts/pm-os-review.sh --push
 
       - name: Weekly reviewer eval (Mondays)
-        if: github.event_name == 'schedule' && github.event.schedule == '30 21 * * *'
+        if: steps.cred.outputs.ok == 'true' && github.event_name == 'schedule' && github.event.schedule == '30 21 * * *'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

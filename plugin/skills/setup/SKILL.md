@@ -55,13 +55,12 @@ Continue to Step 2 when every claude.ai connector and GitHub pass. ClickHouse an
 
 ## Step 2. Shared repo
 
-PM OS lives inside the Sales Agents handover repo, `Product14/yashs-handover` (private), in the folder `05-claude-toolkit/pm-os`. That folder is the PM OS repo for every skill: `repo_path` points at it.
+PM OS has its own private repo, `Product14/pm-os`. A clone of it is the PM OS repo for every skill: `repo_path` points at the clone root.
 
-1. Find a clone. Check `~/yashs-handover`, then `~/Documents/yashs-handover`, then `~/Documents/claude-code/sales-agents-knowledge`. A clone has `05-claude-toolkit/pm-os/pm-os.config.json`. If none is found, ask the PM whether they already cloned it somewhere else.
-2. If there is no clone, run `gh repo clone Product14/yashs-handover ~/yashs-handover` yourself. If it fails with "not found", the PM has no access yet: tell them to ask the repo owners (Lakshay Narang or Devansh Hasija) to add their GitHub username as a collaborator, then re-run `/pm-os:setup`.
-3. `repo_path` is `<clone>/05-claude-toolkit/pm-os`.
-4. In the clone root, run `git config core.hooksPath .githooks` so the repo's safety check runs on every commit.
-5. In `repo_path`, run `node scripts/check.mjs` once and report the result.
+1. Find a clone. Check `~/pm-os`, then `~/Documents/pm-os`, then ask. A clone has `pm-os.config.json` and `scripts/check.mjs` at its root.
+2. If there is no clone, run `gh repo clone Product14/pm-os ~/pm-os` yourself. If it fails with "not found", the PM has no access yet: tell them to ask the PM OS owner (see `OWNERS.md` in the repo; until one is named, the Product14 account holders) to add their GitHub username, then re-run `/pm-os:setup`.
+3. In the clone, run `git config core.hooksPath .githooks` so the safety check runs on every commit.
+4. Run `node scripts/check.mjs` once and report the result.
 
 ## Step 3. Goals sheet (after the repo is found)
 
