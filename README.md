@@ -12,10 +12,12 @@ Everything happens inside Claude Code: the VS Code extension, the desktop app or
 
 **2. Get the plugin.**
 - **Team rollout (recommended):** an org Owner adds this repo once under claude.ai Organization settings > Plugins & skills and marks `pm-os` Required. It then appears for every PM with nothing to install.
-- **Install:** in Claude Code, type `/plugin marketplace add Product14/pm-os`, then `/plugin install pm-os@spyne-pm-os`. Full steps: [QUICKSTART.md](QUICKSTART.md).
+- **Install (VS Code or CLI):** type `/plugin marketplace add Product14/pm-os`, then `/plugin install pm-os@spyne-pm-os`.
+- **Install (Claude desktop app):** in a **Local** session in the **Code** tab, click **+** > **Plugins** > **Add marketplace**, enter `Product14/pm-os`, install **pm-os**, then start a new session. Or ask Claude to "add the plugin marketplace Product14/pm-os and install pm-os".
+- GitHub must be signed in on your computer first (private repo). Full steps for every app: [QUICKSTART.md](QUICKSTART.md).
 
 **3. Type `/pm-os:setup`.** Claude checks every tool, fixes what it can with you, and walks you through the rest:
-- **ClickHouse and Freshdesk** go into the plugin's Configure dialog (`/plugins` > Installed > pm-os > Configure). They are stored in your system's credential store, never in the chat.
+- **ClickHouse and Freshdesk** go into the plugin's Configure dialog (`/plugins` > Installed > pm-os > Configure; in the desktop app, **+** > **Plugins** > **Manage plugins** > pm-os). They are stored in your system's credential store, never in the chat.
 - **GitHub sign-in** is a one-time code you enter at github.com/login/device. Claude starts it for you.
 
 Re-run `/pm-os:setup` any time something stops working.

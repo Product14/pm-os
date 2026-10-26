@@ -153,7 +153,7 @@
       "required": true,
       "kind": "bundled with the plugin",
       "why": "All metrics, read-only. Each PM uses their own ClickHouse Cloud user, stored in the system credential store.",
-      "connect": "1) Ask data/eng in Slack for a read-only ClickHouse Cloud user. 2) Open the plugin manager: type /plugin (in VS Code: /plugins), choose Installed, then pm-os, then Configure. Fill in ClickHouse user and ClickHouse password, then save. 3) Type /reload-plugins, or quit and reopen Claude Code.",
+      "connect": "1) Ask data/eng in Slack for a read-only ClickHouse Cloud user. 2) Open the plugin manager: type /plugin (in VS Code: /plugins; in the Claude desktop app: click + next to the prompt box, then Plugins > Manage plugins), choose Installed, then pm-os, then Configure. Fill in ClickHouse user and ClickHouse password, then save. 3) Type /reload-plugins, or quit and reopen Claude Code.",
       "probe": {
         "search": "clickhouse list_databases run_query",
         "match": "clickhouse",
@@ -181,7 +181,7 @@
       "required": true,
       "kind": "bundled with the plugin",
       "why": "Search the 'waiting on product' queue, read tickets and companies, and post private notes. There is no tool for public replies.",
-      "connect": "1) In Freshdesk, click your profile picture, then Profile settings, and copy Your API key. 2) Open the plugin manager: type /plugin (in VS Code: /plugins), choose Installed, then pm-os, then Configure. Paste it into Freshdesk API key and save. 3) Type /reload-plugins, or quit and reopen Claude Code.",
+      "connect": "1) In Freshdesk, click your profile picture, then Profile settings, and copy Your API key. 2) Open the plugin manager: type /plugin (in VS Code: /plugins; in the Claude desktop app: click + next to the prompt box, then Plugins > Manage plugins), choose Installed, then pm-os, then Configure. Paste it into Freshdesk API key and save. 3) Type /reload-plugins, or quit and reopen Claude Code.",
       "probe": {
         "search": "freshdesk whoami",
         "match": "freshdesk",

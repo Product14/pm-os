@@ -32,7 +32,7 @@ You produce one **case file** per ticket. The case file is the only thing the PR
 
 1. **Fetch the queue.** Call `mcp__plugin_pm-os_freshdesk__search_tickets` with `freshdesk.queue.query`. Page until all results are in (at most 10 pages). Map each ticket to `vini-sales` or `vini-service` with `area_field` and `area_values`; a pod not in either list goes to the PM at Gate 1. Apply any skip list the PM gives for this run.
    - **Only the PM's areas:** keep tickets whose area is in `areas` from `~/.pm-os/profile.json`, unless the PM asks for the whole queue. Say how many tickets belong to other areas.
-   - **Not someone else's:** `git pull --ff-only` on `main` first. Skip a ticket whose work folder already exists with a different `pm:` in its `case.md`, or that has an open PR (`gh pr list --search fd<id> --state open`). Tell the PM who owns it.
+   - **Not someone else's:** `git fetch origin` first and look for work folders on `origin/main` (`git ls-tree -r --name-only origin/main product/work`) as well as the current branch, so this also works in a worktree. Skip a ticket whose work folder already exists with a different `pm:` in its `case.md`, or that has an open PR (`gh pr list --search fd<id> --state open`). Tell the PM who owns it.
 2. **Skip what is current.** For each ticket, look for `product/work/<area>/fd<id>-*/case.md`. Skip it when its `ticket_updated_at` equals the ticket's `updated_at`. Say how many you skipped.
 3. **Research, one subagent per ticket, at most 3 at a time.** Use the Agent tool (general-purpose) with `model: sonnet`. Give each subagent:
    - the ticket id, area and the work folder path it must write to: `product/work/<area>/fd<id>-<topic-slug>/`. The slug describes the topic, never the rooftop.

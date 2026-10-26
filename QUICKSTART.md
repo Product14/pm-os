@@ -7,7 +7,13 @@ PM OS is a Claude Code plugin for Spyne PMs. It does four jobs:
 - **Jira:** files the approved PRD or bug in Jira, only after you approve the exact issue.
 - **Shared context:** data traps, metric definitions, decisions and lessons that every PM's Claude reads, reviewed automatically before they merge.
 
-You never need a terminal. Everything below is typed into Claude Code (the CLI, or the Claude Code panel in VS Code).
+You never need a terminal. Everything below happens inside Claude Code, wherever you use it:
+
+- **The Claude desktop app** (the **Code** tab in the Claude app for Mac or Windows). Look for the **In the Claude app** notes in each step.
+- **The Claude Code panel in VS Code.**
+- **The Claude Code CLI** in a terminal, if that is how you already work.
+
+Plugins and keys are saved per computer, so whatever you set up in one of these works in the others.
 
 Setup takes about 20 minutes, most of it connecting tools.
 
@@ -17,7 +23,9 @@ Setup takes about 20 minutes, most of it connecting tools.
 
 | You need | How to get it |
 |---|---|
-| Claude Code, signed in with your Spyne Claude account | Install from claude.com/claude-code |
+| Claude Code, signed in with your Spyne Claude account | The Claude desktop app from claude.com/download (use its **Code** tab), or Claude Code from claude.com/claude-code |
+| Git on your computer | On a Mac, the app asks to install it the first time it needs it ("Git is required"): accept. Or ask Claude: "install git for me" |
+| GitHub signed in on your computer (the plugin lives in a private repo, so the install in Step 1 fails without it) | Ask Claude: "install the GitHub CLI and sign me in to GitHub". It shows a one-time code; open github.com/login/device and enter it |
 | Access to the private GitHub repo `Product14/pm-os` (read to use it, write to contribute back) | Ask the PM OS owner in `OWNERS.md`. Until one is named, ask Lakshay Narang or Devansh Hasija (they hold the Product14 account) |
 | These claude.ai connectors switched on: **Arali, Slack, Gmail, Google Drive, Google Calendar, Google Sheets, Atlassian**. Spyne Blue Brain is recommended | claude.ai > Settings > Connectors > Connect each one. Then quit and reopen Claude Code (connectors only load at start) |
 | Your own **Freshdesk API key** | In Freshdesk: your profile picture > Profile settings > copy "Your API key". Never use someone else's key: notes would post under their name |
@@ -40,6 +48,12 @@ Or just ask Claude: "add the plugin marketplace Product14/pm-os and install pm-o
 
 Then type `/reload-plugins` (or quit and reopen Claude Code).
 
+**In the Claude app:**
+1. Open the **Code** tab and start a **Local** session (not a cloud session: plugins only run locally). Any folder is fine for now.
+2. Click **+** next to the prompt box, then **Plugins**. Choose **Add marketplace**, enter `Product14/pm-os`, then install **pm-os** (choose **user** if it asks for a scope).
+3. If you cannot find those buttons, ask Claude in the session: "add the plugin marketplace Product14/pm-os and install pm-os". Approve the commands when it asks.
+4. Start a new session so the plugin loads. Typing `/pm-os` should now list the PM OS commands.
+
 ## Step 2. Add your keys (never paste them in the chat)
 
 1. Type `/plugin` (CLI) or `/plugins` (VS Code).
@@ -48,6 +62,10 @@ Then type `/reload-plugins` (or quit and reopen Claude Code).
 4. Save, then type `/reload-plugins`.
 
 The keys are stored in your system credential store and only the plugin's own Freshdesk and ClickHouse tools can read them.
+
+**In the Claude app:** click **+** next to the prompt box, then **Plugins** > **Manage plugins** > **pm-os**, and use its **Configure** option. Fill in the same fields, save, and start a new session.
+
+If your app version shows no Configure option for pm-os, set the keys once from the Claude Code panel in VS Code (the steps above). The app uses the same keys, because they are saved for your computer, not per app. Never paste a key into the chat as a workaround.
 
 ## Step 3. Run setup
 
@@ -66,6 +84,18 @@ Claude checks every tool, shows a pass/fail table, and fixes what it can with yo
 - Finally it asks your area (for example vini-sales) and saves your profile to `~/.pm-os/profile.json` (no secrets in it).
 
 Re-run `/pm-os:setup` any time something stops working.
+
+**In the Claude app:** type `/pm-os:setup` in a Local session exactly as above.
+
+## Step 4. Open the right folder every time
+
+PM OS work is saved in the `pm-os` folder in your home folder (`~/pm-os`), which setup created.
+
+- **Claude app:** when you start a session in the **Code** tab, choose the `pm-os` folder in the project folder picker next to the environment selector. Keep the session **Local**.
+- **VS Code:** File > Open Folder > `pm-os` in your home folder, then open the Claude Code panel.
+- **CLI:** start `claude` from that folder.
+- **The first time,** Claude Code may ask whether to trust the folder. Say yes: the repo's safety hooks only run in a trusted folder (see "Working alongside other PMs").
+- **The app may run each session in its own copy of the folder** (a git worktree, on its own branch). That is fine: PM OS saves your work on a branch and opens a pull request either way.
 
 ---
 
@@ -121,6 +151,8 @@ PM OS runs many short subagents. To stay inside your plan limits:
 
 When a new version is announced, type `/plugin`, open **Marketplaces**, update `spyne-pm-os`, then update **pm-os** and type `/reload-plugins`. Or ask Claude to "update the pm-os plugin". The repo itself updates every time you start Claude Code.
 
+**In the Claude app:** **+** > **Plugins** > **Manage plugins**, update the `spyne-pm-os` marketplace and then **pm-os**, or ask Claude to "update the pm-os plugin". Then start a new session.
+
 ## Contributing back
 
 `/pm-os:capture`, `/pm-os:veto` and your PRD work are saved as a branch and a pull request on `Product14/pm-os`. You need write access for that. A GitHub Action merges PRs that only touch `queue/`, `proposals/` or `product/` and pass the safety check, within a minute or two. The reviewer then checks new context entries on `main`. It needs a repo secret (`CLAUDE_CODE_OAUTH_TOKEN` or `ANTHROPIC_API_KEY`); until the owner adds one, it skips with a notice and the owner runs `/pm-os:reviewer run` locally.
@@ -129,7 +161,9 @@ When a new version is announced, type `/plugin`, open **Marketplaces**, update `
 
 | Symptom | Fix |
 |---|---|
-| `/pm-os:...` commands do not appear | Type `/reload-plugins`, or quit and reopen Claude Code |
+| `/pm-os:...` commands do not appear | Type `/reload-plugins`, or quit and reopen Claude Code. In the Claude app, start a new **Local** session: plugins do not run in cloud sessions |
+| Typing `/plugin` in the Claude app says it "isn't available in this environment" | Use **+** > **Plugins** in the app instead (Step 1), or ask Claude to run the install |
+| Adding the marketplace fails with "not found", "authentication" or "permission denied" | GitHub is not signed in on this computer, or you have no access yet. Ask Claude: "sign me in to GitHub", and check access with the owner in `OWNERS.md` |
 | "Freshdesk API key is not set" | Step 2 above, then `/reload-plugins` |
 | A ticket's description or later comments are missing | Make sure you are on pm-os 0.4.0 or later (Updating, above). Older versions read only the first 10 comments |
 | Setup says a connector is "not loaded" | Connect it on claude.ai, then quit and reopen Claude Code. Connectors added mid-session do not load |
