@@ -50,9 +50,10 @@ Then type `/reload-plugins` (or quit and reopen Claude Code).
 
 **In the Claude app:**
 1. Open the **Code** tab and start a **Local** session (not a cloud session: plugins only run locally). Any folder is fine for now.
-2. Click **+** next to the prompt box, then **Plugins**. Choose **Add marketplace**, enter `Product14/pm-os`, then install **pm-os** (choose **user** if it asks for a scope).
-3. If you cannot find those buttons, ask Claude in the session: "add the plugin marketplace Product14/pm-os and install pm-os". Approve the commands when it asks.
-4. Start a new session so the plugin loads. Typing `/pm-os` should now list the PM OS commands.
+2. Ask Claude in that session: "add the plugin marketplace Product14/pm-os and install pm-os for my user". Approve the commands when it asks. It uses your computer's GitHub sign-in, which the private repo needs.
+3. Start a new session so the plugin loads. Typing `/pm-os` should now list the PM OS commands.
+
+Do not use the app's **Add marketplace** button (the box with a **Sync** button) for this repo. It shows "Failed to add marketplace" because it cannot read a private GitHub repo.
 
 ## Step 2. Add your keys (never paste them in the chat)
 
@@ -162,7 +163,8 @@ When a new version is announced, type `/plugin`, open **Marketplaces**, update `
 | Symptom | Fix |
 |---|---|
 | `/pm-os:...` commands do not appear | Type `/reload-plugins`, or quit and reopen Claude Code. In the Claude app, start a new **Local** session: plugins do not run in cloud sessions |
-| Typing `/plugin` in the Claude app says it "isn't available in this environment" | Use **+** > **Plugins** in the app instead (Step 1), or ask Claude to run the install |
+| Typing `/plugin` in the Claude app says it "isn't available in this environment" | Ask Claude in a Local session to run the install (Step 1, In the Claude app) |
+| The app's **Add marketplace** box says "Failed to add marketplace" | Expected for this private repo. Close it and ask Claude in a Local session to install instead (Step 1) |
 | Adding the marketplace fails with "not found", "authentication" or "permission denied" | GitHub is not signed in on this computer, or you have no access yet. Ask Claude: "sign me in to GitHub", and check access with the owner in `OWNERS.md` |
 | "Freshdesk API key is not set" | Step 2 above, then `/reload-plugins` |
 | A ticket's description or later comments are missing | Make sure you are on pm-os 0.4.0 or later (Updating, above). Older versions read only the first 10 comments |

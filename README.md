@@ -13,7 +13,7 @@ Everything happens inside Claude Code: the VS Code extension, the desktop app or
 **2. Get the plugin.**
 - **Team rollout (recommended):** an org Owner adds this repo once under claude.ai Organization settings > Plugins & skills and marks `pm-os` Required. It then appears for every PM with nothing to install.
 - **Install (VS Code or CLI):** type `/plugin marketplace add Product14/pm-os`, then `/plugin install pm-os@spyne-pm-os`.
-- **Install (Claude desktop app):** in a **Local** session in the **Code** tab, click **+** > **Plugins** > **Add marketplace**, enter `Product14/pm-os`, install **pm-os**, then start a new session. Or ask Claude to "add the plugin marketplace Product14/pm-os and install pm-os".
+- **Install (Claude desktop app):** in a **Local** session in the **Code** tab, ask Claude to "add the plugin marketplace Product14/pm-os and install pm-os for my user", then start a new session. The app's own **Add marketplace** button cannot read this private repo.
 - GitHub must be signed in on your computer first (private repo). Full steps for every app: [QUICKSTART.md](QUICKSTART.md).
 
 **3. Type `/pm-os:setup`.** Claude checks every tool, fixes what it can with you, and walks you through the rest:
