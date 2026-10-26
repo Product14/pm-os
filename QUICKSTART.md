@@ -84,6 +84,9 @@ Re-run `/pm-os:setup` any time something stops working.
 
 ### Working alongside other PMs
 
+- The first time you open the `~/pm-os` folder in Claude Code, it asks whether to trust the folder and its hooks. Say yes: the repo's hooks turn on the safety check and stop anyone's Claude from committing to `main`, pushing to `main`, force-pushing or sweeping in stray files.
+- Every folder has a `CLAUDE.md` that tells Claude what belongs there. You can ask in your own words ("write a PRD for this ticket"); Claude routes it to the right `/pm-os:` skill so the files come out the same as everyone else's.
+
 - `/pm-os:triage` shows only tickets in your areas (set in `/pm-os:setup`). Ask for "the whole queue" to see everything.
 - Every work folder records its owner (`pm:` in `case.md`). Triage skips tickets another PM owns or has an open PR for, and `/pm-os:prd` asks before working in someone else's folder.
 - Your work is saved on your own branch and reaches the shared repo as a pull request. Claude asks before publishing, and never pushes to `main`.

@@ -14,6 +14,7 @@ import { join, relative } from "node:path";
 import { ROOT, KINDS, KIND_FIELDS, KIND_BODY, LESSON_TARGETS, PERSONAS, STATUSES, CONFIDENCE, REQUIRED, STALE_DAYS, walk, entries, ageDays, destDir } from "./lib.mjs";
 import { renderIndex, renderProductIndexes } from "./index.mjs";
 import { lintAllCases } from "./case-lint.mjs";
+import { lintStructure } from "./structure-lint.mjs";
 
 const TEXT = /\.(md|json|mjs|js|ts|sh|ya?ml|txt|sql|csv|html)$/;
 // Files that must contain the patterns they police.
@@ -127,6 +128,9 @@ for (const [rel, want] of Object.entries(renderProductIndexes())) {
   const p = join(ROOT, rel);
   if ((existsSync(p) ? readFileSync(p, "utf8") : "") !== want) err(rel, 0, "S6 generated index out of date; run node scripts/index.mjs");
 }
+
+// S8: product/ structure (folder names, owner, allowed files)
+for (const r of lintStructure()) (r.level === "warn" ? warn : err)(r.path, 0, r.msg);
 
 // S7: every case file meets the evidence bar, and every THIN or EMPTY slot has an open question
 for (const r of lintAllCases()) for (const p of r.problems) (p.level === "warn" ? warn : err)(r.path, 0, `S7 ${p.msg}`);

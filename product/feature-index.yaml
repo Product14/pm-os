@@ -27,6 +27,11 @@ vini-sales:
       stage: triaged
       outcome: build-generalised
   unassigned:
+    - work: product/work/vini-sales/bug-workflow-v2-visit-ask-regression
+      pm: yash.sharma
+      stage: bug-filed
+      outcome: bug
+      jira: RETCONVAI-5392
     - work: product/work/vini-sales/fd23736-human-takeover-in-stl-and-chat
       pm: yash.sharma
       freshdesk_ticket: 23736

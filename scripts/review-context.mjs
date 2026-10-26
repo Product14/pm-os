@@ -61,7 +61,7 @@ function owners() {
 function candidates() {
   const only = opt("--only");
   if (only) return [only];
-  const top = readdirSync(join(ROOT, "queue")).filter((f) => f.endsWith(".md")).map((f) => `queue/${f}`);
+  const top = readdirSync(join(ROOT, "queue")).filter((f) => f.endsWith(".md") && !["CLAUDE.md", "README.md"].includes(f)).map((f) => `queue/${f}`);
   const heldDir = join(ROOT, "queue", "held");
   const expired = existsSync(heldDir)
     ? readdirSync(heldDir).filter((f) => f.endsWith(".md")).map((f) => `queue/held/${f}`).filter((p) => {

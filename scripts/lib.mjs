@@ -25,7 +25,7 @@ export const KIND_FIELDS = {
 };
 export const KIND_BODY = { observation: "Pattern" };
 // Files under context/ that are not entries.
-export const NOT_ENTRIES = /\/(INDEX|README|core|watchlist)\.md$/;
+export const NOT_ENTRIES = /\/(INDEX|README|CLAUDE|core|watchlist)\.md$/;
 
 export function destDir(meta) {
   const dir = KINDS[meta.kind];
