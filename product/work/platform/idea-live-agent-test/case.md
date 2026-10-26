@@ -2,6 +2,7 @@
 id: idea-live-agent-test
 area: platform
 stage: triaged
+pm: yash.sharma
 freshdesk_ticket:
 ticket_updated_at:
 rooftop_slug:

@@ -2,6 +2,7 @@
 id: fd24641-single-screen-conversation-ui
 area: vini-sales
 stage: confirmed
+pm: yash.sharma
 freshdesk_ticket: 24641
 ticket_updated_at: 2026-10-13T17:15:13Z
 rooftop_slug: bob-johnson-auto-group

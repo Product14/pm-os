@@ -2,6 +2,7 @@
 id: fd22370-vin-details-on-outbound-calls
 area: vini-service
 stage: confirmed
+pm: yash.sharma
 freshdesk_ticket: 22370
 ticket_updated_at: 2026-10-14T16:01:36Z
 rooftop_slug: bill-wright-toyota

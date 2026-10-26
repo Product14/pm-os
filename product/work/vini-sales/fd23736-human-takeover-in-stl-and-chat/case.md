@@ -2,6 +2,7 @@
 id: fd23736-human-takeover-in-stl-and-chat
 area: vini-sales
 stage: confirmed
+pm: yash.sharma
 freshdesk_ticket: 23736
 ticket_updated_at: 2026-10-03T06:32:02Z
 rooftop_slug: lucki-mazda-of-woodbridge

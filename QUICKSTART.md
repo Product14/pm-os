@@ -82,6 +82,12 @@ Re-run `/pm-os:setup` any time something stops working.
 | `/pm-os:veto` | A shared entry is wrong or stale | The entry is withdrawn; no approval needed |
 | `/pm-os:persona-refresh` | Once a week (not scheduled yet) | Updates the dealer personas from last week's Arali conversations |
 
+### Working alongside other PMs
+
+- `/pm-os:triage` shows only tickets in your areas (set in `/pm-os:setup`). Ask for "the whole queue" to see everything.
+- Every work folder records its owner (`pm:` in `case.md`). Triage skips tickets another PM owns or has an open PR for, and `/pm-os:prd` asks before working in someone else's folder.
+- Your work is saved on your own branch and reaches the shared repo as a pull request. Claude asks before publishing, and never pushes to `main`.
+
 ### How a PRD run goes
 
 You approve at every gate; nothing is decided for you.

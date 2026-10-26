@@ -9,6 +9,7 @@ The case file is the handoff between `/pm-os:triage` and `/pm-os:prd`. Keep the 
 id: fd<ticket id>-<topic-slug>
 area: vini-sales | vini-service
 stage: triaged
+pm: <the PM's Spyne username from ~/.pm-os/profile.json; the owner of this work folder>
 freshdesk_ticket: <ticket id>
 ticket_updated_at: <ISO timestamp from Freshdesk>
 rooftop_slug: <kebab-case rooftop name>

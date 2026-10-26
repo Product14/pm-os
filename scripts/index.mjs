@@ -81,7 +81,7 @@ function featureIndex(work) {
       out.push(`  ${q(feature)}:`);
       for (const { dir, meta } of tree[area][feature]) {
         out.push(`    - work: ${q(dir)}`);
-        for (const k of ["freshdesk_ticket", "stage", "outcome", "prd", "jira", "ledger_match"]) if (meta[k]) out.push(`      ${k}: ${q(meta[k])}`);
+        for (const k of ["pm", "freshdesk_ticket", "stage", "outcome", "prd", "jira", "ledger_match"]) if (meta[k]) out.push(`      ${k}: ${q(meta[k])}`);
       }
     }
   }

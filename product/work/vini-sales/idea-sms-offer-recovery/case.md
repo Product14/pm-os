@@ -2,6 +2,7 @@
 id: idea-sms-offer-recovery
 area: vini-sales
 stage: triaged
+pm: yash.sharma
 freshdesk_ticket:
 ticket_updated_at:
 rooftop_slug:

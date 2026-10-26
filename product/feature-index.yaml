@@ -4,32 +4,38 @@
 platform:
   live-agent-test:
     - work: product/work/platform/idea-live-agent-test
+      pm: yash.sharma
       stage: triaged
       outcome: build-generalised
       jira: RETCONVAI-5409
 vini-sales:
   lead-type-aware-stl-first-message:
     - work: product/work/vini-sales/fd24140-stl-and-widget-configuration
+      pm: yash.sharma
       freshdesk_ticket: 24140
       stage: confirmed
       outcome: build-generalised
   my-unanswered-queue:
     - work: product/work/vini-sales/fd24641-single-screen-conversation-ui
+      pm: yash.sharma
       freshdesk_ticket: 24641
       stage: confirmed
       outcome: build-generalised
   sms-offer-recovery:
     - work: product/work/vini-sales/idea-sms-offer-recovery
+      pm: yash.sharma
       stage: triaged
       outcome: build-generalised
   unassigned:
     - work: product/work/vini-sales/fd23736-human-takeover-in-stl-and-chat
+      pm: yash.sharma
       freshdesk_ticket: 23736
       stage: confirmed
       ledger_match: "jira:RETCONVAI-5165"
 vini-service:
   unassigned:
     - work: product/work/vini-service/fd22370-vin-details-on-outbound-calls
+      pm: yash.sharma
       freshdesk_ticket: 22370
       stage: confirmed
       outcome: bug

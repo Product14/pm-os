@@ -22,6 +22,7 @@ You orchestrate. Subagents draft, review, research and judge, each in a fresh co
 2. Resolve the work folder:
    - A path was given: use it.
    - A Freshdesk id was given: find `product/work/*/fd<id>-*`. None: tell the PM to run `/pm-os:triage` first.
+   - If the folder's `case.md` has a `pm:` that is not this PM, say who owns it and ask before continuing. A folder with no `pm:` gets this PM's username.
    - An idea was given: create `product/work/<area>/idea-<slug>/` with an empty case from `../triage/reference/case-template.md` (ask the PM for the area). The sufficiency step fills it.
 3. Create or load `run.json` in the folder: `{ "stage", "started", "rubrics": {...versions}, "lessons_loaded": [], "observations_loaded": {}, "rounds": {}, "requests": 0, "gates": [] }`. If a run is in progress, resume from its `stage`.
 4. Load lessons: from `context/INDEX.md`, take the lesson lines whose target is `prd-drafting`, `decide` or `fit-check` and whose area matches, newest first, at most 15 per target. Record their paths in `run.json`. Pass the file paths to subagents, not the text.
@@ -125,4 +126,4 @@ fit-check.md csm-draft.md jira.md
 
 ## Committing
 
-After each stage, commit the work folder on a branch `prd/<folder-name>` with a message naming the stage. Publish through `../../reference/contribute.md` only at the end of the run, after the retro. Never push without the PM agreeing.
+After each stage, commit the work folder on a branch `prd/<folder-name>` with a message naming the stage, staging only that folder (and `product/prds/`, the generated indexes, or `queue/` files the stage wrote). Publish through `../../reference/contribute.md` only at the end of the run, after the retro. Never push without the PM agreeing.

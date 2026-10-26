@@ -11,7 +11,9 @@ This is the Spyne product team's shared Claude Code operating system. Read `READ
 - Goals sheets are read live through Google Sheets. Never copy sheet contents into this repo.
 - Mechanical work goes in `scripts/` as plain Node with no dependencies. Judgment goes in skills.
 - Skills live in `plugin/skills/<name>/SKILL.md` and must be listed in `registry.json`.
-- Do not push or publish without Yash's approval. Committing locally is fine.
+- Never push to `main` and never force-push. Changes reach `main` only as a pull request from a branch, through `plugin/reference/contribute.md`, after the PM running the session agrees.
+- Stage files by path (the work folder, the queue file), never `git add -A` or `git add .`.
+- PM work goes only in `product/work/<area>/<folder>/`, `product/triage/` or `product/prds/<area>/`. Shared knowledge goes only through `queue/` (`/pm-os:capture`). Raw pulls go to `.cache/` (gitignored). Nothing else in the repo changes without the PM OS owner.
 
 ## Where things are
 

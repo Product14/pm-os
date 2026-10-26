@@ -2,6 +2,7 @@
 id: fd24140-stl-and-widget-configuration
 area: vini-sales
 stage: confirmed
+pm: yash.sharma
 freshdesk_ticket: 24140
 ticket_updated_at: 2026-10-12T16:56:46Z
 rooftop_slug: superior-auto-inc
