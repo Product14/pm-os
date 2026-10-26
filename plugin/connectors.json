@@ -149,22 +149,20 @@
     },
     {
       "id": "clickhouse",
-      "name": "ClickHouse",
+      "name": "Spyne Clickhouse",
       "required": true,
-      "kind": "bundled with the plugin",
-      "why": "All metrics, read-only. Each PM uses their own ClickHouse Cloud user, stored in the system credential store.",
-      "connect": "1) Ask data/eng in Slack for a read-only ClickHouse Cloud user. 2) Open the plugin manager: type /plugin (in VS Code: /plugins; in the Claude desktop app: click + next to the prompt box, then Plugins > Manage plugins), choose Installed, then pm-os, then Configure. Fill in ClickHouse user and ClickHouse password, then save. 3) Type /reload-plugins, or quit and reopen Claude Code.",
+      "kind": "claude.ai connector (org)",
+      "why": "All metrics, read-only (the connector runs every query with readonly=1). No login of your own.",
+      "connect": "claude.ai > Settings > Connectors > Spyne Clickhouse > Connect. If it is not listed, ask the claude.ai org admin to enable it for you. Then quit and reopen Claude Code.",
       "probe": {
-        "search": "clickhouse list_databases run_query",
-        "match": "clickhouse",
-        "call": "list_databases",
+        "find": "mcp__claude_ai_Spyne_Clickhouse__list_databases",
+        "call": {},
         "expect_databases": [
           "vini_reporting",
           "dealer_leads",
           "conversation_ai",
           "eventila"
-        ],
-        "note": "Either the plugin's own clickhouse server or an existing clickhouse-local server passes."
+        ]
       },
       "used_by": [
         "agent-review",

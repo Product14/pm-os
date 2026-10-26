@@ -106,7 +106,7 @@ Drafters and reviewers never fetch data themselves. When one needs something spe
 - source: arali | bluebrain | freshdesk | clickhouse | jira | context
 ```
 
-You send one research subagent per open request with only that block. It searches `.cache/` first, then the live source. It appends the answer to `evidence.md` as a new E-id and marks the request `answered (E<n>)`. Then you resume the drafter or reviewer. At most 5 requests per stage and 2 rounds. An unanswerable request becomes a question with `slot: request`. For ClickHouse, the research subagent must read the matching `context/metrics` and `context/traps` entries before writing any query.
+You send one research subagent per open request with only that block. It searches `.cache/` first, then the live source. It appends the answer to `evidence.md` as a new E-id and marks the request `answered (E<n>)`. Then you resume the drafter or reviewer. At most 5 requests per stage and 2 rounds. An unanswerable request becomes a question with `slot: request`. For ClickHouse, the research subagent uses the org's Spyne Clickhouse connector (`mcp__claude_ai_Spyne_Clickhouse__list_tables`, `describe_table`, `run_query`; read-only, at most 1000 rows) and must read the matching `context/metrics` and `context/traps` entries before writing any query.
 
 ## Discovery one-pager
 

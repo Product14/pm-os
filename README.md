@@ -8,7 +8,7 @@ It replaces each PM's private setup. Your personal preferences stay personal. Te
 
 Everything happens inside Claude Code: the VS Code extension, the desktop app or the CLI.
 
-**1. Connect your claude.ai tools.** At claude.ai > Settings > Connectors, connect Arali, Slack, Gmail, Google Drive, Google Calendar, Google Sheets and Atlassian. Then quit and reopen Claude Code.
+**1. Connect your claude.ai tools.** At claude.ai > Settings > Connectors, connect Arali, Slack, Gmail, Google Drive, Google Calendar, Google Sheets, Atlassian and Spyne Clickhouse. Then quit and reopen Claude Code.
 
 **2. Get the plugin.**
 - **Team rollout (recommended):** an org Owner adds this repo once under claude.ai Organization settings > Plugins & skills and marks `pm-os` Required. It then appears for every PM with nothing to install.
@@ -17,7 +17,7 @@ Everything happens inside Claude Code: the VS Code extension, the desktop app or
 - GitHub must be signed in on your computer first (private repo). Full steps for every app: [QUICKSTART.md](QUICKSTART.md).
 
 **3. Type `/pm-os:setup`.** Claude checks every tool, fixes what it can with you, and walks you through the rest:
-- **ClickHouse and Freshdesk** go into the plugin's Configure dialog (`/plugins` > Installed > pm-os > Configure; in the desktop app, **+** > **Plugins** > **Manage plugins** > pm-os). They are stored in your system's credential store, never in the chat.
+- **Freshdesk** goes into the plugin's Configure dialog (`/plugins` > Installed > pm-os > Configure; in the desktop app, **+** > **Plugins** > **Manage plugins** > pm-os). It is stored in your system's credential store, never in the chat. ClickHouse comes from the org's Spyne Clickhouse connector, with no login of your own.
 - **GitHub sign-in** is a one-time code you enter at github.com/login/device. Claude starts it for you.
 
 Re-run `/pm-os:setup` any time something stops working.

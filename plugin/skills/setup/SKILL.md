@@ -1,6 +1,6 @@
 ---
 name: setup
-description: Install or re-check the Spyne PM OS for this PM. Connects and verifies every required tool first (Arali, Slack, Gmail, Drive, Calendar, Google Sheets, Atlassian, ClickHouse, Freshdesk), then links the PM's quarterly goals sheet and the shared repo, and writes the PM's profile. Use on first install, when the session-start hook says the OS is not set up, when a PM OS skill reports a missing connector, or when asked to "check my connections" or "re-run setup".
+description: Install or re-check the Spyne PM OS for this PM. Connects and verifies every required tool first (Arali, Slack, Gmail, Drive, Calendar, Google Sheets, Atlassian, Spyne Clickhouse, Freshdesk), then links the PM's quarterly goals sheet and the shared repo, and writes the PM's profile. Use on first install, when the session-start hook says the OS is not set up, when a PM OS skill reports a missing connector, or when asked to "check my connections" or "re-run setup".
 ---
 
 # PM OS setup
@@ -12,7 +12,7 @@ Paths below are relative to this skill's base directory. The plugin root is `../
 ## Rules
 
 - **The PM never uses a terminal.** You run every command. Explain each step in plain words, never as a command for them to type.
-- **Never ask for a password, API key or token in the chat**, and never read a secrets file's contents into the conversation. Keys and passwords go only into the plugin's Configure dialog, which keeps them in the system credential store and hands them only to the plugin's own Freshdesk and ClickHouse servers. If a PM pastes a secret into the chat anyway, tell them to rotate it.
+- **Never ask for a password, API key or token in the chat**, and never read a secrets file's contents into the conversation. Keys and passwords go only into the plugin's Configure dialog, which keeps them in the system credential store and hands them only to the plugin's own Freshdesk server. ClickHouse needs no key: it is the org's Spyne Clickhouse connector. If a PM pastes a secret into the chat anyway, tell them to rotate it.
 - Every probe is a tiny read. Never write anything to a connected system during setup.
 - Ask every question with the AskUserQuestion tool, with concrete options.
 - Report each result plainly: pass, fail, or not loaded. Do not round "not loaded" up to "probably fine".
@@ -32,7 +32,7 @@ Read `../../connectors.json`. For every connector, in file order:
    - `fail`: the tool exists but errored (auth expired, permission denied, wrong database).
 
 Extra checks:
-- **ClickHouse:** after `list_databases` passes, confirm every database in the probe's `expect_databases` appears. Any missing database is a `fail` with the message "ask data/eng to grant read on <db>". The PM's user and password come from the plugin's Configure dialog.
+- **ClickHouse:** after `list_databases` passes, confirm every database in the probe's `expect_databases` appears. Any missing database is a `fail` with the message "ask data/eng to add <db> to the Spyne Clickhouse connector".
 - **Freshdesk:** the `whoami` tool returns the name and email the key belongs to. If that email is not the PM's own, mark it `fail`. Say: "This key belongs to <name>. Notes would be posted under their name. Use your own key." Never accept a borrowed key.
 
 Show one table:
@@ -45,13 +45,12 @@ For anything not `pass`, the Fix column is the `connect` text from `connectors.j
 Then:
 - If any required claude.ai connector is `not loaded`, tell the PM to connect it at claude.ai > Settings > Connectors, then **quit and restart Claude Code** (connectors load at session start) and run `/pm-os:setup` again. Stop here.
 - Fix the rest with the PM right now, one at a time, in plain words:
-  - **Freshdesk and ClickHouse** live in the plugin's Configure dialog. Walk the PM through the `connect` text. When they say they have saved it, ask them to type `/reload-plugins` (or quit and reopen Claude Code if the tools still do not appear; in the Claude desktop app, start a new Local session), then re-run that probe. If the desktop app shows no Configure option, point them to QUICKSTART Step 2: set the keys once from the VS Code panel; never take a key in the chat.
-  - **ClickHouse** needs a read-only user first. If the PM does not have one, tell them to ask data/eng in Slack, and continue without it.
+  - **Freshdesk** lives in the plugin's Configure dialog. Walk the PM through the `connect` text. When they say they have saved it, ask them to type `/reload-plugins` (or quit and reopen Claude Code if the tools still do not appear; in the Claude desktop app, start a new Local session), then re-run that probe. If the desktop app shows no Configure option, point them to QUICKSTART Step 2: set the keys once from the VS Code panel; never take a key in the chat.
   - **GitHub:** if `gh` is missing, install it with `brew install gh`. If Homebrew is missing too, point them to the GitHub CLI download page and wait. Then run `gh auth login --web --git-protocol https --hostname github.com` in the background, read the one-time code from its output, and tell the PM: "Open github.com/login/device and enter this code." Wait for it to finish.
-- ClickHouse and Freshdesk can be finished later. Mark them `pending` and continue. Re-run `/pm-os:setup` any time to retry.
+- Freshdesk can be finished later. Mark them `pending` and continue. Re-run `/pm-os:setup` any time to retry.
 - Optional connectors (`required: false`) never block. List them as "recommended".
 
-Continue to Step 2 when every claude.ai connector and GitHub pass. ClickHouse and Freshdesk may be pending.
+Continue to Step 2 when every claude.ai connector and GitHub pass. Freshdesk may be pending.
 
 ## Step 2. Shared repo
 

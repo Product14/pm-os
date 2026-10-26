@@ -27,9 +27,8 @@ Setup takes about 20 minutes, most of it connecting tools.
 | Git on your computer | On a Mac, the app asks to install it the first time it needs it ("Git is required"): accept. Or ask Claude: "install git for me" |
 | GitHub signed in on your computer (the plugin lives in a private repo, so the install in Step 1 fails without it) | Ask Claude: "install the GitHub CLI and sign me in to GitHub". It shows a one-time code; open github.com/login/device and enter it |
 | Access to the private GitHub repo `Product14/pm-os` (read to use it, write to contribute back) | Ask the PM OS owner in `OWNERS.md`. Until one is named, ask Lakshay Narang or Devansh Hasija (they hold the Product14 account) |
-| These claude.ai connectors switched on: **Arali, Slack, Gmail, Google Drive, Google Calendar, Google Sheets, Atlassian**. Spyne Blue Brain is recommended | claude.ai > Settings > Connectors > Connect each one. Then quit and reopen Claude Code (connectors only load at start) |
+| These claude.ai connectors switched on: **Arali, Slack, Gmail, Google Drive, Google Calendar, Google Sheets, Atlassian, Spyne Clickhouse** (metrics, no login of your own). Spyne Blue Brain is recommended | claude.ai > Settings > Connectors > Connect each one. Then quit and reopen Claude Code (connectors only load at start) |
 | Your own **Freshdesk API key** | In Freshdesk: your profile picture > Profile settings > copy "Your API key". Never use someone else's key: notes would post under their name |
-| A **read-only ClickHouse user** (for metrics) | Ask data/eng in Slack. You can finish setup without it and add it later |
 
 ---
 
@@ -52,7 +51,7 @@ Then type `/reload-plugins` (or quit and reopen Claude Code).
 1. Open the **Code** tab and start a **Local** session (not a cloud session: plugins only run locally). Any folder is fine for now.
 2. Ask Claude in that session: "add the plugin marketplace Product14/pm-os and install pm-os for my user". Approve the commands when it asks. It uses your computer's GitHub sign-in, which the private repo needs.
 3. Start a new session so the plugin loads. Typing `/pm-os` should now list the PM OS commands.
-4. The app may show **"This plugin includes local MCP servers"** with a warning that installing grants access to everything on your computer. Click **Continue**. The two servers it names, **freshdesk** and **clickhouse**, are the plugin's own small programs that read Freshdesk tickets and ClickHouse data with your keys (ClickHouse is read-only; Freshdesk can add a private note only after you approve it). **Disable plugin** turns PM OS off.
+4. The app may show **"This plugin includes local MCP servers"** with a warning that installing grants access to everything on your computer. Click **Continue**. The server it names, **freshdesk**, is the plugin's own small program that reads Freshdesk tickets with your key (it can add a private note to a ticket only after you approve it). The app shows this warning for any plugin that runs a program on your computer. **Disable plugin** turns PM OS off.
 5. You can see the plugin under **+** > **Plugins**, on the **Code** tab, as `spyne-pm-os`.
 
 Do not use the app's **Add marketplace** button (the box with a **Sync** button) for this repo. It shows "Failed to add marketplace" because it cannot read a private GitHub repo.
@@ -61,10 +60,12 @@ Do not use the app's **Add marketplace** button (the box with a **Sync** button)
 
 1. Type `/plugin` (CLI) or `/plugins` (VS Code).
 2. Choose **Installed**, then **pm-os**, then **Configure**.
-3. Paste your **Freshdesk API key**. If you have a ClickHouse user, fill in **ClickHouse user** and **ClickHouse password**.
+3. Paste your **Freshdesk API key**. (ClickHouse needs no key: it comes from the Spyne Clickhouse connector.)
 4. Save, then type `/reload-plugins`.
 
-The keys are stored in your system credential store and only the plugin's own Freshdesk and ClickHouse tools can read them.
+The keys are stored in your system credential store and only the plugin's own Freshdesk tool can read it.
+
+The key field shows dots whether or not a key is saved, and keys stay on the computer where you entered them, so a new computer starts empty. `/pm-os:setup` tells you if the key is missing or belongs to someone else.
 
 **In the Claude app:** click **+** next to the prompt box, then **Plugins** > **Manage plugins** > **pm-os**, and use its **Configure** option. Fill in the same fields, save, and start a new session.
 
@@ -172,7 +173,7 @@ When a new version is announced, type `/plugin`, open **Marketplaces**, update `
 | A ticket's description or later comments are missing | Make sure you are on pm-os 0.4.0 or later (Updating, above). Older versions read only the first 10 comments |
 | Setup says a connector is "not loaded" | Connect it on claude.ai, then quit and reopen Claude Code. Connectors added mid-session do not load |
 | "not found" when cloning the repo | You have no access to `Product14/pm-os` yet. Ask the owner in `OWNERS.md` (or Lakshay Narang or Devansh Hasija) |
-| ClickHouse shows a missing database | Ask data/eng to grant read on it. Everything else works without ClickHouse |
+| ClickHouse shows a missing database, or Spyne Clickhouse is not in your connectors | Ask the claude.ai org admin or data/eng. Everything else works without ClickHouse |
 | You hit your usage limit | Start a new conversation per ticket (see "Keep your Claude usage low") |
 
 ## Rules the plugin enforces
