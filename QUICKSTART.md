@@ -52,6 +52,8 @@ Then type `/reload-plugins` (or quit and reopen Claude Code).
 1. Open the **Code** tab and start a **Local** session (not a cloud session: plugins only run locally). Any folder is fine for now.
 2. Ask Claude in that session: "add the plugin marketplace Product14/pm-os and install pm-os for my user". Approve the commands when it asks. It uses your computer's GitHub sign-in, which the private repo needs.
 3. Start a new session so the plugin loads. Typing `/pm-os` should now list the PM OS commands.
+4. The app may show **"This plugin includes local MCP servers"** with a warning that installing grants access to everything on your computer. Click **Continue**. The two servers it names, **freshdesk** and **clickhouse**, are the plugin's own small programs that read Freshdesk tickets and ClickHouse data with your keys (ClickHouse is read-only; Freshdesk can add a private note only after you approve it). **Disable plugin** turns PM OS off.
+5. You can see the plugin under **+** > **Plugins**, on the **Code** tab, as `spyne-pm-os`.
 
 Do not use the app's **Add marketplace** button (the box with a **Sync** button) for this repo. It shows "Failed to add marketplace" because it cannot read a private GitHub repo.
 
