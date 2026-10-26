@@ -7,7 +7,7 @@ if [[ ! -f "$PROFILE" ]]; then
   exit 0
 fi
 REPO=$(node -e 'try{process.stdout.write(require(process.argv[1]).repo_path||"")}catch{}' "$PROFILE")
-if [[ -z "$REPO" || ! -d "$REPO/.git" ]]; then
+if [[ -z "$REPO" ]] || ! git -C "$REPO" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "PM OS profile has no valid repo_path. Suggest re-running /pm-os:setup."
   exit 0
 fi

@@ -12,7 +12,7 @@ Everything happens inside Claude Code: the VS Code extension, the desktop app or
 
 **2. Get the plugin.**
 - **Team rollout (recommended):** an org Owner adds this repo once under claude.ai Organization settings > Plugins & skills and marks `pm-os` Required. It then appears for every PM with nothing to install.
-- **Until then:** in Claude Code, type `/plugins` (VS Code) or `/plugin` (CLI), open Marketplaces, add `Product14/pm-os`, then install `pm-os` from the Plugins tab.
+- **Install:** in Claude Code, type `/plugins` (VS Code) or `/plugin` (CLI), open Marketplaces, add `Product14/yashs-handover`, then install `pm-os` from the Plugins tab. Full steps: `05-claude-toolkit/PM-OS-QUICKSTART.md` in that repo.
 
 **3. Type `/pm-os:setup`.** Claude checks every tool, fixes what it can with you, and walks you through the rest:
 - **ClickHouse and Freshdesk** go into the plugin's Configure dialog (`/plugins` > Installed > pm-os > Configure). They are stored in your system's credential store, never in the chat.
