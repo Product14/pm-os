@@ -1,0 +1,101 @@
+{
+  "persona": "bdc-manager",
+  "round": 2,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 3,
+    "Right decision": 4,
+    "Evidence": 4,
+    "P&L": 3,
+    "Above the DMS": 4,
+    "Honest unknowns": 5,
+    "Shared scope": 4,
+    "Full value": 3,
+    "Brevity": 4,
+    "CRM completeness": 3,
+    "Human reach": 4,
+    "Show discipline": 3,
+    "Workload effect": 3,
+    "Contact compliance": 2
+  },
+  "previous_issues": [
+    { "id": "bdc-manager-r1-1", "fixed": true, "note": "Steps 6 and 7 now say plainly what stays out and what still shows, and rollout to every user waits on step 7." },
+    { "id": "bdc-manager-r1-2", "fixed": true, "note": "Lead under the tester's phone is named in step 7 and gated before every user; CRM push block is stated. Its fail-open gap is raised again as r2-2." },
+    { "id": "bdc-manager-r1-3", "fixed": false, "note": "Verified (E90) and listed, but still gated only before every user. No rule that texts go only to the tester's own verified number, and no opt-out or consent rule. Raised as r2-1." },
+    { "id": "bdc-manager-r1-4", "fixed": true, "note": "Step 3 says transfers are not tested. What the report shows about a transfer is open question 6." },
+    { "id": "bdc-manager-r1-5", "fixed": false, "note": "Report is 'reworded for a live store' but still does not say it shows the CRM write (status, appointment, summary) or why the agent would escalate. Raised as r2-3." },
+    { "id": "bdc-manager-r1-6", "fixed": true, "note": "BDC manager named in the Problem; CSM time labelled a Spyne cost; dealer benefit labelled not measured." },
+    { "id": "bdc-manager-r1-7", "fixed": true, "note": "Rollout to every user waits on step 7; owner and date are an honest open question (Q2)." },
+    { "id": "bdc-manager-r1-8", "fixed": false, "note": "Shared number and cleanup are named as a risk only. What the tester's phone shows, what a callback reaches, and whether cleanup can touch a lead a person worked are not stated. Raised as r2-5." },
+    { "id": "bdc-manager-r1-9", "fixed": true, "note": "Scene is labelled illustrative and the Evidence section says no dealer has asked. No BDC scene, but the gap is stated plainly." },
+    { "id": "bdc-manager-r1-10", "fixed": true, "note": "Lanes, set not coded and step numbers in the table are gone. Small residue raised as r2-6." }
+  ],
+  "issues": [
+    {
+      "id": "bdc-manager-r2-1",
+      "severity": "blocking",
+      "type": "wrong-for-dealers",
+      "quote": "Still shows, and must be closed before rollout to every user",
+      "concern": "The Spyne owners stage runs in production on live rooftops, and the gate here only starts at 'every user'. In that first stage a test call can still text any number the agent is given, from a Spyne number not the store's, and can drop a real callback task and lead into my team's queue with the tester's phone in it. The store carries the TCPA risk and my agents clear the tasks. There is no consent, opt-out or own-number-only rule for texts.",
+      "because": "E90, E91, E94, E92 (reminders unverified per E93); persona Blocks when: no consent check or opt-out handling",
+      "ask": "Move texts, callback tasks and reminders into the gate for the first production test, or turn them off for test calls first. State the rule in one line: tests only text the tester's own verified number, and opt-outs are honoured."
+    },
+    {
+      "id": "bdc-manager-r2-2",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "a test record is not sent to the dealer's own CRM unless the rooftop opted in.",
+      "concern": "This reads as a guarantee, but the risks section admits the block lets a record through when it cannot link it to the call. The code header counts 5 of 46 missed in UAT. My CRM is my system of record; a test lead there is a lead my agents call.",
+      "because": "E83, E84 (fails open; production not verified)",
+      "ask": "Say 'not sent in most cases' or add 'a test record reaching the dealer's CRM' to the list that must close before every user, with the daily check covering it."
+    },
+    {
+      "id": "bdc-manager-r2-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "After the call the tester gets a report of what the agent captured, reworded for a live store, and finds every past test in the history.",
+      "concern": "I judge this by whether my agents would have to re-key anything. The report must show what would go on the lead: status, appointment and summary, plus the reason if the agent would have escalated. Open question 6 only asks about transfer and service fields, nothing about the sales lead record. Prospect copy 'Your agent is not live' and the sales request button must also go for live stores.",
+      "because": "E16 (prospect copy and CTA), E18",
+      "ask": "Add one short clause: the report shows lead status, appointment, summary and escalation reason, with no sales request button. Add the sales fields to open question 6."
+    },
+    {
+      "id": "bdc-manager-r2-4",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "| Test leads in the console lead list | One per sales outbound test | None before every user | [E56] [E14] |",
+      "concern": "The inbound sales test also posts customer data to the speed-to-lead endpoint, not only the outbound one. The row says outbound only, so the inbound path my GM would test most is missed, and speed to lead and set counts stay skewed.",
+      "because": "E56 (inbound Instant Response test posts /conversation/speed-to-lead/customer-data, flow_type Internal), E14",
+      "ask": "Change 'One per sales outbound test' to cover inbound sales tests too, or say it is unchecked and add it to the engineering open question."
+    },
+    {
+      "id": "bdc-manager-r2-5",
+      "severity": "minor",
+      "type": "wrong-for-dealers",
+      "quote": "Outbound tests ring from a shared Spyne number, and cleanup at sales go-live could remove leads on a rooftop already live on service.",
+      "concern": "A GM will not answer an unknown shared number, and a callback to it reaches nobody. Cleanup removing a lead my agent already touched is a record that vanishes from the CRM.",
+      "because": "E23, E17",
+      "ask": "Add a clause: callback behaviour is unverified, and cleanup must not delete a lead or appointment a person has worked. Put it in open question 1 or 3 so engineering answers it."
+    },
+    {
+      "id": "bdc-manager-r2-6",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "no real agent carrying an old demo flag",
+      "concern": "Cold reader jargon: 'demo flag', 'live safeguard' and 'demo mark' mean nothing to a BDC manager. Swap for what happens at the store: the real agent mistaken for a demo and its real calls failing.",
+      "because": "missing (PM plain-language requirement); E102",
+      "ask": "Replace with 'no live agent still set up as a demo agent' and use that wording in the Risks bullets."
+    }
+  ],
+  "requests": [
+    {
+      "question": "Does a test call in the production console text only the tester's verified number, or any number the agent is given, and does the text go out from Spyne's number for a live rooftop?",
+      "blocks": "r2-1; first production test gate",
+      "source": "engineering"
+    },
+    {
+      "question": "Does the inbound sales test (Instant Response) create a lead that shows in the BDC task queue or speed-to-lead counts?",
+      "blocks": "r2-4",
+      "source": "engineering"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "persona": "ceo",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {
+    "Real problem": 3,
+    "Right decision": 4,
+    "Evidence": 3,
+    "P&L": 2,
+    "Above the DMS": 4,
+    "Honest unknowns": 5,
+    "Shared scope": 4,
+    "Full value": 3,
+    "Brevity": 4,
+    "Dealer economics": 2,
+    "Base leverage": 3,
+    "Dependency honesty": 4,
+    "Handoff clarity": 3,
+    "Decision readiness": 4
+  },
+  "previous_issues": [
+    { "id": "ceo-r1-1", "fixed": true, "note": "'No trace' is gone. TL;DR and steps 6 and 7 now split what is kept out from what still shows, and rollout to every user waits on step 7." },
+    { "id": "ceo-r1-2", "fixed": true, "note": "The page now says the dealer gain is not measured and labels CSM time as a Spyne cost. No dealer dollar exists (E30, Q53), so honest labelling is all that can be asked. One wording problem remains, raised below." },
+    { "id": "ceo-r1-3", "fixed": true, "note": "E101 count (60 rooftops, 431 calls) is now on the page with the staff caveat. No demand threshold gate, which is consistent with the PM override. See ceo-r2-2 for how the Decision line uses it." },
+    { "id": "ceo-r1-4", "fixed": true, "note": "Problem line now rests on E63 (code-verified: dealer staff test calls are counted) instead of the unverified E60." },
+    { "id": "ceo-r1-5", "fixed": true, "note": "E81 is on the page, Xtime, cancel and move are named as untraced, and one run on a live DMS rooftop gates the first production test. A provider-by-provider list is still absent, but the stop rule is hard now." },
+    { "id": "ceo-r1-6", "fixed": true, "note": "Real texts and reminders are in step 7 (E90, E92) and gate every-user rollout." },
+    { "id": "ceo-r1-7", "fixed": true, "note": "Page says rollout to every user waits for step 7 and says openly there is no owner or date. Owner is still open (Q2), but that is stated rather than hidden." },
+    { "id": "ceo-r1-8", "fixed": true, "note": "GM, BDC manager and service manager named; the Settings-change-to-customer-hears handoff is stated." },
+    { "id": "ceo-r1-9", "fixed": true, "note": "Decision names text-message agents and the receptionist as not covered." },
+    { "id": "ceo-r1-10", "fixed": true, "note": "Lanes, set not coded, switch and test mark are replaced and CSM is spelled out. A leftover Q-id is raised below." }
+  ],
+  "issues": [
+    {
+      "id": "ceo-r2-1",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "Kept out from day one: the calls list, analytics and conversation reports.",
+      "concern": "This is stated as done, but Open question 4 says we do not know whether tests are hidden in the report pages embedded in the console, and E59 only shows the calls table hides console calls. E63 shows a staff test call counts today. I told dealers once that nothing would show; I will not repeat that on a promise the page itself says is unverified. Rollout step 9 only adds a daily check before every user.",
+      "because": "E59, E63, E80 (isDemoCall on a staff call not traced); page Open question 4",
+      "ask": "Split the line: name the surfaces confirmed hidden (calls list, with E59) and the ones still to verify (analytics, embedded reports), or tag it 'by design, not yet checked in the product'. Make the report check a gate before the Spyne owners stage, not only before every user."
+    },
+    {
+      "id": "ceo-r2-2",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "The judge said defer on unmeasured demand; the PM overrode it because live rooftops already test today and those tests land in their reports and CRM.",
+      "concern": "The Evidence section says Spyne staff are included in the 431 calls and cannot be separated, so 'live rooftops already test today' may be partly our own people. 'Land in their CRM' is only evidenced for sales outbound tests (E56); web calls and service tests are not shown to reach the CRM. The sentence that justifies overriding the defer is stronger than the evidence under it.",
+      "because": "E100, E101 (staff caveat), E63, E56",
+      "ask": "Reword to what is proven: 60 live rooftops placed 431 test calls in 90 days, Spyne staff included; test calls are counted in reports (E63) and sales outbound tests create a lead (E56). Drop 'and CRM' for web and service tests."
+    },
+    {
+      "id": "ceo-r2-3",
+      "severity": "major",
+      "type": "scope",
+      "quote": "Rollout: Spyne owners first on production, then every user, with an off switch per rooftop; off means today's form.",
+      "concern": "The owners stage runs on real customer rooftops while every step 7 leak is still open: real staff tasks from callback requests, a lead in the console list, real texts, reminders on test bookings. The only pre-owners gate is the DMS run. A Spyne owner testing a customer's agent can put a task in front of that store's staff. Nobody at the store signed up for that.",
+      "because": "E94 (real action item and CRM lead on callback), E90 (real text), E92 (reminders), E82 (Spyne meeting row)",
+      "ask": "Say in one line which rooftops the owners stage runs on and how the store is warned, or limit owners-stage tests to flows that avoid callbacks and texts until step 7 closes. Do not widen the page beyond that line."
+    },
+    {
+      "id": "ceo-r2-4",
+      "severity": "minor",
+      "type": "five-facts",
+      "quote": "| Days a wrong hours or policy answer costs missed or misbooked appointments | Not measured | Fewer | [ASSUMPTION: not measured, Q53] |",
+      "concern": "I cannot read this row in 60 seconds. It is the only dealer-value row and it is garbled, and the first two rows are harm we avoid creating, not value we deliver. Say it plainly in fixed-ops terms: a wrong Saturday-hours answer is a missed service-drive appointment, owned by the service manager. 'Q53' means nothing to a cold reader.",
+      "because": "E30 (no dealer quote), decide.md Inputs: dealer P&L impact unknown",
+      "ask": "Reword to 'Service-drive appointments missed or misbooked because the agent gave a wrong answer' with owner service manager, drop the Q-id, and keep 'not measured'. No new numbers."
+    },
+    {
+      "id": "ceo-r2-5",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "The block on the dealer's own CRM lets a record through when it cannot link it to the call. [E84]",
+      "concern": "The page states the leak but not its size, and the same line is the only place the dealer's own CRM is named. E84 also says no sales-side DMS or calendar write was found and that is unverified. The Spyne owners and every-user gates do not mention CRM, only the DMS run.",
+      "because": "E84 (fails open; 5 of 46 UAT insertions missed), E83",
+      "ask": "Add the CRM leak to the gate wording in step 9 (check one test run on a rooftop with a connected CRM), or say why the opt-in default is enough."
+    }
+  ],
+  "requests": []
+}

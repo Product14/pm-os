@@ -1,0 +1,131 @@
+{
+  "persona": "bdc-manager",
+  "round": 1,
+  "verdict": "block",
+  "scores": {
+    "Real problem": 2,
+    "Right decision": 3,
+    "Evidence": 2,
+    "P&L": 2,
+    "Above the DMS": 2,
+    "Honest unknowns": 3,
+    "Shared scope": 3,
+    "Full value": 2,
+    "Brevity": 4,
+    "CRM completeness": 1,
+    "Human reach": 2,
+    "Show discipline": 2,
+    "Workload effect": 2,
+    "Contact compliance": 2
+  },
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "bdc-manager-r1-1",
+      "severity": "blocking",
+      "type": "unsupported-claim",
+      "quote": "The call is marked as a test so it stays out of the rooftop's reports and analytics.",
+      "concern": "This is not true for my board. Test bookings still show in the overview appointments count, so my sets are inflated by the GM's own test calls. The callback tool makes real tasks my team has to clear. Evidence contradicts the sentence, and the doc admits it two sections later.",
+      "because": "E12, E13, E14 (contradicts the line); E11 only covers conversation reports",
+      "ask": "Say plainly what stays in and what stays out in v1. Do not promise 'out of reports' until the booking, task and CRM lead leaks are closed. Make closing them a gate for rollout past Spyne owners."
+    },
+    {
+      "id": "bdc-manager-r1-2",
+      "severity": "blocking",
+      "type": "wrong-for-dealers",
+      "quote": "| Test leads in the CRM | One per sales outbound test | Still created, see risks | [E56] [E14] |",
+      "concern": "A real lead lands in my CRM under the tester's phone with no test marker. My agents work the queue by status, so someone calls a GM's cell phone as a lead, or it skews speed to lead and my appointment numbers. If the tester's number belongs to a customer my agent is already working, we double-contact them. This breaks my 'outcomes in the CRM must be correct and my agents must not do cleanup' test.",
+      "because": "E56, E14, E54; observation: CRM lead created before outbound call with no demo marker",
+      "ask": "Do not create a CRM lead for live tests in v1, or create it with a test status that is suppressed from the BDC queue and from speed-to-lead and set counts. Add a duplicate-contact check against active leads."
+    },
+    {
+      "id": "bdc-manager-r1-3",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "The agent may send real texts during a test and reminders may fire on test bookings. [ASSUMPTION: texts and reminders are not gated for tests]",
+      "concern": "A text or reminder that goes out to a real number is a consent problem and the store carries the TCPA risk, not Spyne. It is also a risk that a test booking sets off a confirmation workflow that my team then sees as a real appointment.",
+      "because": "missing (no code reference for SMS or reminder gating in evidence.md)",
+      "ask": "Verify it and state the rule. Texts and reminders are off for test conversations, outbound tests only dial a number the logged-in user has verified as theirs, and opt-out is honoured. Put this ahead of rollout, not as an assumption."
+    },
+    {
+      "id": "bdc-manager-r1-4",
+      "severity": "major",
+      "type": "scope",
+      "quote": "It never transfers, so the store's line never rings, and any appointment it books is marked as a test.",
+      "concern": "The transfer is where my customers get lost: it rings out, or the main number forwards back to the bot after hours. A test that never transfers cannot show me that. I would believe the agent is fine and still lose calls.",
+      "because": "missing (fixed intent blocks the transfer, so this is about what the test report shows; no evidence in evidence.md on what the test reports for transfers)",
+      "ask": "Have the test report show what would have happened on a transfer: who would be rung, the ring time, and the fallback (a named human or a CRM callback task). If the fallback is only the main number, flag it. Say in the doc that transfer reach is not tested in v1."
+    },
+    {
+      "id": "bdc-manager-r1-5",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "After the call the tester gets the same structured report a prospect gets, and finds every past test in the test history.",
+      "concern": "A prospect report says 'Your agent is not live' and carries a 'Get Vini on your lines' button that files a sales request. A live store seeing that will think we are confused. More important, it must show what the agent would write to the CRM (status, appointment, summary) and why it escalated, or I cannot tell whether my agents would have to re-key it.",
+      "because": "E16, E18",
+      "ask": "Change the report copy for live rooftops, remove the sales CTA, and add the structured CRM write (lead status, appointment, summary) and the escalation reason."
+    },
+    {
+      "id": "bdc-manager-r1-6",
+      "severity": "major",
+      "type": "five-facts",
+      "quote": "It removes CSM time per agent change and days a wrong hours or policy answer stays live; neither is measured yet.",
+      "concern": "Both benefits are Spyne's or the service manager's, not mine. The BDC manager is never named, and the one-pager does not say who on my team runs the test or how it affects my appointment credit. The doc adds cleanup (leaks) for my team before it removes any work.",
+      "because": "E1, E30 (no dealer evidence; the problem is the PM's assumption)",
+      "ask": "Name the role and the cost removed for that role (for example BDC calls handled with a wrong hours or policy answer), or say the benefit is Spyne-side. State who cleans up the leaked tasks and appointments."
+    },
+    {
+      "id": "bdc-manager-r1-7",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Who owns closing the booking, task and CRM lead leaks, and by when?",
+      "concern": "Without an owner and date, we ship a partial fix with the dealer's CRM still polluted and call it done. Nobody on my side signs up for that.",
+      "because": "E12, E13, E14; decide.md Full value 'needs an owner and a date from the PM'",
+      "ask": "Name an owner and date in the doc, or state that rollout beyond Spyne owners waits for the leaks to close. Acceptance must be measured in shows and in test records visible in the BDC queue (zero), not only in test calls excluded from conversation reports."
+    },
+    {
+      "id": "bdc-manager-r1-8",
+      "severity": "major",
+      "type": "wrong-for-dealers",
+      "quote": "Outbound tests ring from a shared caller ID, and demo cleanup at sales go-live could remove test leads on a rooftop already live on service.",
+      "concern": "A call from an unknown shared number is not answered by the GM, and if it is returned it reaches nobody. Test leads removed by cleanup also mean records vanish from the CRM that my agents may have touched.",
+      "because": "E23, E17",
+      "ask": "State what shows on the tester's phone and what happens when it is called back. Confirm cleanup cannot delete a lead or appointment a human has touched."
+    },
+    {
+      "id": "bdc-manager-r1-9",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "A service manager changes Saturday hours in Settings and wants to hear the agent say them before customers call. [ASSUMPTION: illustrative; no dealer has been quoted yet]",
+      "concern": "The problem is told from fixed ops only. There is no sales or BDC scene, and no dealer's words. I cannot tell whether a BDC manager would test this way.",
+      "because": "E30, E50 (searches failed); case.md Customer context (30 days) is EMPTY",
+      "ask": "Add a sales inbound or BDC scene, or say plainly that none exists. Re-run the Arali search before the PRD."
+    },
+    {
+      "id": "bdc-manager-r1-10",
+      "severity": "minor",
+      "type": "acceptance-gap",
+      "quote": "Per rooftop, set not coded: which lanes show (only agents it has live) and the tester's phone number.",
+      "concern": "Jargon. 'Lanes', 'set not coded', 'marked as a test', 'demo-flagged' and 'Edit in Settings' mean nothing cold. A BDC manager would read 'lane' as a phone line.",
+      "because": "missing (plain-language requirement from the PM)",
+      "ask": "Replace with plain words: 'which agents show (inbound sales, outbound sales, service)'. Replace 'marked as a test' with what the dealer sees, for example 'hidden from counts and the CRM queue'."
+    }
+  ],
+  "requests": [
+    {
+      "question": "When a live test books an appointment or creates a lead, does it sync to the dealer's own CRM (VinSolutions, eLead, etc.), and does it trigger confirmation or reminder texts?",
+      "blocks": "Issues 2 and 3; rollout gate",
+      "source": "engineering"
+    },
+    {
+      "question": "What does the prospect report show about transfers and CRM writes today, and can it show the intended destination and fallback?",
+      "blocks": "Issues 4 and 5",
+      "source": "engineering"
+    },
+    {
+      "question": "Which live rooftops have BDC users who use Talk to agent today, and what do they say about test records in their queue?",
+      "blocks": "Issues 6 and 9",
+      "source": "CSM"
+    }
+  ]
+}

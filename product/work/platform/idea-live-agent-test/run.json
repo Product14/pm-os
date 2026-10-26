@@ -1,0 +1,81 @@
+{
+ "stage": "prd",
+ "started": "2026-10-22",
+ "rubrics": {},
+ "lessons_loaded": [
+  "~/.claude/projects/-Users-yash-Documents-claude-code/memory/feedback_onepager_plain_language.md"
+ ],
+ "observations_loaded": {
+  "gm": [],
+  "backend-engineer": [],
+  "ceo": [],
+  "bdc-manager": [],
+  "service-manager": []
+ },
+ "rounds": {
+  "onepager": {
+   "r1": {
+    "issues": 49,
+    "kept": 48,
+    "discarded_generic": 1,
+    "blocking": 8,
+    "major": 29,
+    "minor": 11,
+    "requests_raised": 17,
+    "requests_sent": 3
+   },
+   "r2": {
+    "issues": 24,
+    "blocking": 1,
+    "major": 13,
+    "minor": 10,
+    "discarded_generic": 0,
+    "verdicts": {
+     "gm": "revise",
+     "backend-engineer": "revise",
+     "ceo": "revise",
+     "bdc-manager": "block",
+     "service-manager": "revise"
+    },
+    "score_avg": {
+     "gm": 3.57,
+     "backend-engineer": 3.71,
+     "ceo": 3.43,
+     "bdc-manager": 3.5,
+     "service-manager": 3.43
+    },
+    "requests_raised": 5,
+    "requests_sent": 0,
+    "note": "request budget used; logged as questions",
+    "resolution": {
+     "accepted": 20,
+     "rejected": 0,
+     "escalated": 5
+    }
+   },
+   "note": "round 3 skipped: remaining blocker turns on fixed intents, escalated to PM at Gate 2"
+  }
+ },
+ "requests": 4,
+ "gates": [
+  {
+   "gate": "decide",
+   "date": "2026-10-22",
+   "choice": "reopen as build (override of defer)"
+  },
+  {
+   "gate": 2,
+   "date": "2026-10-22",
+   "choice": "approve; owners stage: block texts/tasks/reminders for tests first; who tests: owners then every user",
+   "doc": "one-pager/final.md (v3 + gate edits)"
+  },
+  {
+   "gate": "jira",
+   "date": "2026-10-26",
+   "choice": "create (from approved one-pager, before PRD)",
+   "key": "RETCONVAI-5409"
+  }
+ ],
+ "jira": "RETCONVAI-5409",
+ "resume_note": "Next: stage 6 PRD from one-pager/final.md (plain language first; reviewers sonnet, max 3 parallel). Jira RETCONVAI-5409 already filed from the one-pager; update its description when the PRD is approved."
+}

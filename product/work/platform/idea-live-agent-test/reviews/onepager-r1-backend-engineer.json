@@ -1,0 +1,105 @@
+{
+  "persona": "backend-engineer",
+  "round": 1,
+  "verdict": "block",
+  "scores": {"Real problem": 3, "Right decision": 3, "Evidence": 3, "P&L": 2, "Above the DMS": 2, "Honest unknowns": 4, "Shared scope": 4, "Full value": 2, "Brevity": 4, "Code-cited baseline": 4, "Integration reality": 2, "Failure design": 1, "Observability and rollback": 1, "Scope discipline": 3},
+  "previous_issues": [],
+  "issues": [
+    {
+      "id": "backend-engineer-r1-1",
+      "severity": "blocking",
+      "type": "feasibility",
+      "quote": "It sits behind a switch: Spyne owners first on production, then every user; with it off, today's form stays.",
+      "concern": "The switch is a role gate, then global. After 'every user' there is no per-rooftop off switch. If one rooftop's real mapping gets flagged demo, real web calls 404 there and I cannot turn off just that store. 'Turn it off' for everyone is the rollback.",
+      "because": "E6, E7, E8 (mapping flagged isDemoAgent breaks real calls); E21 gives role gating only; solution-context Risk 1",
+      "ask": "Add a per-rooftop (team) kill switch independent of the role flag, and state the per-rooftop rollback: how a wrongly flagged mapping is detected and reverted without a deploy."
+    },
+    {
+      "id": "backend-engineer-r1-2",
+      "severity": "blocking",
+      "type": "unsupported-claim",
+      "quote": "Build one guided test mode for every live rooftop, on Sales and Service, running on the rooftop's own live agent and kept out of its numbers.",
+      "concern": "The Decision promises 'kept out of its numbers', but the same page says test bookings still show in the overview appointments count, callback requests create real staff tasks, and a CRM lead is created. The evidence contradicts the headline claim, and v1 ships to live stores with those leaks open.",
+      "because": "E12 (ClickHouse meetings has no demo column), E13 (action item, no test check), E14 and E56 (CRM lead, no marker)",
+      "ask": "Either narrow the Decision to what v1 actually excludes (calls list, analytics, reports via isTest), or make v1 suppress booking, follow-up task and CRM lead writes in live-test mode. Name which, with an owner."
+    },
+    {
+      "id": "backend-engineer-r1-3",
+      "severity": "blocking",
+      "type": "feasibility",
+      "quote": "A test service booking may write into the dealer's DMS scheduler; a UAT check on a rooftop with a working DMS connection gates rollout. [ASSUMPTION: no DMS write; Q70]",
+      "concern": "A test booking in a live dealer's scheduler takes a real slot from a service advisor, and write-back is per provider (CDK, Reynolds, Tekion, Dealertrack, PBS). Whether the demo flag stops the DMS write is an unverified assumption. A one-provider UAT does not cover the others, and no failure or cleanup path is specified.",
+      "because": "missing (solution-context Unknowns: DF:84-87, 140-141 unverified); E10 only covers post-processing skip",
+      "ask": "Trace the booking tool for is_demo_meeting and state per provider whether a write happens. Decide that live-test mode hard-blocks DMS and scheduler writes at the tool layer, with a failure alert. Do this before rollout, not as a UAT surprise."
+    },
+    {
+      "id": "backend-engineer-r1-4",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "The agent's details are read-only, each with an \"Edit in Settings\" link; nothing in the test changes the live agent.",
+      "concern": "Read-only is a UI promise. The demo app today writes hours, finance and service policies and agent name or voice, and auto-saves standard hours before a test. Those backend endpoints stay callable, and hours saves reset the service menu through central config. Nothing server-side stops a write in live mode.",
+      "because": "E15; solution-context 'What the demo app must stop doing'; memory of hours-save side effect via central-config",
+      "ask": "Specify server-side rejection of every config write when mode=live (working-hours, central-config agent-config, console agent endpoint), plus the auto-save-before-test removal. List the callers who-calls found for each write path."
+    },
+    {
+      "id": "backend-engineer-r1-5",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "The call is marked as a test so it stays out of the rooftop's reports and analytics.",
+      "concern": "'Marked as a test' is several different fields: isTest, isDemo, isTestCall, forceTestCall, isLiveTest, is_demo_meeting. The doc names no source of truth and no list of consumers. E11 shows reports filter on isTest only, and the ordinary demo conversation has isTest false. Embedded iframe report apps and dealer-leads v3/meetings were not read.",
+      "because": "E11, E9, E59; solution-context Unknowns (iframe report apps)",
+      "ask": "Define the data contract: which field is authoritative, who writes it, and the list of readers (who-calls on the isTest filters, including iframe report apps and dealer-leads). Resolve open question 3 before the Decision claims exclusion."
+    },
+    {
+      "id": "backend-engineer-r1-6",
+      "severity": "major",
+      "type": "missing-evidence",
+      "quote": "The agent may send real texts during a test and reminders may fire on test bookings. [ASSUMPTION: texts and reminders are not gated for tests]",
+      "concern": "This is checkable in code today, not an unknown. A reminder on a test booking can text a real number, and in-call SMS has no demo gate. An unchecked side effect on a live agent is a customer-facing incident.",
+      "because": "solution-context: 'in-call SMS has no demo gate and reminders on demo meetings likely fire'; E10",
+      "ask": "Read the SMS tool and reminder scheduler, state what fires for a test booking, and gate both in live-test mode or list them as v1 blockers with an owner."
+    },
+    {
+      "id": "backend-engineer-r1-7",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "| Staff test calls in conversation reports | Counted | Excluded | [E63] [E9] |",
+      "concern": "No production check exists. How do we know after rollout that live-test calls are excluded and no real mapping got flagged? Which query, which alert? The other rows are 'Unknown', so nothing measurable proves the outcome.",
+      "because": "missing; E63 relies on a ClickHouse check (Q51) not yet run",
+      "ask": "Add the verification query (isTest and isLiveTest conversations per rooftop vs reports count), an alert on real-mapping isDemoAgent=true, and a failure log or alert for call/start in live mode."
+    },
+    {
+      "id": "backend-engineer-r1-8",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Per rooftop, set not coded: which lanes show (only agents it has live) and the tester's phone number.",
+      "concern": "A free-form tester number on outbound dials any E.164 from a shared caller ID, 20 per hour, with no allow-list. On live stores that is an open dialer on a customer's agent and a TCPA exposure. Also, who validates the number and what happens on a bad one is not specified.",
+      "because": "solution-context Risk 3 (DF:75, 178); E23",
+      "ask": "Restrict the outbound test to the signed-in user's verified number or a rooftop allow-list, validate E.164, and state the failure behaviour for a bad or unreachable number."
+    },
+    {
+      "id": "backend-engineer-r1-9",
+      "severity": "major",
+      "type": "feasibility",
+      "quote": "Rooftops that tried the prospect demo before go-live may already have their real agent marked as a demo and need a check first. [ASSUMPTION: some live rooftops carry an old demo mark]",
+      "concern": "This is a one-query Mongo check on isDemoAgent: true mappings of live teams, not an assumption. If any exist, enabling the flag for them or their old demo copy breaks real calls today. It gates the owners-first rollout, and the fix plan (per-rooftop backfill) is absent.",
+      "because": "E6, E7; solution-context Risk 2 (DF:143)",
+      "ask": "Run the count before approval and list affected rooftops. Add the fix and backfill step, and make a clean mapping a precondition for enabling a rooftop."
+    },
+    {
+      "id": "backend-engineer-r1-10",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "Outbound tests ring from a shared caller ID, and demo cleanup at sales go-live could remove test leads on a rooftop already live on service. [E23] [E17]",
+      "concern": "E17 says delete-demo-data sweeps leads by tester mobile. If a tester's phone matches a real lead, cleanup deletes real lead data. 'Could remove test leads' understates it, and the owner (user-management) is not named.",
+      "because": "E17; solution-context Risk 4",
+      "ask": "Name the user-management caller and state the guard: sweep only demo-flagged leads, or skip rooftops live on any line."
+    }
+  ],
+  "requests": [
+    {"question": "Does the booking tool write to the DMS or scheduler for is_demo_meeting bookings, per provider (CDK, Reynolds, Tekion, Dealertrack, PBS)?", "blocks": "Open question 1 / rollout / issue r1-3", "source": "conversational-ai-backend booking tool, trace_handler"},
+    {"question": "How many live teams have isDemoAgent: true on a real mapping today?", "blocks": "Owners-first rollout / issue r1-9", "source": "Mongo team-agent mappings"},
+    {"question": "Do SMS tools and the appointment reminder scheduler skip demo or test meetings?", "blocks": "Texts and reminders risk / issue r1-6", "source": "conversational-ai-backend, who_calls on reminder scheduler"},
+    {"question": "Is the live-mode backend prototype (commit f996cd4c8) merged anywhere? The one-pager does not say it is a local unpushed prototype covering calls only.", "blocks": "Estimate and scope credibility", "source": "E24, E61"}
+  ]
+}

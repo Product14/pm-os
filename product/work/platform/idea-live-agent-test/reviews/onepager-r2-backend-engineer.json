@@ -1,0 +1,57 @@
+{
+  "persona": "backend-engineer",
+  "round": 2,
+  "verdict": "revise",
+  "scores": {"Real problem": 4, "Right decision": 4, "Evidence": 4, "P&L": 3, "Above the DMS": 4, "Honest unknowns": 4, "Shared scope": 4, "Full value": 3, "Brevity": 4, "Code-cited baseline": 4, "Integration reality": 3, "Failure design": 3, "Observability and rollback": 4, "Scope discipline": 4},
+  "previous_issues": [
+    {"id": "backend-engineer-r1-1", "fixed": true, "note": "Step 9 now has an off switch per rooftop with off meaning today's form."},
+    {"id": "backend-engineer-r1-2", "fixed": true, "note": "Decision narrowed to conversation reports; remaining leaks named in step 7 and gated before every user."},
+    {"id": "backend-engineer-r1-3", "fixed": true, "note": "E81 read in code; Xtime, cancel and move left open and a run on a live-DMS test rooftop gates the first production test. Residual overclaim in the table, raised as r2-2."},
+    {"id": "backend-engineer-r1-4", "fixed": true, "note": "Step 4 says the test cannot change the live setup and the automatic hours save is removed. Server-side detail belongs in the PRD."},
+    {"id": "backend-engineer-r1-5", "fixed": true, "note": "Step 6 states plainly what is excluded; data contract deferred to the PRD, embedded report pages stay open question 4."},
+    {"id": "backend-engineer-r1-6", "fixed": true, "note": "Texts and reminders are named in step 7 (E90, E92) and must be closed before every user."},
+    {"id": "backend-engineer-r1-7", "fixed": false, "note": "A daily report-count check was added, but the alert on a real agent carrying the demo flag is not in v2; raised as r2-3."},
+    {"id": "backend-engineer-r1-8", "fixed": true, "note": "Step 2 restricts outbound to the tester's own verified number."},
+    {"id": "backend-engineer-r1-9", "fixed": true, "note": "Clean real agent is a precondition before every user; count requested in open question 3 (E102 explains why it is not from ClickHouse)."},
+    {"id": "backend-engineer-r1-10", "fixed": false, "note": "Risk still says cleanup 'could remove leads' with no guard and no owner named; raised as r2-4."}
+  ],
+  "issues": [
+    {
+      "id": "backend-engineer-r2-1",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "a test record is not sent to the dealer's own CRM unless the rooftop opted in.",
+      "concern": "Stated as an absolute under 'Kept out from day one', but the CRM gate fails open when it cannot link the record to the call, and the sales-side write paths were not fully read. The Risks section admits this, but the dealer-visible promise in step 6 does not carry the caveat. A dealer reading step 6 will believe a test can never reach VinSolutions or eLead.",
+      "because": "E84 (evaluate-demo.js:44-49 fails open; 5 of 46 UAT insertions missed, production unverified); E83",
+      "ask": "Qualify step 6 so the CRM exclusion reads as the default with a known gap (a record that cannot be linked to the call is still sent), or move the CRM line out of 'Kept out from day one'."
+    },
+    {
+      "id": "backend-engineer-r2-2",
+      "severity": "major",
+      "type": "unsupported-claim",
+      "quote": "| Test service bookings reaching the dealer's scheduler | Not traced for today's form | None | [E80] [E81] |",
+      "concern": "'None' is a measured-sounding outcome, but E81 was read in code and not run, covers the create path only, and does not name Xtime. Cancel and reschedule on a test booking were not traced, and a tester can cancel or move a booking. A test slot in a live advisor's scheduler is the incident I get paged for.",
+      "because": "E81 (read not run; Xtime and cancel/reschedule untraced); E80; E95",
+      "ask": "Change After to 'None on create for Tekion, CDK, PBS, myKaarma and Evenflow (read in code); Xtime, cancel and move unproven', or leave it as a target tied to open question 1."
+    },
+    {
+      "id": "backend-engineer-r2-3",
+      "severity": "major",
+      "type": "acceptance-gap",
+      "quote": "Before every user: step 7 closed, no real agent carrying an old demo flag, and a daily check that tests stay out of report counts.",
+      "concern": "The checks cover rollout day and report counts only. Nothing watches for a real agent being flagged as a demo after rollout, which is the failure that breaks real customer calls at that rooftop (the main risk the page names). The rollback exists, but nobody would know to use it before customers hit it.",
+      "because": "E6, E7, E8 (flagged real agent breaks real calls); E102 (cannot be counted from ClickHouse, so a check needs the source database)",
+      "ask": "Add one line: an alert when any live rooftop's real agent gets the demo flag, owned by Engineering, and live before the Spyne owners stage."
+    },
+    {
+      "id": "backend-engineer-r2-4",
+      "severity": "minor",
+      "type": "missing-evidence",
+      "quote": "Outbound tests ring from a shared Spyne number, and cleanup at sales go-live could remove leads on a rooftop already live on service.",
+      "concern": "The resolution log says the cleanup guard was named, but v2 names neither the guard nor the owner. If a tester's phone matches a real lead, the sweep deletes real dealer data, which is worse than 'remove leads'.",
+      "because": "E17, E23",
+      "ask": "Say whether cleanup sweeps only test-flagged leads, name the owning team, and add it to the step 7 owner question or the PRD."
+    }
+  ],
+  "requests": []
+}
